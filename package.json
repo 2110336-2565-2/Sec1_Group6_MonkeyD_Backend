@@ -1,0 +1,13 @@
+{
+  "name": "Sec1_Group6_MonkeyD_Backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "start": "^5.1.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
