@@ -5,7 +5,6 @@ import {Strategy as LocalStrategy} from "passport-local";
 import User from "../models/user.model.js";
 
 export const createUser = (req, res, next) => {
-  console.log(req.body);
   const user = new User();
   user.username = req.body.user.username;
   user.email = req.body.user.email;
