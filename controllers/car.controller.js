@@ -12,6 +12,7 @@ export const createCars = (req, res, next) => {
     model,
     age,
     gear_type,
+    license_plate,
     registration_book_id,
     registration_book_url,
     energy_types,
@@ -27,6 +28,7 @@ export const createCars = (req, res, next) => {
   car.model = model;
   car.age = age;
   car.gear_type = gear_type;
+  car.license_plate = license_plate;
   car.registration_book_id = registration_book_id;
   car.registration_book_url = registration_book_url;
   car.energy_types = energy_types;
@@ -43,7 +45,8 @@ export const createCars = (req, res, next) => {
     .catch(function (error) {
       if (error.code === 11000) {
         return res.status(400).send({
-          error: "registration_book_id or registration_book_url already exists",
+          error:
+            "license_plate or registration_book_id or registration_book_url already exists",
         });
       }
       next(error);

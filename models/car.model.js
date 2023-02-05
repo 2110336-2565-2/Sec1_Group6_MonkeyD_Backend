@@ -45,6 +45,11 @@ const CarSchema = new mongoose.Schema(
       type: Number,
       required: [true, "can't be blank"],
     },
+    license_plate: {
+      type: String,
+      unique: true,
+      required: [true, "can't be blank"],
+    },
     registration_book_id: {
       type: String,
       unique: true,
@@ -97,7 +102,7 @@ const CarSchema = new mongoose.Schema(
       },
     ],
     rental_price: {
-      type: mongoose.Types.Decimal128,
+      type: Number,
       required: [true, "can't be blank"],
     },
     car_images: [
@@ -134,7 +139,17 @@ CarSchema.methods.toAuthJSON = function () {
     owner: this.owner,
     brand: this.brand,
     model: this.model,
-    registration_book_url: this.registration_book_url,
+    license_plate: this.license_plate,
+    gear_type: this.gear_type,
+    age: this.age,
+    energy_types: this.energy_types,
+    location: this.location,
+    available_times: this.available_times.map((x) => ({
+      start: x.start,
+      end: x.end,
+    })),
+    rental_price: this.rental_price,
+    car_images: this.car_images,
   };
 };
 
