@@ -19,6 +19,7 @@ export const createCars = (req, res, next) => {
     latitude,
     longitude,
     available_times,
+    passenger,
     rental_price,
     car_images,
   } = req.body.car;
@@ -33,6 +34,7 @@ export const createCars = (req, res, next) => {
   car.registration_book_url = registration_book_url;
   car.energy_types = energy_types;
   car.rental_price = rental_price;
+  car.passenger = passenger;
   car.car_images = car_images;
   car.setLocation(latitude, longitude);
   car.setAvailableTimes(available_times);

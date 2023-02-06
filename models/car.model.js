@@ -105,6 +105,10 @@ const CarSchema = new mongoose.Schema(
       type: Number,
       required: [true, "can't be blank"],
     },
+    passenger: {
+      type: Number,
+      required: [true, "can't be blank"],
+    },
     car_images: [
       {
         type: String,
@@ -149,6 +153,7 @@ CarSchema.methods.toAuthJSON = function () {
       end: x.end,
     })),
     rental_price: this.rental_price,
+    passenger: this.passenger,
     car_images: this.car_images,
   };
 };
