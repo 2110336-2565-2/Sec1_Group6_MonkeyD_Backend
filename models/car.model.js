@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env" });
+dotenv.config({path: ".env"});
 
 const CarSchema = new mongoose.Schema(
   {
@@ -77,17 +77,9 @@ const CarSchema = new mongoose.Schema(
         required: [true, "can't be blank"],
       },
     ],
-    location: {
-      //GeoJSON
-      type: {
-        type: String,
-        enum: ["Point"],
-        required: [true, "can't be blank"],
-      },
-      coordinates: {
-        type: [Number], //[long,lat]
-        required: [true, "can't be blank"],
-      },
+    province: {
+      type: String,
+      required: [true, "can't be blank"],
     },
     available_times: [
       {
@@ -104,11 +96,21 @@ const CarSchema = new mongoose.Schema(
     rental_price: {
       type: Number,
       required: [true, "can't be blank"],
+      min: 0,
     },
     passenger: {
       type: Number,
       required: [true, "can't be blank"],
+      min: 0,
     },
+
+    rating: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
+
     car_images: [
       {
         type: String,
@@ -116,15 +118,15 @@ const CarSchema = new mongoose.Schema(
     ],
   },
 
-  { timestamps: true }
+  {timestamps: true}
 );
 
-CarSchema.methods.setLocation = function (latitude, longitude) {
-  this.location = {
-    type: "Point",
-    coordinates: [longitude, latitude],
-  };
-};
+// CarSchema.methods.setLocation = function (latitude, longitude) {
+//   this.location = {
+//     type: "Point",
+//     coordinates: [longitude, latitude],
+//   };
+// };
 
 CarSchema.methods.setAvailableTimes = function (times) {
   let available_times = times;
@@ -147,13 +149,14 @@ CarSchema.methods.toAuthJSON = function () {
     gear_type: this.gear_type,
     age: this.age,
     energy_types: this.energy_types,
-    location: this.location,
+    province: this.province,
     available_times: this.available_times.map((x) => ({
       start: x.start,
       end: x.end,
     })),
     rental_price: this.rental_price,
     passenger: this.passenger,
+    rating: this.rating,
     car_images: this.car_images,
   };
 };
