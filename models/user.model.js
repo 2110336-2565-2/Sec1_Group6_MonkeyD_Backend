@@ -37,6 +37,14 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    rentedCount: {
+      type: Number,
+      default: 0,
+    },
+    rentedOutCount: {
+      type: Number,
+      default: 0,
+    },
     hash: String,
     salt: String,
   },
