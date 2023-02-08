@@ -111,11 +111,10 @@ const CarSchema = new mongoose.Schema(
       max: 5,
     },
 
-    car_images: [
-      {
-        type: String,
-      },
-    ],
+    car_images: {
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0,
+    },
   },
 
   {timestamps: true}

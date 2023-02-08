@@ -9,6 +9,7 @@ export const createUser = (req, res, next) => {
   const user = new User();
   user.username = req.body.user.username;
   user.email = req.body.user.email;
+  user.image = req.body.user.image;
   user.setPassword(req.body.user.password);
 
   user
