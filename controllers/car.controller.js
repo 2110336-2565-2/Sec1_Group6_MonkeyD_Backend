@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Car from "../models/car.model.js";
+import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
   console.log(req.body);
@@ -94,15 +95,30 @@ export const getCars = async (req, res, next) => {
   if (req.query.province) {
     condition.province = req.query.province;
   }
-
-  let cars;
-  try {
-    cars = await Car.find(condition, show_attrs);
-    if (!cars.length) {
-      return res.status(404).json({message: "Cannot find car"});
-    } else {
-      return res.json(cars);
+  if (req.query.brandlist) {
+    try {
+      const encoded_brandlist = req.query.brandlist;
+      const brandlist = JSON.parse(decodeURIComponent(encoded_brandlist));
+      condition.brand = {
+        $in: brandlist,
+      };
+      console.log(brandlist, typeof brandlist);
+    } catch (err) {
+      return res.status(500).json({message: err.message});
     }
+  }
+
+  try {
+    let cars = await Car.find(condition, show_attrs).lean();
+    for (const car of cars) {
+      if (car.car_images && car.car_images.length) {
+        car.car_image = car.car_images[0];
+        delete car.car_images;
+      }
+      const user_image = await User.findOne({username: car.owner}, {image: 1});
+      car.user_image = user_image.image;
+    }
+    return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
