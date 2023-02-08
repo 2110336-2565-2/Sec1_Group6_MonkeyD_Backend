@@ -99,9 +99,11 @@ export const getCars = async (req, res, next) => {
     try {
       const encoded_brandlist = req.query.brandlist;
       const brandlist = JSON.parse(decodeURIComponent(encoded_brandlist));
-      condition.brand = {
-        $in: brandlist,
-      };
+      if (brandlist.length) {
+        condition.brand = {
+          $in: brandlist,
+        };
+      }
     } catch (err) {
       return res.status(500).json({message: err.message});
     }
