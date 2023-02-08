@@ -32,6 +32,9 @@ if (isProduction) {
   mongoose.connect(process.env.MONGODB_URI);
 } else {
   mongoose.connect("mongodb://localhost:27017/testDatabase");
+  // mongoose.connect(
+  //   "mongodb+srv://Kan:mk8cTFBpg7Vvg5W@cluster0.8vrm3fc.mongodb.net/?retryWrites=true&w=majority"
+  // );
   mongoose.set("debug", true);
 }
 

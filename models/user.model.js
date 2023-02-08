@@ -25,7 +25,14 @@ const UserSchema = new mongoose.Schema(
       match: [/\S+@\S+\.\S+/, "is invalid"],
       index: true,
     },
-    image: String,
+    image: {
+      type: String,
+      default: "https://pic.onlinewebfonts.com/svg/img_264157.png",
+    },
+    owncars: {
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0,
+    },
     hash: String,
     salt: String,
   },
@@ -66,7 +73,6 @@ UserSchema.methods.toAuthJSON = function () {
     username: this.username,
     email: this.email,
     token: this.generateJWT(),
-    image: this.image,
   };
 };
 
