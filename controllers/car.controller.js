@@ -102,7 +102,6 @@ export const getCars = async (req, res, next) => {
       condition.brand = {
         $in: brandlist,
       };
-      console.log(brandlist, typeof brandlist);
     } catch (err) {
       return res.status(500).json({message: err.message});
     }
