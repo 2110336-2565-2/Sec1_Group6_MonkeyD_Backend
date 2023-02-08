@@ -111,9 +111,13 @@ const CarSchema = new mongoose.Schema(
       max: 5,
     },
 
-    car_images: {
-      type: [String],
-      validate: (v) => Array.isArray(v) && v.length > 0,
+    lesser: {
+      type: String,
+      required: [true, "can't be blank"],
+    },
+    renter: {
+      type: String,
+      required: [true, "can't be blank"],
     },
   },
 
