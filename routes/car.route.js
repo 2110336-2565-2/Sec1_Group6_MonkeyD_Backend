@@ -5,6 +5,6 @@ import auth from "../middlewares/jwt.middleware.js";
 const router = express.Router();
 
 router.route("/car").post(createCars);
-router.route("/car").get(getCars);
+router.route("/car").get(auth.required, getCars);
 
 export default router;
