@@ -1,4 +1,5 @@
 import jwt from "express-jwt";
+import dotenv from "dotenv";
 
 dotenv.config({path: ".env"});
 
