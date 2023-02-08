@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema(
       type: [String],
       validate: (v) => Array.isArray(v) && v.length > 0,
     },
+    isLesser: {
+      type: Boolean,
+      default: false,
+    },
     hash: String,
     salt: String,
   },
