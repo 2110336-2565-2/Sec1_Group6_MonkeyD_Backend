@@ -75,7 +75,13 @@ UserSchema.methods.toAuthJSON = function () {
 };
 UserSchema.methods.getIdJSON = function () {
   return {
-    id: this._id,
+    user_id: this._id,
+  };
+};
+
+UserSchema.methods.getNavbarJSON = function () {
+  return {
+    image: this.image,
   };
 };
 
