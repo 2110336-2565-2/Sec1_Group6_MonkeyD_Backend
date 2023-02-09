@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import {customLogger} from "./middlewares/logger.middleware.js";
 import {customCORS} from "./middlewares/cors.middleware.js";
@@ -18,10 +19,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(customLogger);
 app.use(customCORS);
+app.use(cookieParser());
 
 if (!isProduction) {
   app.use(errorHandler);
 }
+
+// test git
 
 // deprecate **change later**
 mongoose.set("strictQuery", true);
