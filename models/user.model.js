@@ -94,9 +94,9 @@ UserSchema.methods.getIdJSON = function () {
 
 UserSchema.methods.getNavbarJSON = function () {
   return {
-    image: this.image,
     username: this.username,
     user_id: this._id,
+    image: this.image,
   };
 };
 
