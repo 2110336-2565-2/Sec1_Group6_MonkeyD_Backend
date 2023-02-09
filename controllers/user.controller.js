@@ -41,9 +41,23 @@ export const login = (req, res, next) => {
     }
     if (user) {
       user.token = user.generateJWT();
-      return res.json({user: user.toAuthJSON()});
+      const cookieData = JSON.stringify(user.toAuthJSON());
+      res.cookie("auth", cookieData, {httpOnly: true});
+      // res.cookie("auth", cookieData, {httpOnly: true, sameSite: "strict"});
+      return res.status(200).send("Login successful");
+      return res.json({user: user.getIdJSON()});
     } else {
       return res.status(422).json(info);
     }
   })(req, res, next);
+};
+
+export const getNavbarInfo = async (req, res, next) => {
+  return res.send(req.headers.user_id);
+  // try {
+  //   const user = await User.findOne({_id: req.headers.user_id}, {image: 1});
+  //   return res.json(cars);
+  // } catch (err) {
+  //   return res.status(500).json({message: err.message});
+  // }
 };

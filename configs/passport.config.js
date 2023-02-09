@@ -14,7 +14,7 @@ passport.use(
         .then(function (user) {
           if (!user || !user.validPassword(password)) {
             return done(null, false, {
-              errors: {"email or password": "is invalid"},
+              error: "email or password is invalid",
             });
           }
 

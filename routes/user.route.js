@@ -1,5 +1,9 @@
 import express from "express";
-import {createUser, login} from "../controllers/user.controller.js";
+import {
+  createUser,
+  login,
+  getNavbarInfo,
+} from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -13,5 +17,6 @@ const router = express.Router();
 
 router.route("/user").post(createUser);
 router.route("/user/login").post(login);
+router.route("/user/navbar").get(getNavbarInfo);
 
 export default router;

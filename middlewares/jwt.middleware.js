@@ -18,17 +18,21 @@ const getTokenFromHeader = (req) => {
   return null;
 };
 
+const getTokenFromCookie = (req) => {
+  return req.cookies.auth;
+};
+
 var auth = {
   required: jwt({
     secret: secret,
     userProperty: "payload",
-    getToken: getTokenFromHeader,
+    getToken: getTokenFromCookie,
   }),
   optional: jwt({
     secret: secret,
     userProperty: "payload",
     credentialsRequired: false,
-    getToken: getTokenFromHeader,
+    getToken: getTokenFromCookie,
   }),
 };
 
