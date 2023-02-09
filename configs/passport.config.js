@@ -15,9 +15,13 @@ passport.use(
           if (!user || !user.validPassword(password)) {
             return done(null, false, {
 <<<<<<< HEAD
+<<<<<<< HEAD
               error: "email or password is invalid",
 =======
               errors: "email or password is invalid",
+>>>>>>> main
+=======
+              error: "email or password is invalid",
 >>>>>>> main
             });
           }
