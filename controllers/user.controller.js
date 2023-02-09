@@ -51,8 +51,11 @@ export const login = (req, res, next) => {
 
 export const getNavbarInfo = async (req, res, next) => {
   try {
-    const user = await User.findOne({_id: req.headers.user_id}, {username: 1});
-    console.log(user, req.headers.user_id);
+    const user = await User.findOne(
+      {_id: req.headers.user_id},
+      {username: 1, image: 1}
+    );
+    console.log(user);
     return res.json({user: user.getNavbarJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
