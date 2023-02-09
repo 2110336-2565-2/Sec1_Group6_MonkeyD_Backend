@@ -4,19 +4,12 @@ import {
   login,
   getNavbarInfo,
 } from "../controllers/user.controller.js";
+import auth from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-// router.get("/user", auth.required, function (req, res, next) {
-//   res.send("get user");
-// });
-
-// router.put("/user", auth.required, function (req, res, next) {
-//   res.send("update");
-// });
-
 router.route("/user").post(createUser);
 router.route("/user/login").post(login);
-router.route("/user/navbar").get(getNavbarInfo);
+router.route("/user/navbar").get(auth.required, getNavbarInfo);
 
 export default router;

@@ -13,7 +13,7 @@ export const createUser = (req, res, next) => {
   user
     .save()
     .then(function () {
-      return res.json({user: user.toAuthJSON()});
+      return res.json({message: "Create account successfully"});
     })
     .catch(function (error) {
       if (error.code === 11000) {
@@ -38,7 +38,8 @@ export const login = (req, res, next) => {
     }
     if (user) {
       user.token = user.generateJWT();
-      const cookieData = JSON.stringify(user.toAuthJSON());
+      // const cookieData = JSON.stringify(user.toAuthJSON());
+      const cookieData = user.toAuthJSON();
       res.cookie("auth", cookieData, {httpOnly: true});
       // res.cookie("auth", cookieData, {httpOnly: true, sameSite: "strict",secure: true});
       return res.set(user.getIdJSON()).send("Login success");
@@ -52,7 +53,7 @@ export const getNavbarInfo = async (req, res, next) => {
   try {
     const user = await User.findOne({_id: req.headers.user_id}, {username: 1});
     console.log(user, req.headers.user_id);
-    return res.json({user: user.toAuthJSON()});
+    return res.json({user: user.getIdJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }

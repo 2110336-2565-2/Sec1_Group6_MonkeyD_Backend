@@ -17,12 +17,13 @@ const getTokenFromHeader = (req) => {
 
   return null;
 };
-
-const getTokenFromCookie = (req) => {
+const getTokenFromCookie = (req, res) => {
+  console.log(req.cookies.auth);
+  //   return req.headers.cookie;
   return req.cookies.auth;
 };
 
-var auth = {
+const auth = {
   required: jwt({
     secret: secret,
     userProperty: "payload",
