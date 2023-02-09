@@ -14,10 +14,13 @@ passport.use(
         .then(function (user) {
           if (!user || !user.validPassword(password)) {
             return done(null, false, {
+<<<<<<< HEAD
               error: "email or password is invalid",
+=======
+              errors: "email or password is invalid",
+>>>>>>> main
             });
           }
-
           return done(null, user);
         })
         .catch(done);

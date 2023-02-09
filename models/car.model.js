@@ -12,6 +12,11 @@ const CarSchema = new mongoose.Schema(
       match: [/^[a-zA-Z0-9]+$/, "is invalid"],
       index: true,
     },
+    renter: {
+      type: String,
+      lowercase: true,
+      match: [/^[a-zA-Z0-9]+$/, "is invalid"],
+    },
     status: {
       type: String,
       required: [true, "can't be blank"],
@@ -110,14 +115,9 @@ const CarSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
-
-    lesser: {
-      type: String,
-      required: [true, "can't be blank"],
-    },
-    renter: {
-      type: String,
-      required: [true, "can't be blank"],
+    rentedOutCount: {
+      type: Number,
+      default: 0,
     },
   },
 
