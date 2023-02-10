@@ -29,10 +29,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "https://pic.onlinewebfonts.com/svg/img_264157.png",
     },
-    owncars: {
-      type: [String],
-      validate: (v) => Array.isArray(v) && v.length > 0,
-    },
+    // owncars: {
+    //   type: [String],
+    //   validate: (v) => Array.isArray(v) && v.length > 0,
+    // },
     isLesser: {
       type: Boolean,
       default: false,
