@@ -5,7 +5,6 @@ import {Strategy as LocalStrategy} from "passport-local";
 import User from "../models/user.model.js";
 
 export const createUser = (req, res, next) => {
-  console.log(req.body);
   const user = new User();
   user.username = req.body.user.username;
   user.email = req.body.user.email;
@@ -14,7 +13,7 @@ export const createUser = (req, res, next) => {
   user
     .save()
     .then(function () {
-      return res.json({user: user.toAuthJSON()});
+      return res.json({message: "Create account successfully"});
     })
     .catch(function (error) {
       if (error.code === 11000) {
@@ -33,16 +32,17 @@ export const login = (req, res, next) => {
   if (!req.body.user.password) {
     return res.status(422).json({errors: {password: "can't be blank"}});
   }
-
-  console.log(req.body.user.email);
-
   passport.authenticate("local", function (err, user, info) {
     if (err) {
       return next(err);
     }
     if (user) {
       user.token = user.generateJWT();
-      return res.json({user: user.toAuthJSON()});
+      // const cookieData = JSON.stringify(user.toAuthJSON());
+      const cookieData = user.toAuthJSON();
+      res.cookie("auth", cookieData, {httpOnly: true});
+      // res.cookie("auth", cookieData, {httpOnly: true, sameSite: "strict",secure: true});
+      return res.set(user.getIdJSON()).send("Login success");
     } else {
       return res.status(422).json(info);
     }
@@ -76,4 +76,16 @@ export const carRented = async (req, res, next) => {
   renter.save()
   lessor.save()
   res.send("car rented")
+};
+export const getNavbarInfo = async (req, res, next) => {
+  try {
+    const user = await User.findOne(
+      {_id: req.headers.user_id},
+      {username: 1, image: 1}
+    );
+    console.log(user);
+    return res.json({user: user.getNavbarJSON()});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
 };

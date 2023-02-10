@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import {customLogger} from "./middlewares/logger.middleware.js";
 import {customCORS} from "./middlewares/cors.middleware.js";
@@ -18,10 +19,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(customLogger);
 app.use(customCORS);
+app.use(cookieParser());
 
 if (!isProduction) {
   app.use(errorHandler);
 }
+
+// test git
 
 // deprecate **change later**
 mongoose.set("strictQuery", true);
@@ -29,11 +33,11 @@ mongoose.set("strictQuery", true);
 if (isProduction) {
   mongoose.connect(process.env.MONGODB_URI);
 } else {
-  mongoose.connect("mongodb://127.0.0.1:27017/testDatabase");
+    mongoose.connect("mongodb://localhost:27017/testDatabase");
   // mongoose.connect(
   //   "mongodb+srv://Kan:mk8cTFBpg7Vvg5W@cluster0.8vrm3fc.mongodb.net/?retryWrites=true&w=majority"
   // );
-  mongoose.set("debug", true);
+  // mongoose.set("debug", true);
 }
 
 app.use("/", routes);
