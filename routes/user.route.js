@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  carRented,
   createUser,
   login,
   getNavbarInfo,
@@ -10,6 +11,7 @@ const router = express.Router();
 
 router.route("/user").post(createUser);
 router.route("/user/login").post(login);
+router.route("/user").patch(auth.required, carRented);
 router.route("/user/navbar").get(auth.required, getNavbarInfo);
 
 export default router;

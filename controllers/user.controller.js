@@ -49,6 +49,34 @@ export const login = (req, res, next) => {
   })(req, res, next);
 };
 
+export const carRented = async (req, res, next) => {
+  const renter_id = req.headers.renter_id
+  const lessor_id = req.headers.lessor_id
+  let renter
+  try {
+    renter = await User.findById(renter_id)
+    if (renter == null) {
+      return res.status(404).json({ message: 'Cannot find renter'})
+    }
+  } catch (err){
+    return res.status(500).json({message: err.message})
+  }
+  let lessor
+  try {
+    lessor = await User.findById(lessor_id)
+    if (lessor == null) {
+      return res.status(404).json({ message: 'Cannot find lessor'})
+    }
+  } catch (err){
+    return res.status(500).json({message: err.message})
+  }
+
+  renter.rentedCount += 1
+  lessor.rentedOutCount += 1
+  renter.save()
+  lessor.save()
+  res.send("car rented")
+};
 export const getNavbarInfo = async (req, res, next) => {
   try {
     const user = await User.findOne(
