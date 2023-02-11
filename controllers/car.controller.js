@@ -128,37 +128,36 @@ export const getCars = async (req, res, next) => {
 export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
-  let car
+  let car;
   try {
-    car = await Car.findById(car_id)
+    car = await Car.findById(car_id);
     if (car == null) {
-      return res.status(404).json({ message: 'Cannot find car'})
+      return res.status(404).json({message: "Cannot find car"});
     }
-  } catch (err){
-    return res.status(500).json({message: err.message})
+  } catch (err) {
+    return res.status(500).json({message: err.message});
   }
 
-  let renter
+  let renter;
   try {
-    renter = await User.findById(renter_id)
+    renter = await User.findById(renter_id);
     if (renter == null) {
-      return res.status(404).json({ message: 'Cannot find user'})
+      return res.status(404).json({message: "Cannot find user"});
     }
-  } catch (err){
-    return res.status(500).json({message: err.message})
+  } catch (err) {
+    return res.status(500).json({message: err.message});
   }
 
-  if (car.status == "Available"){
-    car.status = "Rented"
-    car.renter = renter.username
-    car.rentedOutCount += 1
-    car.save()
-    res.send("car rented")
-  }
-  else{
-    car.status = "Available"
-    car.renter = ""
-    car.save()
-    res.send("car available")
+  if (car.status == "Available") {
+    car.status = "Rented";
+    car.renter = renter.username;
+    car.rentedOutCount += 1;
+    car.save();
+    res.send("car rented");
+  } else {
+    car.status = "Available";
+    car.renter = "";
+    car.save();
+    res.send("car available");
   }
 };
