@@ -61,3 +61,20 @@ export const getNavbarInfo = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const updateRole = async (req, res, next) =>{
+  const user_id = req.headers.user_id;
+  let user
+  try {
+    user = await User.findById(user_id);
+    if(user == null) {
+      return res.status(404).json({message: 'cannot find user'})
+    }
+  } catch (err){
+    return res.status(500).json({message: err.message})
+  }
+
+  user.isLesser = true;
+  user.save();
+  res.send("role updated");
+}
