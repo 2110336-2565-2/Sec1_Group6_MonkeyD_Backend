@@ -124,3 +124,16 @@ export const getCars = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const getCarInfo = async (req, res, next) => {
+  const {id} = req.params;
+  try{
+    let car = await Car.find(
+      {_id:id}
+    );
+    console.log(car)
+    return res.json(car);
+  }catch(err){
+    return res.status(500).json({message: err.message});
+  }
+};
