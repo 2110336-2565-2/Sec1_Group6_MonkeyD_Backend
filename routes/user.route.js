@@ -12,6 +12,6 @@ const router = express.Router();
 router.route("/user").post(createUser);
 router.route("/user/login").post(login);
 router.route("/user/navbar").get(auth.required, getNavbarInfo);
-router.route("/user").post(updateRole);
+router.route("/user").patch(updateRole);
 
 export default router;
