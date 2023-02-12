@@ -86,7 +86,7 @@ export const forgotPassword = async (req, res, next) => {
       });
 
       const mailOptions = {
-        from: process.env.MONKEY_EMAIL_ADR,
+        from: `Monkey D Car Rent <${process.env.MONKEY_EMAIL_ADR}>`,
         to: email,
         subject: "Password reset instructions",
         html: `<p>Hi ${user.username},</p>
