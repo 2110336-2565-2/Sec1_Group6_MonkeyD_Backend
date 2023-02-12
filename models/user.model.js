@@ -40,6 +40,22 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    firstName: {
+      type: String,
+      default: "",
+    },
+    lastName: {
+      type: String,
+      default: "",
+    },
+    phoneNumber: {
+      type: String,
+      default: "",
+    },
+    prefix: {
+      type: String,
+      default: "",
+    },
     rentedCount: {
       type: Number,
       default: 0,
