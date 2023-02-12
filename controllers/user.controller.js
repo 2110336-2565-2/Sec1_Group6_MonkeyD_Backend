@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 import passport from "passport";
 import {Strategy as LocalStrategy} from "passport-local";
 import User from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config({path: ".env"});
+const secret = process.env.JWT_SECRET;
 
 export const createUser = (req, res, next) => {
   const user = new User();
@@ -65,6 +71,71 @@ export const logout = async (req, res, next) => {
   res.status(200).send("logout succesfully");
 };
 
+export const forgotPassword = async (req, res, next) => {
+  const {email} = req.body;
+  try {
+    const user = await User.findOne({email: email}, {_id: 1, username: 1});
+    if (user) {
+      const token = jwt.sign({userId: user._id}, secret, {expiresIn: "1h"});
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.MONKEY_EMAIL_ADR,
+          pass: process.env.MONKEY_EMAIL_PWD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.MONKEY_EMAIL_ADR,
+        to: email,
+        subject: "Password reset instructions",
+        html: `<p>Hi ${user.username},</p>
+           <p>Click <a href="${process.env.FRONTEND_PORT}/resetPassword?token=${token}">here</a> to reset your password.</p>
+           <p>This link will expire in 1 hour.</p>`,
+      };
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({message: "Internal server error"});
+        }
+        return res
+          .status(200)
+          .json({message: "Password reset instructions sent"});
+      });
+    } else {
+      return res.status(404).json({message: "User not found"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  const token = req.body.token;
+  const password = req.body.password;
+
+  try {
+    const decoded = jwt.verify(token, secret);
+    const userId = decoded.userId;
+
+    User.findById(userId, (err, user) => {
+      if (err) {
+        return res.status(500).json({message: "Internal server error"});
+      }
+      if (!user) {
+        return res.status(404).json({message: "User not found"});
+      }
+      user.setPassword(password);
+      user.save((err, updatedUser) => {
+        if (err) {
+          return res.status(500).json({message: "Internal server error"});
+        }
+        res.status(200).json({message: "Password reset successfully"});
+      });
+    });
+  } catch (error) {}
+};
+
 export const carRented = async (req, res, next) => {
   const renter_id = req.headers.renter_id;
   const lessor_id = req.headers.lessor_id;
@@ -96,10 +167,7 @@ export const carRented = async (req, res, next) => {
 
 export const getNavbarInfo = async (req, res, next) => {
   try {
-    const user = await User.findOne(
-      {_id: req.headers.user_id},
-      {username: 1, image: 1}
-    );
+    const user = await User.findOne({_id: req.headers.user_id});
     return res.json({user: user.getNavbarJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
