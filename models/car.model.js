@@ -98,6 +98,10 @@ const CarSchema = new mongoose.Schema(
         },
       },
     ],
+    car_images: {
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0,
+    },
     rental_price: {
       type: Number,
       required: [true, "can't be blank"],
@@ -114,6 +118,10 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
+    },
+    rentedOutCount: {
+      type: Number,
+      default: 0,
     },
   },
 

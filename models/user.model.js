@@ -14,7 +14,10 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       required: [true, "can't be blank"],
-      match: [/^[a-zA-Z0-9]+$/, "is invalid"],
+      match: [
+        /^(?=.{1,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/,
+        "is invalid",
+      ],
       index: true,
     },
     email: {
@@ -31,7 +34,7 @@ const UserSchema = new mongoose.Schema(
     },
     owncars: {
       type: [String],
-      //validate: (v) => Array.isArray(v) && v.length > 0,
+      default: [],
     },
     isLesser: {
       type: Boolean,
@@ -52,6 +55,14 @@ const UserSchema = new mongoose.Schema(
     prefix: {
       type: String,
       default: "",
+    },
+    rentedCount: {
+      type: Number,
+      default: 0,
+    },
+    rentedOutCount: {
+      type: Number,
+      default: 0,
     },
     hash: String,
     salt: String,
@@ -89,10 +100,19 @@ UserSchema.methods.generateJWT = function () {
 };
 
 UserSchema.methods.toAuthJSON = function () {
+  return this.generateJWT();
+};
+UserSchema.methods.getIdJSON = function () {
+  return {
+    user_id: this._id,
+  };
+};
+
+UserSchema.methods.getNavbarJSON = function () {
   return {
     username: this.username,
-    email: this.email,
-    token: this.generateJWT(),
+    user_id: this._id,
+    image: this.image,
   };
 };
 
