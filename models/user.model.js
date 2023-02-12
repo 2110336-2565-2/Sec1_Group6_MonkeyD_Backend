@@ -31,11 +31,27 @@ const UserSchema = new mongoose.Schema(
     },
     owncars: {
       type: [String],
-      validate: (v) => Array.isArray(v) && v.length > 0,
+      //validate: (v) => Array.isArray(v) && v.length > 0,
     },
     isLesser: {
       type: Boolean,
       default: false,
+    },
+    firstName: {
+      type: String,
+      default: "",
+    },
+    lastName: {
+      type: String,
+      default: "",
+    },
+    phoneNumber: {
+      type: String,
+      default: "",
+    },
+    prefix: {
+      type: String,
+      default: "",
     },
     hash: String,
     salt: String,

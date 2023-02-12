@@ -1,5 +1,5 @@
 import express from "express";
-import {createUser, login} from "../controllers/user.controller.js";
+import {createUser, login, AddInform, ViewInfo} from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -13,5 +13,6 @@ const router = express.Router();
 
 router.route("/user").post(createUser);
 router.route("/user/login").post(login);
-
+router.route("/user").patch(AddInform);
+router.route("/user").get(ViewInfo);
 export default router;
