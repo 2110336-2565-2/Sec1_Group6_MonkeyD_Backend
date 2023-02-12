@@ -98,6 +98,10 @@ const CarSchema = new mongoose.Schema(
         },
       },
     ],
+    car_images: {
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0,
+    },
     rental_price: {
       type: Number,
       required: [true, "can't be blank"],
