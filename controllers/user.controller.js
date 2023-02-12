@@ -47,9 +47,9 @@ export const login = (req, res, next) => {
       const cookieData = user.toAuthJSON();
 
       res.cookie("auth", cookieData, {
-        // httpOnly: true,
-        // sameSite: "lax",
-        // secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
         expires: 0,
         path: "/",
       });
@@ -238,6 +238,24 @@ export const getNavbarInfo = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const updateRole = async (req, res, next) =>{
+  const user_id = req.headers.user_id;
+  let user
+  console.log(user_id, "gg");
+  try {
+    user = await User.findById(user_id);
+    if(user == null) {
+      return res.status(404).json({message: 'cannot find user'})
+    }
+  } catch (err){
+    return res.status(500).json({message: err.message})
+  }
+
+  user.isLesser = true;
+  user.save();
+  res.send("role updated");
+}
 
 export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});

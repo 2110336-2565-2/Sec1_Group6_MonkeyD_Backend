@@ -7,6 +7,7 @@ import {
   forgotPassword,
   resetPassword,
   getNavbarInfo,
+  updateRole,
   checkLogin,
   AddInform,
   ViewInfo,
@@ -25,6 +26,7 @@ router.route("/user/logout").post(auth.required, logout);
 router.route("/user/forgot-password").post(forgotPassword);
 router.route("/user/reset-password").post(resetPassword);
 router.route("/user/navbar").get(auth.required, getNavbarInfo);
+router.route("/user/update-role").patch(updateRole);
 router.route("/user/check-login").get(auth.required, checkLogin);
 
 export default router;
