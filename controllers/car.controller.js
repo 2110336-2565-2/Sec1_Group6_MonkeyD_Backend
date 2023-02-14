@@ -11,7 +11,7 @@ export const createCars = (req, res, next) => {
     status,
     brand,
     model,
-    age,
+    year,
     gear_type,
     license_plate,
     registration_book_id,
@@ -28,7 +28,7 @@ export const createCars = (req, res, next) => {
   car.status = status;
   car.brand = brand;
   car.model = model;
-  car.age = age;
+  car.year = year;
   car.gear_type = gear_type;
   car.license_plate = license_plate;
   car.registration_book_id = registration_book_id;
@@ -127,13 +127,11 @@ export const getCars = async (req, res, next) => {
 
 export const getCarInfo = async (req, res, next) => {
   const {id} = req.params;
-  try{
-    let car = await Car.find(
-      {_id:id}
-    );
-    console.log(car)
+  try {
+    let car = await Car.find({_id: id});
+    console.log(car);
     return res.json(car);
-  }catch(err){
+  } catch (err) {
     return res.status(500).json({message: err.message});
   }
 };

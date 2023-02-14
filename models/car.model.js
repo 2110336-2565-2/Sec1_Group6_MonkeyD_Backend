@@ -46,7 +46,7 @@ const CarSchema = new mongoose.Schema(
       enum: ["Manual", "Auto"],
       required: [true, "can't be blank"],
     },
-    age: {
+    year: {
       type: Number,
       required: [true, "can't be blank"],
     },
@@ -154,7 +154,7 @@ CarSchema.methods.toAuthJSON = function () {
     model: this.model,
     license_plate: this.license_plate,
     gear_type: this.gear_type,
-    age: this.age,
+    year: this.year,
     energy_types: this.energy_types,
     province: this.province,
     available_times: this.available_times.map((x) => ({
