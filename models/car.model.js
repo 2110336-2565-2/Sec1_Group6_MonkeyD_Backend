@@ -32,6 +32,7 @@ const CarSchema = new mongoose.Schema(
         "FixingOrPreparing",
         "CarChecking",
       ],
+      default: "Pending",
     },
     brand: {
       type: String,
