@@ -52,6 +52,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    rating: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
     prefix: {
       type: String,
       default: "",

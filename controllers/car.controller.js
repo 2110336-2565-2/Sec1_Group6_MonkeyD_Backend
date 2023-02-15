@@ -128,7 +128,13 @@ export const getCars = async (req, res, next) => {
 export const getCarInfo = async (req, res, next) => {
   const {id} = req.params;
   try {
-    let car = await Car.find({_id: id});
+    let car = await Car.findOne({_id: id}).lean();
+    const user = await User.findOne(
+      {username: car.owner},
+      {image: 1, rating: 1}
+    );
+    car.user_image = user.image;
+    car.user_rating = user.rating;
     console.log(car);
     return res.json(car);
   } catch (err) {

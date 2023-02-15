@@ -50,6 +50,9 @@ const CarSchema = new mongoose.Schema(
       type: Number,
       required: [true, "can't be blank"],
     },
+    description: {
+      type: String,
+    },
     license_plate: {
       type: String,
       unique: true,
