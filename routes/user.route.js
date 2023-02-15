@@ -21,7 +21,7 @@ router.route("/user").post(createUser).patch(auth.required, carRented); // regis
 router.route("/user/login").post(login); // login
 router
   .route("/user/info")
-  .get(auth.required, getUserInfo)
+  .post(auth.required, getUserInfo)
   .patch(auth.required, addUserInfo); // get user's info & add user info
 router.route("/user/logout").post(auth.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email

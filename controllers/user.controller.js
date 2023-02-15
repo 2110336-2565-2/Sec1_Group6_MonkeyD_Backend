@@ -111,6 +111,7 @@ export const getUserInfo = async (req, res, next) => {
         phoneNumber: user.phoneNumber,
         prefix: user.prefix,
         owncars: user.owncars,
+        image: user.image,
       });
     }
   } catch (error) {
