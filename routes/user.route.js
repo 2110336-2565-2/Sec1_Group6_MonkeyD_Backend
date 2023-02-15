@@ -17,7 +17,7 @@ import auth from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-router.route("/user").post(createUser).patch(auth.required, carRented); // register & add rented count of renter and lesser
+router.route("/user").post(createUser).patch(auth.required, carRented); // register & add rented count of renter and lessor
 router.route("/user/login").post(login); // login
 router
   .route("/user/info")

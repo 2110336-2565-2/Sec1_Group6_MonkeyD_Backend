@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    isLesser: {
+    isLessor: {
       type: Boolean,
       default: false,
     },
@@ -55,6 +55,7 @@ const UserSchema = new mongoose.Schema(
     rating: {
       type: Number,
       required: [true, "can't be blank"],
+      default: 5,
       min: 0,
       max: 5,
     },
@@ -120,6 +121,7 @@ UserSchema.methods.getNavbarJSON = function () {
     username: this.username,
     user_id: this._id,
     image: this.image,
+    isLessor: this.isLessor,
   };
 };
 

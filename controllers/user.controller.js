@@ -72,7 +72,7 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.username != null) user.username = req.body.username;
       if (req.body.image != null) user.image = req.body.image;
       if (req.body.owncars != null) user.owncars = req.body.owncars;
-      if (req.body.isLesser != null) user.isLesser = req.body.isLesser;
+      if (req.body.isLessor != null) user.isLessor = req.body.isLessor;
       if (req.body.firstName != null) user.firstName = req.body.firstName;
       if (req.body.lastName != null) user.lastName = req.body.lastName;
       if (req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
@@ -243,7 +243,7 @@ export const updateRole = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 
-  user.isLesser = true;
+  user.isLessor = true;
   user.save();
   res.send("role updated");
 };
