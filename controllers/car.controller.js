@@ -24,22 +24,22 @@ export const createCars = (req, res, next) => {
     rental_price,
     car_images,
   } = req.body.car;
-  car.owner = owner;
-  car.status = status;
-  car.brand = brand;
-  car.model = model;
-  car.year = year;
-  car.gear_type = gear_type;
-  car.license_plate = license_plate;
-  car.registration_book_id = registration_book_id;
-  car.registration_book_url = registration_book_url;
-  car.energy_types = energy_types;
-  car.province = province;
-  car.rental_price = rental_price;
-  car.passenger = passenger;
-  car.rating = rating;
-  car.car_images = car_images;
-  car.setAvailableTimes(available_times);
+  if (owner) car.owner = owner;
+  if (status) car.status = status;
+  if (brand) car.brand = brand;
+  if (model) car.model = model;
+  if (year) car.year = year;
+  if (gear_type) car.gear_type = gear_type;
+  if (license_plate) car.license_plate = license_plate;
+  if (registration_book_id) car.registration_book_id = registration_book_id;
+  if (registration_book_url) car.registration_book_url = registration_book_url;
+  if (energy_types) car.energy_types = energy_types;
+  if (province) car.province = province;
+  if (rental_price) car.rental_price = rental_price;
+  if (passenger) car.passenger = passenger;
+  if (rating) car.rating = rating;
+  if (car_images) car.car_images = car_images;
+  if (available_times) car.setAvailableTimes(available_times);
 
   car
     .save()
