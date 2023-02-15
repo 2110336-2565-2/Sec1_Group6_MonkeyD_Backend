@@ -61,56 +61,48 @@ export const login = (req, res, next) => {
   })(req, res, next);
 };
 
-
-
-export const AddInform = async (req, res, next) => {
-  console.log('Add!');
-  const  id  = req.body.id;
-  try{
+export const addUserInfo = async (req, res, next) => {
+  console.log("Add!");
+  const id = req.body.id;
+  try {
     let user = await User.findById(id);
-    if(user == null){
-      res.status(404).json({ message: 'Cannot find user' })
-    }
-    else{
-      if(req.body.username != null) user.username = req.body.username;
-      if(req.body.image != null) user.image = req.body.image;
-      if(req.body.owncars != null) user.owncars = req.body.owncars;
-      if(req.body.isLesser != null) user.isLesser = req.body.isLesser;
-      if(req.body.firstName != null) user.firstName = req.body.firstName;
-      if(req.body.lastName != null) user.lastName = req.body.lastName;
-      if(req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
-      if(req.body.prefix != null) user.prefix = req.body.prefix;
+    if (user == null) {
+      res.status(404).json({message: "Cannot find user"});
+    } else {
+      if (req.body.username != null) user.username = req.body.username;
+      if (req.body.image != null) user.image = req.body.image;
+      if (req.body.owncars != null) user.owncars = req.body.owncars;
+      if (req.body.isLesser != null) user.isLesser = req.body.isLesser;
+      if (req.body.firstName != null) user.firstName = req.body.firstName;
+      if (req.body.lastName != null) user.lastName = req.body.lastName;
+      if (req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
+      if (req.body.prefix != null) user.prefix = req.body.prefix;
 
       user
         .save()
         .then(function () {
-          return res.send('Complete!');
+          return res.send("Complete!");
         })
         .catch(function (error) {
           if (error.code === 11000) {
-            return res
-              .status(400)
-              .send({error: "Username already exists"});
+            return res.status(400).send({error: "Username already exists"});
           }
           next(error);
         });
     }
-    
-  }
-  catch (error){
-    res.status(500).json({ message: error.message })
+  } catch (error) {
+    res.status(500).json({message: error.message});
   }
 };
 
-export const ViewInfo = async (req, res, next) => {
-  console.log('View!');
-  const  id  = req.body.id;
-  try{
+export const getUserInfo = async (req, res, next) => {
+  console.log("View!");
+  const id = req.body.id;
+  try {
     let user = await User.findById(id);
-    if(user == null){
-      res.status(404).json({ message: 'Cannot find user' })
-    }
-    else{
+    if (user == null) {
+      res.status(404).json({message: "Cannot find user"});
+    } else {
       res.send({
         username: user.username,
         email: user.email,
@@ -118,14 +110,13 @@ export const ViewInfo = async (req, res, next) => {
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         prefix: user.prefix,
-        owncars: user.owncars
+        owncars: user.owncars,
       });
     }
+  } catch (error) {
+    res.status(500).json({message: error.message});
   }
-  catch (error){
-    res.status(500).json({ message: error.message })
-  }
-}
+};
 export const logout = async (req, res, next) => {
   // also use for collecting log in the future
   const cookie_name = req.body.cookie_name;
@@ -239,23 +230,23 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
-export const updateRole = async (req, res, next) =>{
+export const updateRole = async (req, res, next) => {
   const user_id = req.headers.user_id;
-  let user
+  let user;
   console.log(user_id, "gg");
   try {
     user = await User.findById(user_id);
-    if(user == null) {
-      return res.status(404).json({message: 'cannot find user'})
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
     }
-  } catch (err){
-    return res.status(500).json({message: err.message})
+  } catch (err) {
+    return res.status(500).json({message: err.message});
   }
 
   user.isLesser = true;
   user.save();
   res.send("role updated");
-}
+};
 
 export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});

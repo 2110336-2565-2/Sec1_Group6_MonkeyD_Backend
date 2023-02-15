@@ -9,24 +9,24 @@ import {
   getNavbarInfo,
   updateRole,
   checkLogin,
-  AddInform,
-  ViewInfo,
+  addUserInfo,
+  getUserInfo,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import auth from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-router.route("/user").post(createUser);
-router.route("/user").patch(auth.required, carRented);
-router.route("/user/login").post(login);
-router.route("/user/info").patch(AddInform);
-router.route("/user/info").get(ViewInfo);
-router.route("/user/logout").post(auth.required, logout);
-router.route("/user/forgot-password").post(forgotPassword);
-router.route("/user/reset-password").post(resetPassword);
-router.route("/user/navbar").get(auth.required, getNavbarInfo);
-router.route("/user/update-role").patch(updateRole);
-router.route("/user/check-login").get(auth.required, checkLogin);
+router.route("/user").post(createUser); // register
+router.route("/user").patch(auth.required, carRented); // add rented count of renter and lesser
+router.route("/user/login").post(login); // login
+router.route("/user/info").patch(auth.required, addUserInfo); // add user info
+router.route("/user/info").get(auth.required, getUserInfo); // get user's info
+router.route("/user/logout").post(auth.required, logout); // logout
+router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email
+router.route("/user/reset-password").post(resetPassword); // reset password
+router.route("/user/navbar").get(auth.required, getNavbarInfo); // get navbar info
+router.route("/user/update-role").patch(auth.required, updateRole); // change role
+router.route("/user/check-login").get(auth.required, checkLogin); // check if user login
 
 export default router;

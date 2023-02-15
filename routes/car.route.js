@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.route("/car").get(getCars);
 router.route("/car").post(auth.required, createCars);
-router.route("/car/:id").get(getCarInfo);
 router.route("/car").patch(auth.required, toggleRented);
+router.route("/car/:id").get(getCarInfo);
 
 export default router;

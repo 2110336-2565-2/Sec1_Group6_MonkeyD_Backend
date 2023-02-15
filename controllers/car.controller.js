@@ -131,11 +131,11 @@ export const getCarInfo = async (req, res, next) => {
     let car = await Car.findOne({_id: id}).lean();
     const user = await User.findOne(
       {username: car.owner},
-      {image: 1, rating: 1}
+      {_id: 1, image: 1, rating: 1}
     );
     car.user_image = user.image;
     car.user_rating = user.rating;
-    console.log(car);
+    car.owner_id = user._id;
     return res.json(car);
   } catch (err) {
     return res.status(500).json({message: err.message});
