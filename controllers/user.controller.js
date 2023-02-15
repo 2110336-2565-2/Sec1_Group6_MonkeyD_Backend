@@ -233,7 +233,7 @@ export const getNavbarInfo = async (req, res, next) => {
 export const updateRole = async (req, res, next) => {
   const user_id = req.headers.user_id;
   let user;
-  console.log(user_id, "gg");
+  console.log(user_id);
   try {
     user = await User.findById(user_id);
     if (user == null) {
