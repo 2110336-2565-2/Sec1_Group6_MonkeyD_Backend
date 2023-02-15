@@ -16,6 +16,7 @@ export const createCars = (req, res, next) => {
     license_plate,
     registration_book_id,
     registration_book_url,
+    description,
     energy_types,
     province,
     available_times,
@@ -24,22 +25,23 @@ export const createCars = (req, res, next) => {
     rental_price,
     car_images,
   } = req.body.car;
-  car.owner = owner;
-  car.status = status;
-  car.brand = brand;
-  car.model = model;
-  car.year = year;
-  car.gear_type = gear_type;
-  car.license_plate = license_plate;
-  car.registration_book_id = registration_book_id;
-  car.registration_book_url = registration_book_url;
-  car.energy_types = energy_types;
-  car.province = province;
-  car.rental_price = rental_price;
-  car.passenger = passenger;
-  car.rating = rating;
-  car.car_images = car_images;
-  car.setAvailableTimes(available_times);
+  if (owner) car.owner = owner;
+  if (status) car.status = status;
+  if (brand) car.brand = brand;
+  if (model) car.model = model;
+  if (year) car.year = year;
+  if (gear_type) car.gear_type = gear_type;
+  if (license_plate) car.license_plate = license_plate;
+  if (registration_book_id) car.registration_book_id = registration_book_id;
+  if (registration_book_url) car.registration_book_url = registration_book_url;
+  if (description) car.description = description;
+  if (energy_types) car.energy_types = energy_types;
+  if (province) car.province = province;
+  if (rental_price) car.rental_price = rental_price;
+  if (passenger) car.passenger = passenger;
+  if (rating) car.rating = rating;
+  if (car_images) car.car_images = car_images;
+  if (available_times) car.setAvailableTimes(available_times);
 
   car
     .save()
@@ -47,12 +49,14 @@ export const createCars = (req, res, next) => {
       return res.json({car: car.toAuthJSON()});
     })
     .catch(function (error) {
+      console.log(error);
       if (error.code === 11000) {
         return res.status(400).send({
           error:
             "license_plate or registration_book_id or registration_book_url already exists",
         });
       }
+      console.log(error);
       next(error);
     });
 };
@@ -71,7 +75,7 @@ export const getCars = async (req, res, next) => {
     car_images: 1,
   };
 
-  let condition = {};
+  let condition = {renter: null || ""};
   if (req.query.minprice || req.query.maxprice) {
     condition.rental_price = {
       $gte: parseFloat(req.query.minprice) || 0,
@@ -137,6 +141,41 @@ export const getCarInfo = async (req, res, next) => {
     car.user_rating = user.rating;
     car.owner_id = user._id;
     return res.json(car);
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
+
+export const getMyCar = async (req, res, next) => {
+  const {username} = req.params;
+
+  try {
+    let cars = await Car.find(
+      {renter: username},
+      {
+        owner: 1,
+        brand: 1,
+        model: 1,
+        gear_type: 1,
+        energy_types: 1,
+        passenger: 1,
+        rating: 1,
+        province: 1,
+        rental_price: 1,
+        car_images: 1,
+      }
+    ).lean();
+    console.log(username);
+    for (const car of cars) {
+      if (car.car_images && car.car_images.length) {
+        car.car_image = car.car_images[0];
+        delete car.car_images;
+      }
+      const user_image = await User.findOne({username: car.owner}, {image: 1});
+      car.user_image = user_image.image;
+    }
+    console.log(cars);
+    return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
   }

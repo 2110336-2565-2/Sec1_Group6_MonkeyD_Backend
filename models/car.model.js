@@ -15,6 +15,7 @@ const CarSchema = new mongoose.Schema(
     renter: {
       type: String,
       lowercase: true,
+      default: "",
       match: [/^[a-zA-Z0-9]+$/, "is invalid"],
     },
     status: {

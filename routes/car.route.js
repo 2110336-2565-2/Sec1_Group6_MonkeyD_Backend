@@ -4,6 +4,7 @@ import {
   getCars,
   getCarInfo,
   toggleRented,
+  getMyCar,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 
@@ -15,5 +16,6 @@ router
   .post(auth.required, createCars)
   .patch(auth.required, toggleRented);
 router.route("/car/:id").get(getCarInfo);
+router.route("/car/me/:username").get(auth.required, getMyCar);
 
 export default router;
