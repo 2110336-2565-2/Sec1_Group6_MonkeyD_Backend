@@ -111,6 +111,7 @@ UserSchema.methods.toAuthJSON = function () {
 UserSchema.methods.getIdJSON = function () {
   return {
     user_id: this._id,
+    username: this.username,
   };
 };
 

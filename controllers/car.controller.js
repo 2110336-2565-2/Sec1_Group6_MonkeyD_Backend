@@ -152,6 +152,7 @@ export const toggleRented = async (req, res, next) => {
       return res.status(404).json({message: "Cannot find car"});
     }
   } catch (err) {
+    console.log(err.message);
     return res.status(500).json({message: err.message});
   }
 
@@ -162,6 +163,7 @@ export const toggleRented = async (req, res, next) => {
       return res.status(404).json({message: "Cannot find user"});
     }
   } catch (err) {
+    console.log(err.message);
     return res.status(500).json({message: err.message});
   }
 

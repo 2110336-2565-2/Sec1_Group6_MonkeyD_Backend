@@ -54,7 +54,7 @@ export const login = (req, res, next) => {
         path: "/",
       });
 
-      res.set(user.getIdJSON()).send("Login success");
+      res.header(user.getIdJSON()).send("Login success");
     } else {
       return res.status(422).json(info);
     }

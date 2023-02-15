@@ -7,9 +7,17 @@ const frontend_port = process.env.FRONTEND_PORT;
 const corsOptions = {
   origin: ["http://localhost:3000", "*"],
   credentials: true,
-  methods: "POST, OPTIONS, GET, PUT, DELETE",
-  allowedHeaders: ["Content-Type", "Authorization", "user_id"],
-  exposedHeaders: ["user_id"],
+  methods: "POST, OPTIONS, GET, PUT, DELETE, PATCH",
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "user_id",
+    "car_id",
+    "renter_id",
+    "lessor_id",
+    "username",
+  ],
+  exposedHeaders: ["user_id", "car_id", "renter_id", "lessor_id", "username"],
 };
 
 export const customCORS = cors(corsOptions);
