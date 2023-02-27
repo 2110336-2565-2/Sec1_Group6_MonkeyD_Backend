@@ -1,6 +1,8 @@
 import express from "express";
 import usersRouter from "./user.route.js";
 import carsRouter from "./car.route.js";
+import matchRouter from "./match.route.js";
+import reviewRouter from "./review.route.js";
 import {
   checkValidationError,
   errorHandler,
@@ -8,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.use("/", usersRouter, carsRouter);
+router.use("/", usersRouter, carsRouter, matchRouter, reviewRouter);
 
 router.use(checkValidationError, errorHandler);
 

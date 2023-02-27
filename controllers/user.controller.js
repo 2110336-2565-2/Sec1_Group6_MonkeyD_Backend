@@ -73,6 +73,7 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.image != null) user.image = req.body.image;
       if (req.body.owncars != null) user.owncars = req.body.owncars;
       if (req.body.isLessor != null) user.isLessor = req.body.isLessor;
+      if (req.body.isAdmin != null) user.isLessor = req.body.isAdmin;
       if (req.body.firstName != null) user.firstName = req.body.firstName;
       if (req.body.lastName != null) user.lastName = req.body.lastName;
       if (req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
@@ -231,7 +232,7 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
-export const updateRole = async (req, res, next) => {
+export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   let user;
   console.log(user_id);
@@ -246,7 +247,25 @@ export const updateRole = async (req, res, next) => {
 
   user.isLessor = true;
   user.save();
-  res.send("role updated");
+  res.send("role lessor updated");
+};
+
+export const updateRoleAdmin = async (req, res, next) => {
+  const user_id = req.headers.user_id;
+  let user;
+  console.log(user_id);
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.isAdmin = true;
+  user.save();
+  res.send("role admin updated");
 };
 
 export const checkLogin = async (req, res, next) => {

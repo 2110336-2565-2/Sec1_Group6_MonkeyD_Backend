@@ -17,6 +17,7 @@ export const createCars = (req, res, next) => {
     registration_book_id,
     registration_book_url,
     description,
+    available_location,
     energy_types,
     province,
     available_times,
@@ -35,6 +36,7 @@ export const createCars = (req, res, next) => {
   if (registration_book_id) car.registration_book_id = registration_book_id;
   if (registration_book_url) car.registration_book_url = registration_book_url;
   if (description) car.description = description;
+  if (available_location) car.available_location = available_location;
   if (energy_types) car.energy_types = energy_types;
   if (province) car.province = province;
   if (rental_price) car.rental_price = rental_price;
@@ -114,6 +116,7 @@ export const getCars = async (req, res, next) => {
   }
 
   try {
+    console.log(condition);
     let cars = await Car.find(condition, show_attrs).lean();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {

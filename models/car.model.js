@@ -23,15 +23,15 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       enum: [
         "Pending",
-        "Verified",
-        "Updating",
+        // "Verified",
+        // "Updating",
         "Unavailable",
         "Available",
         "Rented",
-        "WaitForInspectation",
-        "Inspected",
-        "FixingOrPreparing",
-        "CarChecking",
+        // "WaitForInspectation",
+        // "Inspected",
+        // "FixingOrPreparing",
+        // "CarChecking",
       ],
       default: "Pending",
     },
@@ -68,6 +68,10 @@ const CarSchema = new mongoose.Schema(
     registration_book_url: {
       type: String,
       unique: true,
+      required: [true, "can't be blank"],
+    },
+    available_location: {
+      type: String,
       required: [true, "can't be blank"],
     },
     energy_types: [
@@ -117,7 +121,30 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
     },
-
+    hygiene: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
+    carConditionRating: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
+    serviceRating: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
+    averageRating: {
+      type: Number,
+      required: [true, "can't be blank"],
+      min: 0,
+      max: 5,
+    },
     rating: {
       type: Number,
       required: [true, "can't be blank"],
