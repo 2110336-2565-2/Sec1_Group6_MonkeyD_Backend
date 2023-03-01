@@ -40,6 +40,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
     firstName: {
       type: String,
       default: "",
@@ -122,6 +126,7 @@ UserSchema.methods.getNavbarJSON = function () {
     user_id: this._id,
     image: this.image,
     isLessor: this.isLessor,
+    isAdmin: this.isAdmin,
   };
 };
 
