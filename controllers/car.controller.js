@@ -222,3 +222,19 @@ export const toggleRented = async (req, res, next) => {
     res.send("car available");
   }
 };
+
+export const deleteCar = async (req, res, next) => {
+  const car_id = req.headers.car_id;
+  let car;
+  try {
+    car = await Car.findByIdAndDelete(car_id);
+    if(car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+    res.send({message: `Car with ID ${car_id} deleted successfully`});
+  }catch (err) {
+    console.log.error(err.message);
+    return res.status(500).json({message: err.message});
+  }
+};
+
