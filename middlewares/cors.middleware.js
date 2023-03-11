@@ -18,6 +18,7 @@ const corsOptions = {
     "username",
   ],
   exposedHeaders: ["user_id", "car_id", "renter_id", "lessor_id", "username"],
+  optionsSuccessStatus: 200,
 };
 
 export const customCORS = cors(corsOptions);

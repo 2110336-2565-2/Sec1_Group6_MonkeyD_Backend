@@ -31,7 +31,7 @@ export const createUser = (req, res, next) => {
     });
 };
 
-export const login = (req, res, next) => {
+export const localLogin = (req, res, next) => {
   if (!req.body.user.email) {
     return res.status(422).json({errors: {email: "can't be blank"}});
   }
@@ -59,6 +59,81 @@ export const login = (req, res, next) => {
       return res.status(422).json(info);
     }
   })(req, res, next);
+};
+
+// export const facebookLogin = (req, res, next) => {
+//   passport.authenticate("facebook", {
+//     scope: ["email"],
+//     failureRedirect: "/login",
+//   })(req, res, next);
+// };
+
+// export const facebookCallback = (req, res, next) => {
+//   passport.authenticate(
+//     "facebook",
+//     {failureRedirect: "/login"},
+//     function (err, user) {
+//       if (err) {
+//         return next(err);
+//       }
+//       if (!user) {
+//         return res.redirect("/login");
+//       }
+//       // Redirect the user to the home page or any other protected route
+//       res.redirect("/");
+//     }
+//   )(req, res, next);
+// };
+
+export const googleAuth = (req, res, next) => {
+  passport.authenticate("google", function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (user) {
+      console.log(user);
+      // User is already authenticated with a local strategy, do nothing
+      return res.send("Already logged in");
+    } else {
+      // User is not authenticated with a local strategy, initiate Google authentication
+      return passport.authenticate("google", {scope: ["profile", "email"]})(
+        req,
+        res,
+        next
+      );
+    }
+  })(req, res, next);
+};
+
+export const googleCallback = (req, res, next) => {
+  passport.authenticate(
+    "google",
+    {failureRedirect: "/login"},
+    function (err, user) {
+      if (err) {
+        return next(err);
+      }
+      if (user) {
+        user.token = user.generateJWT();
+        const cookieData = user.toAuthJSON();
+
+        res.cookie("auth", cookieData, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: true,
+          expires: 0,
+          path: "/",
+        });
+        res.cookie("userID", user._id, {
+          sameSite: "lax",
+          secure: true,
+          expires: 0,
+          path: "/",
+        });
+        res.redirect(process.env.FRONTEND_PORT);
+      }
+    }
+  )(req, res, next);
 };
 
 export const addUserInfo = async (req, res, next) => {
