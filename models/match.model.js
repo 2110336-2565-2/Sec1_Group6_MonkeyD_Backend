@@ -29,14 +29,18 @@ const MatchSchema = new mongoose.Schema(
     },
     renterID: {
       type: mongoose.ObjectId,
+      ref: "User",
       required: [true, "can't be blank"],
+      index: true,
     },
     lessorID: {
       type: mongoose.ObjectId,
+      ref: "User",
       required: [true, "can't be blank"],
     },
     carID: {
       type: mongoose.ObjectId,
+      ref: "Car",
       required: [true, "can't be blank"],
     },
     price: {
@@ -52,6 +56,21 @@ MatchSchema.methods.toAuthJSON = function () {
   return {
     _id: this._id,
     carID: this.carID,
+    lessorID: this.lessorID,
+    renterID: this.renterID,
+    status: this.status,
+    pickupLocation: this.pickupLocation,
+    pickUpDateTime: this.pickUpDateTime,
+    returnLocation: this.returnLocation,
+    returnDateTime: this.returnDateTime,
+    price: this.price,
+  };
+};
+
+MatchSchema.methods.toMyBookingJSON = function () {
+  return {
+    _id: this._id,
+    car: this.carID,
     lessorID: this.lessorID,
     renterID: this.renterID,
     status: this.status,
