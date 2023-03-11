@@ -6,6 +6,7 @@ import {
   toggleRented,
   getMyCar,
   deleteCar,
+  cancelReserevation,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 
@@ -19,5 +20,5 @@ router
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
 router.route("/car/me/:username").get(auth.required, getMyCar);
-
+router.route("/car/cancel-reservation").patch(auth.required, cancelReserevation);
 export default router;

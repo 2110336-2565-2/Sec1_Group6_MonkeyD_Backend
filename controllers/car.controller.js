@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Car from "../models/car.model.js";
+import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
@@ -236,5 +237,31 @@ export const deleteCar = async (req, res, next) => {
     console.log.error(err.message);
     return res.status(500).json({message: err.message});
   }
+};
+
+export const cancelReserevation = async (req, res, next) => {
+  const car_id = req.headers.car_id;
+  const match_id = req.headers.match_id;
+  let car;
+  try {
+    car = await Car.findById(car_id);
+    if(car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  }catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  let match;
+  try {
+    match = await Match.findById(match_id);
+    if(car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  }catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  car.renter = "";
+  car.status = "Available";
+  match.status = "Cancelled";
 };
 
