@@ -4,6 +4,7 @@ import {
   createMatch,
   getMatches,
   getMatchInfo,
+  getMyBooking,
 } from "../controllers/match.controller.js";
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router
   .get(auth.required, getMatches)
   .post(auth.required, createMatch);
 router.route("/match/:id").get(auth.required, getMatchInfo);
+router.route("/match/me/:id").get(auth.required, getMyBooking);
 
 export default router;

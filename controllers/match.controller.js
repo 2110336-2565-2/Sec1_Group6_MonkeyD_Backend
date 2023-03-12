@@ -75,3 +75,25 @@ export const getMatchInfo = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const getMyBooking = async (req, res, next) => {
+  let condition = {};
+  condition.renterID = req.params.id;
+  if (req.query.status) {
+    condition.status = req.query.status;
+  }
+  if (req.query.carID) {
+    condition.carID = req.query.carID;
+  }
+  if (req.query.lessorID) {
+    condition.lessorID = req.query.lessorID;
+  }
+
+  try {
+    let matches = await Match.find(condition).populate("carID");
+    const sendMatches = matches.map((e) => e.toMyBookingJSON());
+    return res.json({matches: sendMatches});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
