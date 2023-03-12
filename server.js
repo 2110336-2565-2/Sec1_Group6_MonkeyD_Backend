@@ -1,8 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import passport from "passport";
-import session from "express-session";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import {customLogger} from "./middlewares/logger.middleware.js";
@@ -16,16 +14,6 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(customLogger);

@@ -35,8 +35,6 @@ export const facebookStrategy = new FacebookStrategy(
     profileFields: ["id", "displayName", "photos", "email"],
   },
   function (accessToken, refreshToken, profile, done) {
-    // This function will be called after the user is authenticated
-    // You can retrieve user data from the `profile` object
     console.log(profile);
     done(null, profile);
   }
@@ -50,8 +48,6 @@ export const googleStrategy = new GoogleStrategy(
     scope: ["profile", "email"],
   },
   function (accessToken, refreshToken, profile, cb) {
-    // console.log(profile);
-    // Find a user with the given Google ID
     User.findOne({googleId: profile.id}, function (err, user) {
       if (err) {
         return cb(err);
@@ -84,12 +80,5 @@ export const googleStrategy = new GoogleStrategy(
     // return profile;
   }
 );
-
-// passport.serializeUser(function (user, done) {
-//   done(null, user);
-// });
-// passport.deserializeUser(function (obj, done) {
-//   done(null, obj);
-// });
 
 passport.use(googleStrategy);

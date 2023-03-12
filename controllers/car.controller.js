@@ -116,7 +116,6 @@ export const getCars = async (req, res, next) => {
   }
 
   try {
-    console.log(condition);
     let cars = await Car.find(condition, show_attrs).lean();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {

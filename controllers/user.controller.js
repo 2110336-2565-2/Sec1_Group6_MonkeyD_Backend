@@ -61,29 +61,31 @@ export const localLogin = (req, res, next) => {
   })(req, res, next);
 };
 
-// export const facebookLogin = (req, res, next) => {
-//   passport.authenticate("facebook", {
-//     scope: ["email"],
-//     failureRedirect: "/login",
-//   })(req, res, next);
-// };
+// for facebook login (soon)
+export const facebookLogin = (req, res, next) => {
+  passport.authenticate("facebook", {
+    scope: ["email"],
+    failureRedirect: "/",
+  })(req, res, next);
+};
 
-// export const facebookCallback = (req, res, next) => {
-//   passport.authenticate(
-//     "facebook",
-//     {failureRedirect: "/login"},
-//     function (err, user) {
-//       if (err) {
-//         return next(err);
-//       }
-//       if (!user) {
-//         return res.redirect("/login");
-//       }
-//       // Redirect the user to the home page or any other protected route
-//       res.redirect("/");
-//     }
-//   )(req, res, next);
-// };
+// for facebook login (soon)
+export const facebookCallback = (req, res, next) => {
+  passport.authenticate(
+    "facebook",
+    {failureRedirect: "/"},
+    function (err, user) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.redirect("/");
+      }
+
+      res.redirect("/");
+    }
+  )(req, res, next);
+};
 
 export const googleAuth = (req, res, next) => {
   passport.authenticate("google", function (err, user, info) {
@@ -92,10 +94,10 @@ export const googleAuth = (req, res, next) => {
     }
     if (user) {
       console.log(user);
-      // User is already authenticated with a local strategy, do nothing
+      // if user is already authenticated with a local strategy, do nothing
       return res.send("Already logged in");
     } else {
-      // User is not authenticated with a local strategy, initiate Google authentication
+      // if user is not authenticated with a local strategy, initiate Google authentication
       return passport.authenticate("google", {scope: ["profile", "email"]})(
         req,
         res,
@@ -124,12 +126,16 @@ export const googleCallback = (req, res, next) => {
           expires: 0,
           path: "/",
         });
-        res.cookie("userID", user._id, {
-          sameSite: "lax",
-          secure: true,
-          expires: 0,
-          path: "/",
-        });
+        res.cookie(
+          "userID",
+          {userID: user._id},
+          {
+            sameSite: "lax",
+            secure: true,
+            expires: 0,
+            path: "/",
+          }
+        );
         res.redirect(process.env.FRONTEND_PORT);
       }
     }
