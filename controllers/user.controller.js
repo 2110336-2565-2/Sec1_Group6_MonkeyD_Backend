@@ -383,3 +383,19 @@ export const addLesserInfo = async (req, res, next) => {
   user.save();
   res.send("complete!");
 };
+
+export const getUserRole = async (req, res, next) => {
+  const id = req.body.id;
+  try {
+    let user = await User.findById(id);
+    if (user == null) {
+      res.status(404).json({message: "Cannot find user"});
+    } else {
+      res.send({
+        userRole: user.isLessor ? "lessor" : "renter",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+};

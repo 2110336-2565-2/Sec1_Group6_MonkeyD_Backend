@@ -1,4 +1,5 @@
 import express from "express";
+import {get} from "mongoose";
 import {
   carRented,
   createUser,
@@ -12,6 +13,7 @@ import {
   checkLogin,
   addUserInfo,
   getUserInfo,
+  getUserRole,
   addLesserInfo,
   // facebookLogin,
   // facebookCallback,
@@ -29,6 +31,8 @@ router.route("/user/login").post(localLogin); // login
 // router.route("/auth/facebook/callback").get(facebookCallback);
 router.route("/auth/google").get(googleAuth);
 router.route("/auth/google/callback").get(googleCallback);
+router.route("/user/role").post(auth.required, getUserRole);
+
 router
   .route("/user/info")
   .post(auth.required, getUserInfo)
