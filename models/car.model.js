@@ -121,7 +121,7 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
     },
-    hygiene: {
+    hygieneRating: {
       type: Number,
       required: [true, "can't be blank"],
       min: 0,
@@ -132,24 +132,26 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
+      default: 5,
     },
     serviceRating: {
       type: Number,
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
-    },
-    averageRating: {
-      type: Number,
-      required: [true, "can't be blank"],
-      min: 0,
-      max: 5,
+      default: 5,
     },
     rating: {
       type: Number,
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
+      default: 5,
+    },
+    reviewCount: {
+      type: Number,
+      required: [true, "can't be blank"],
+      default: 0,
     },
     rentedOutCount: {
       type: Number,

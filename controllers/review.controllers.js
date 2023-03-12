@@ -4,12 +4,15 @@ import Review from "../models/review.model.js";
 
 export const createReview = (req, res, next) => {
   const review = new Review();
-  const {hygeine, carCondition, service, comment, matchID} = req.body.review;
+  const {hygeine, carCondition, service, comment, matchID, reviewerID, carID} =
+    req.body.review;
   if (hygeine) review.hygeine = hygeine;
   if (carCondition) review.carCondition = carCondition;
   if (service) review.service = service;
   if (comment) review.comment = comment;
   if (matchID) review.matchID = matchID;
+  if (carID) review.carID = carID;
+  if (reviewerID) review.reviewerID = reviewerID;
   review
     .save()
     .then(function () {
