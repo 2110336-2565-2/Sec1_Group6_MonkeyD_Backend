@@ -79,5 +79,3 @@ export const googleStrategy = new GoogleStrategy(
     // return profile;
   }
 );
-
-passport.use(googleStrategy);
