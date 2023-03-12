@@ -56,23 +56,6 @@ export const createReview = async (req, res, next) => {
       console.log(error);
       next(error);
     });
-
-  // review
-  //   .save()
-  //   .then(function () {
-  //     return res.json({review: review.toAuthJSON()});
-  //   })
-  //   .catch(function (error) {
-  //     console.log(error);
-  //     if (error.code === 11000) {
-  //       return res.status(400).send({
-  //         error: "something already exists",
-  //       });
-  //     }
-  //     console.log(error);
-  //     next(error);
-  //   });
-  
 };
 
 export const getReviews = async (req, res, next) => {
