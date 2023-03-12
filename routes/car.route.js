@@ -6,6 +6,7 @@ import {
   toggleRented,
   getMyCar,
   deleteCar,
+  getNumberOfRentals,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 
@@ -18,6 +19,7 @@ router
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
+router.route("/car/number-of-retal/:id").get(auth.required, getNumberOfRentals);
 router.route("/car/me/:username").get(auth.required, getMyCar);
 
 export default router;

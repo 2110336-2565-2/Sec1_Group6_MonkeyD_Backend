@@ -241,15 +241,13 @@ export const deleteCar = async (req, res, next) => {
 export const getNumberOfRentals = async (req, res, next) => {
   const {id} = req.params;
   try {
-    let car = await Car.findById(id);
+    let car = await Car.findOne({_id: id},{rentedOutCount: 1});
     if (car == null) {
-      res.status(404).json({message: "Cannot find car"});
+      return res.status(404).json({message: "Cannot find car"});
     } else {
-      res.send({
-        rentedOutCount: car.rentedOutCount
-      });
+      return res.json(car);
     }
   } catch (error) {
-    res.status(500).json({message: error.message});
+    return res.status(500).json({message: error.message});
   }
 };
