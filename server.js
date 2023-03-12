@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 app.use(customLogger);
 app.use(customCORS);
 app.use(cookieParser());
-
 // deprecate **change later**
 mongoose.set("strictQuery", true);
 

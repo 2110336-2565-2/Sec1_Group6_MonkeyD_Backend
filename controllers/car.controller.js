@@ -4,7 +4,6 @@ import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
-  console.log(req.body);
   const car = new Car();
   const {
     owner,
@@ -116,7 +115,6 @@ export const getCars = async (req, res, next) => {
   }
 
   try {
-    console.log(condition);
     let cars = await Car.find(condition, show_attrs).lean();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
@@ -168,7 +166,6 @@ export const getMyCar = async (req, res, next) => {
         car_images: 1,
       }
     ).lean();
-    console.log(username);
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
@@ -177,7 +174,6 @@ export const getMyCar = async (req, res, next) => {
       const user_image = await User.findOne({username: car.owner}, {image: 1});
       car.user_image = user_image.image;
     }
-    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -228,13 +224,12 @@ export const deleteCar = async (req, res, next) => {
   let car;
   try {
     car = await Car.findByIdAndDelete(car_id);
-    if(car == null) {
+    if (car == null) {
       return res.status(404).send({message: "Cannot find car"});
     }
     res.send({message: `Car with ID ${car_id} deleted successfully`});
-  }catch (err) {
+  } catch (err) {
     console.log.error(err.message);
     return res.status(500).json({message: err.message});
   }
 };
-

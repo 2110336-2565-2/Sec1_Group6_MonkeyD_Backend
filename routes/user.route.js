@@ -2,7 +2,7 @@ import express from "express";
 import {
   carRented,
   createUser,
-  login,
+  localLogin,
   logout,
   forgotPassword,
   resetPassword,
@@ -13,6 +13,10 @@ import {
   addUserInfo,
   getUserInfo,
   addLesserInfo,
+  // facebookLogin,
+  // facebookCallback,
+  googleAuth,
+  googleCallback,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import auth from "../middlewares/jwt.middleware.js";
@@ -20,7 +24,11 @@ import auth from "../middlewares/jwt.middleware.js";
 const router = express.Router();
 
 router.route("/user").post(createUser).patch(auth.required, carRented); // register & add rented count of renter and lessor
-router.route("/user/login").post(login); // login
+router.route("/user/login").post(localLogin); // login
+// router.route("/user/login/facebook").get(facebookLogin);
+// router.route("/auth/facebook/callback").get(facebookCallback);
+router.route("/auth/google").get(googleAuth);
+router.route("/auth/google/callback").get(googleCallback);
 router
   .route("/user/info")
   .post(auth.required, getUserInfo)
