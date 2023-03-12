@@ -318,6 +318,13 @@ export const getNavbarInfo = async (req, res, next) => {
 
 export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
+  const prefix = req.body.prefix;
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
+  const phone_number = req.body.mobile_number;
+  const driving_license = req.body.driving_license;
+  const identification_number = req.body.identification_number;
+
   let user;
   try {
     user = await User.findById(user_id);
@@ -329,6 +336,12 @@ export const updateRoleLessor = async (req, res, next) => {
   }
 
   user.isLessor = true;
+  user.prefix = prefix;
+  user.firstName = first_name;
+  user.lastName = last_name;
+  user.phoneNumber = phone_number;
+  user.drivingLicenseNumber = driving_license;
+  user.IDCardNumber = identification_number;
   user.save();
   res.send("role lessor updated");
 };
