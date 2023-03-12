@@ -121,29 +121,27 @@ export const googleCallback = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      if (user) {
-        user.token = user.generateJWT();
-        const cookieData = user.toAuthJSON();
+      user.token = user.generateJWT();
+      const cookieData = user.toAuthJSON();
 
-        res.cookie("auth", cookieData, {
-          httpOnly: true,
+      res.cookie("auth", cookieData, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        expires: 0,
+        path: "/",
+      });
+      res.cookie(
+        "userID",
+        {userID: user._id},
+        {
           sameSite: "lax",
           secure: true,
           expires: 0,
           path: "/",
-        });
-        res.cookie(
-          "userID",
-          {userID: user._id},
-          {
-            sameSite: "lax",
-            secure: true,
-            expires: 0,
-            path: "/",
-          }
-        );
-        res.redirect(process.env.FRONTEND_PORT);
-      }
+        }
+      );
+      res.redirect(process.env.FRONTEND_PORT);
     }
   )(req, res, next);
 };
