@@ -35,7 +35,6 @@ export const facebookStrategy = new FacebookStrategy(
     profileFields: ["id", "displayName", "photos", "email"],
   },
   function (accessToken, refreshToken, profile, done) {
-    console.log(profile);
     done(null, profile);
   }
 );

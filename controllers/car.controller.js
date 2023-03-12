@@ -4,7 +4,6 @@ import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
-  console.log(req.body);
   const car = new Car();
   const {
     owner,
@@ -167,7 +166,6 @@ export const getMyCar = async (req, res, next) => {
         car_images: 1,
       }
     ).lean();
-    console.log(username);
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
@@ -176,7 +174,6 @@ export const getMyCar = async (req, res, next) => {
       const user_image = await User.findOne({username: car.owner}, {image: 1});
       car.user_image = user_image.image;
     }
-    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});

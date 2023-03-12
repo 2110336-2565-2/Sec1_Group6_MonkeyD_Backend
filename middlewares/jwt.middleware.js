@@ -6,7 +6,6 @@ dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
 
 const getTokenFromCookie = (req, res) => {
-  console.log(req.cookies.auth);
   return req.cookies.auth;
 };
 
