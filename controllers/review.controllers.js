@@ -45,7 +45,7 @@ export const createReview = async (req, res, next) => {
         car.reviewCount = car.reviewCount + 1;
       }
 
-      car.carRating =
+      car.rating =
         (car.carConditionRating + car.hygieneRating + car.serviceRating) / 3;
       await Match.findById(matchID).then(function (match) {
         match.isReview = true;
@@ -73,12 +73,11 @@ export const createReview = async (req, res, next) => {
 
 export const getReviews = async (req, res, next) => {
   let condition = {};
-  if (req.body.review.carID) {
-    condition.carID = req.body.review.carID;
+  if (req.query.carID) {
+    condition.carID = req.query.carID;
   }
-  console.log(condition, req.query);
   try {
-    let reviews = await Review.find(condition);
+    let reviews = await Review.find(condition).populate("reviewerID");
     for (const review of reviews) {
       review.overall =
         (review.carCondition + review.hygeine + review.service) / 3;
@@ -89,8 +88,7 @@ export const getReviews = async (req, res, next) => {
     for (const review of reviews) {
       delete review.overall;
     }
-    console.log(reviews);
-    const sendReviews = reviews.map((e) => e.toAuthJSON());
+    const sendReviews = reviews.map((e) => e.toCarDetailJSON());
     return res.json({reviews: sendReviews});
   } catch (err) {
     return res.status(500).json({message: err.message});

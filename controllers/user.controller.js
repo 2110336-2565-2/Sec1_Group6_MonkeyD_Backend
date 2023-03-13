@@ -50,11 +50,11 @@ export const localLogin = (req, res, next) => {
       const cookieData = user.toAuthJSON();
 
       res.cookie("auth", cookieData, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: true,
-        expires: 0,
-        path: "/",
+        // httpOnly: true,
+        // sameSite: "lax",
+        // secure: true,
+        // expires: 0,
+        // path: "/",
       });
 
       res.header(user.getIdJSON()).send("Login success");

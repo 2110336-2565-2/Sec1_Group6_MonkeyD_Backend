@@ -69,8 +69,8 @@ export const getMatches = async (req, res, next) => {
 export const getMatchInfo = async (req, res, next) => {
   const {id} = req.params;
   try {
-    const match = await Match.findById(id);
-    return res.json({match: match.toAuthJSON()});
+    const match = await Match.findById(id).populate("carID");
+    return res.json({match: match.toMyBookingJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
