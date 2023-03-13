@@ -126,6 +126,7 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
+      default: 5,
     },
     carConditionRating: {
       type: Number,
