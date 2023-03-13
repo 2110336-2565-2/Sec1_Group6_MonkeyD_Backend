@@ -15,7 +15,8 @@ const router = express.Router();
 router
   .route("/car")
   .get(getCars)
-  .post(auth.required, createCars)
+  // .post(auth.required, createCars)
+  .post(createCars)
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
