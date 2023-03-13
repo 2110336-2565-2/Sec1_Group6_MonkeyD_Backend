@@ -4,7 +4,6 @@ import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
-  console.log(req.body);
   const car = new Car();
   const {
     owner,
@@ -116,7 +115,6 @@ export const getCars = async (req, res, next) => {
   }
 
   try {
-    console.log(condition);
     let cars = await Car.find(condition, show_attrs).lean();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
@@ -168,7 +166,6 @@ export const getMyCar = async (req, res, next) => {
         car_images: 1,
       }
     ).lean();
-    console.log(username);
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
@@ -177,7 +174,6 @@ export const getMyCar = async (req, res, next) => {
       const user_image = await User.findOne({username: car.owner}, {image: 1});
       car.user_image = user_image.image;
     }
-    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -228,11 +224,11 @@ export const deleteCar = async (req, res, next) => {
   let car;
   try {
     car = await Car.findByIdAndDelete(car_id);
-    if(car == null) {
+    if (car == null) {
       return res.status(404).send({message: "Cannot find car"});
     }
     res.send({message: `Car with ID ${car_id} deleted successfully`});
-  }catch (err) {
+  } catch (err) {
     console.log.error(err.message);
     return res.status(500).json({message: err.message});
   }
@@ -250,4 +246,42 @@ export const getNumberOfRentals = async (req, res, next) => {
   } catch (error) {
     return res.status(500).json({message: error.message});
   }
+};
+export const changeCarInfo = async (req, res, next) => {
+  const car_id = req.header.car_id;
+  try {
+    let car = await Car.findById(car_id);
+    if (car == null) {
+      return res.status(404).json({message: "Cannot find car"});
+    }
+
+    if (req.body.sttaus != null && req.body.status != "unavailable") {
+      return res.status(400).json(({message: "Status can only be changed to Unavailable"}));
+    }
+  
+    car.brand = req.body.brand || car.brand;
+    car.model = req.body.model || car.model;
+    car.gear_type = req.body.gear_type || car.gear_type;
+    car.year = req.body.year || car.year;
+    car.description = req.body.description || car.description;
+    car.license_plate = req.body.license_plate || car.license_plate;
+    car.registration_book_id = req.body.registration_book_id || car.registration_book_id;
+    car.registration_book_url = req.body.registration_book_url || car.registration_book_url;
+    car.energy_types = req.body.energy_types || car.energy_types;
+    car.province = req.body.province || car.province;
+    car.available_times.start = req.body.available_times.start || car.available_times.start;
+    car.available_times.end = req.body.available_times.end || car.available_times.end;
+    car.car_images = req.body.car_images || car.car_images;
+    car.rental_price = req.body.rental_price || car.rental_price;
+    car.passenger = req.body.passenger || car.passenger;
+    car.available_location = req.body.available_location || car.available_location;
+
+    await car.save();
+
+    return res.json({car});
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+
 };

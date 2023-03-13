@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import findOrCreate from "mongoose-findorcreate";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
@@ -9,6 +10,10 @@ const secret = process.env.JWT_SECRET;
 
 const UserSchema = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+      unique: true,
+    },
     username: {
       type: String,
       lowercase: true,
@@ -75,11 +80,28 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    drivingLicenseNumber: {
+      type: String,
+      default: "",
+    },
+    IDCardNumber: {
+      type: String,
+      default: "",
+    },
+    drivingLicenseImage: {
+      type: String,
+      default: "",
+    },
+    IDCardImage: {
+      type: String,
+      default: "",
+    },
     hash: String,
     salt: String,
   },
   {timestamps: true}
 );
+UserSchema.plugin(findOrCreate);
 
 UserSchema.methods.validPassword = function (password) {
   var hash = crypto

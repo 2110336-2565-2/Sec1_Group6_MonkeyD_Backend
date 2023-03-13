@@ -30,6 +30,16 @@ const ReviewSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       required: [true, "can't be blank"],
     },
+    reviewerID: {
+      type: mongoose.ObjectId,
+      ref: "User",
+      required: [true, "can't be blank"],
+    },
+    carID: {
+      type: mongoose.ObjectId,
+      ref: "Car",
+      required: [true, "can't be blank"],
+    },
   },
 
   {timestamps: true}
@@ -43,6 +53,8 @@ ReviewSchema.methods.toAuthJSON = function () {
     service: this.service,
     comment: this.comment,
     matchID: this.matchID,
+    carID: this.carID,
+    reviewerID: this.reviewerID,
   };
 };
 
