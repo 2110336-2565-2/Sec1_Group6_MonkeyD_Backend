@@ -188,7 +188,7 @@ export const getUserInfo = async (req, res, next) => {
       res.status(404).json({message: "Cannot find user"});
     } else {
       res.send({
-        user
+        user,
       });
     }
   } catch (error) {
@@ -291,8 +291,23 @@ export const carRented = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 
+  const {
+    prefix,
+    first_name,
+    last_name,
+    phone_number,
+    driving_license,
+    identification_number,
+  } = req.body;
+
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
+  if (prefix) renter.prefix = prefix;
+  if (first_name) renter.firstName = first_name;
+  if (last_name) renter.lastName = last_name;
+  if (phone_number) renter.phoneNumber = phone_number;
+  if (driving_license) renter.drivingLicenseNumber = driving_license;
+  if (identification_number) renter.IDCardNumber = identification_number;
   renter.save();
   lessor.save();
   res.send("car rented");
@@ -357,4 +372,3 @@ export const updateRoleAdmin = async (req, res, next) => {
 export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});
 };
-
