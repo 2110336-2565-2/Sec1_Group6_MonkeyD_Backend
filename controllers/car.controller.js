@@ -196,10 +196,13 @@ export const getMyCar = async (req, res, next) => {
         car.car_image = car.car_images[0];
         delete car.car_images;
       }
+      car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
       //delete car._id
       //car.user_image = user_image.image;
     }
+
     console.log(cars);
+
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -233,18 +236,22 @@ export const toggleRented = async (req, res, next) => {
   }
 
   //if (car.status == "Available") {
-    //car.status = "Rented";
-    //car.renter = renter.username;
-    car.status=(car.status==="Unavailable")?"Unavailable":"Available";
-    car.rentedOutCount += 1;
-    car.unavailable_times.push({start:pickUpDateTime, end:returnDateTime, username:renter.username});
-    car.save();
-    res.send("car rented");
+  //car.status = "Rented";
+  //car.renter = renter.username;
+  car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
+  car.rentedOutCount += 1;
+  car.unavailable_times.push({
+    start: pickUpDateTime,
+    end: returnDateTime,
+    username: renter.username,
+  });
+  car.save();
+  res.send("car rented");
   //} else {
-    //car.status = "Available";
-    //car.renter = "";
-   // car.save();
-    //res.send("car available");
+  //car.status = "Available";
+  //car.renter = "";
+  // car.save();
+  //res.send("car available");
   //}
 };
 
@@ -266,7 +273,7 @@ export const deleteCar = async (req, res, next) => {
 export const getNumberOfRentals = async (req, res, next) => {
   const {id} = req.params;
   try {
-    let car = await Car.findOne({_id: id},{rentedOutCount: 1});
+    let car = await Car.findOne({_id: id}, {rentedOutCount: 1});
     if (car == null) {
       return res.status(404).json({message: "Cannot find car"});
     } else {
@@ -279,14 +286,20 @@ export const getNumberOfRentals = async (req, res, next) => {
 export const changeCarInfo = async (req, res, next) => {
   const car_id = req.headers.car_id;
   let car;
-  try{
+  try {
     car = await Car.findById(car_id);
     if (car == null) {
       return res.status(404).json({message: "Cannot find car"});
     }
 
-    if (req.body.status !== null && req.body.status !== "Unavailable") {
-      return res.status(400).json(({message: "Status can only be changed to Unavailable"}));
+    if (
+      req.body.status !== null &&
+      req.body.status !== "Unavailable" &&
+      req.body.status !== "Available"
+    ) {
+      return res
+        .status(400)
+        .json({message: "Status can only be changed to Unavailable"});
     }
 
     Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
@@ -297,10 +310,8 @@ export const changeCarInfo = async (req, res, next) => {
       }
     });
     res.send({message: `Car with ID ${car_id} updated successfully`});
-  }catch (err) {
+  } catch (err) {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
-
 };
-

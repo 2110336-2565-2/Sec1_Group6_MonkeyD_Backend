@@ -35,7 +35,6 @@ router.route("/user/role").post(auth.required, getUserRole);
 router
   .route("/user/info")
   .post(auth.required, getUserInfo)
-  // .post(getUserInfo)
   .patch(auth.required, addUserInfo); // get user's info & add user info
 router.route("/user/logout").post(auth.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email

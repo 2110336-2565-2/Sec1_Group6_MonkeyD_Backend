@@ -141,6 +141,16 @@ export const googleCallback = (req, res, next) => {
           path: "/",
         }
       );
+      res.cookie(
+        "username",
+        {username: user.username},
+        {
+          sameSite: "lax",
+          secure: true,
+          expires: 0,
+          path: "/",
+        }
+      );
       res.redirect(process.env.FRONTEND_PORT);
     }
   )(req, res, next);
