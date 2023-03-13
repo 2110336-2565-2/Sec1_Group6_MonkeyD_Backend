@@ -365,21 +365,3 @@ export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});
 };
 
-export const addLesserInfo = async (req, res, next) => {
-  const id = req.body.id;
-  let user;
-  try {
-    let user = await User.findById(id);
-    if (user == null) {
-      return res.status(404).json({message: "Cannot find user"});
-    }
-  } catch (error) {
-    return res.status(500).json({message: error.message});
-  }
-  user.drivingLicense = req.body.drivingLicense;
-  user.IDCardNumber = req.body.IDCardNumber;
-  user.drivingLicenseImage = req.body.drivingLicenseImage;
-  user.IDCardImage = req.body.IDCardImage;
-  user.save();
-  res.send("complete!");
-};
