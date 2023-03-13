@@ -14,7 +14,6 @@ import {
   addUserInfo,
   getUserInfo,
   getUserRole,
-  addLesserInfo,
   // facebookLogin,
   // facebookCallback,
   googleAuth,
@@ -45,5 +44,6 @@ router.route("/user/navbar").get(auth.required, getNavbarInfo); // get navbar in
 router.route("/user/update-role").patch(auth.required, updateRoleLessor); // change role
 router.route("/user/update-role-admin").patch(auth.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(auth.required, checkLogin); // check if user login
+//router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
 
 export default router;
