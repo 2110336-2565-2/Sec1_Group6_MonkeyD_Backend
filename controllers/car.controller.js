@@ -153,9 +153,11 @@ export const getMyCar = async (req, res, next) => {
 
   try {
     let cars = await Car.find(
-      {renter: username},
+      {owner: username},
       {
-        owner: 1,
+        _id: 1,
+        renter: 1,
+        status: 1,
         brand: 1,
         model: 1,
         gear_type: 1,
@@ -165,22 +167,42 @@ export const getMyCar = async (req, res, next) => {
         province: 1,
         rental_price: 1,
         car_images: 1,
+        rentedOutCount: 1,
       }
     ).lean();
+    console.log(username);
+    const user_image = await User.findOne({username: username}, {image: 1}).lean();
     for (const car of cars) {
+      if (car.status == "Rented"){
+        const match = await Match.findOne(
+          {carID: car._id, status: 'Rented'},
+          {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
+        car.pickUpDateTime = match.pickUpDateTime;
+        car.pickupLocation = match.pickupLocation;
+        car.returnDateTime = match.returnDateTime;
+        car.returnLocation = match.returnLocation;
+        car.totalprice = match.price;
+      }
+      else{
+        car.pickUpDateTime = null;
+        car.pickupLocation = null;
+        car.returnDateTime = null;
+        car.returnLocation = null;
+        car.totalprice = null;
+      }
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
         delete car.car_images;
       }
-      const user_image = await User.findOne({username: car.owner}, {image: 1});
+      delete car._id
       car.user_image = user_image.image;
     }
+    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
 };
-
 export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
@@ -235,6 +257,19 @@ export const deleteCar = async (req, res, next) => {
   }
 };
 
+export const getNumberOfRentals = async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    let car = await Car.findOne({_id: id},{rentedOutCount: 1});
+    if (car == null) {
+      return res.status(404).json({message: "Cannot find car"});
+    } else {
+      return res.json(car);
+    }
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+  }
+};
 export const changeCarInfo = async (req, res, next) => {
   const car_id = req.header.car_id;
   try {
