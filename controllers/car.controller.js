@@ -155,25 +155,27 @@ export const getMyCar = async (req, res, next) => {
     let cars = await Car.find(
       {owner: username},
       {
-        _id: 1,
-        renter: 1,
+        //_id: 1,
+        //renter: 1,
         status: 1,
+        energy_types: 1,
+        rating: 1,
+        rentedOutCount: 1,
         brand: 1,
         model: 1,
         gear_type: 1,
-        energy_types: 1,
-        passenger: 1,
-        rating: 1,
-        province: 1,
+        available_location: 1,
         rental_price: 1,
+        passenger: 1,
         car_images: 1,
-        rentedOutCount: 1,
+        available_times: 1,
+        unavailable_times: 1,
       }
     ).lean();
     console.log(username);
-    const user_image = await User.findOne({username: username}, {image: 1}).lean();
+    //const user_image = await User.findOne({username: username}, {image: 1}).lean();
     for (const car of cars) {
-      if (car.status == "Rented"){
+      /*if (car.status == "Rented"){
         const match = await Match.findOne(
           {carID: car._id, status: 'Rented'},
           {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
@@ -189,13 +191,13 @@ export const getMyCar = async (req, res, next) => {
         car.returnDateTime = null;
         car.returnLocation = null;
         car.totalprice = null;
-      }
+      }*/
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
         delete car.car_images;
       }
-      delete car._id
-      car.user_image = user_image.image;
+      //delete car._id
+      //car.user_image = user_image.image;
     }
     console.log(cars);
     return res.json(cars);
