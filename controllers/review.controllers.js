@@ -60,8 +60,8 @@ export const createReview = async (req, res, next) => {
 
 export const getReviews = async (req, res, next) => {
   let condition = {};
-  if (req.body.carID){
-    condition.status = req.body.carID;
+  if (req.body.review.carID){
+    condition.carID = req.body.review.carID;
   }
   try {
     let reviews = await Review.find(condition);
