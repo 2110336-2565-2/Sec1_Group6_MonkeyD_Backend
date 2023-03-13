@@ -1,11 +1,13 @@
-import express from "express";
-import mongoose from "mongoose";
 import passport from "passport";
-import {Strategy as LocalStrategy} from "passport-local";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import {
+  localStrategy,
+  googleStrategy,
+  facebookStrategy,
+} from "../configs/passport.config.js";
 
 dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
@@ -31,7 +33,8 @@ export const createUser = (req, res, next) => {
     });
 };
 
-export const login = (req, res, next) => {
+export const localLogin = (req, res, next) => {
+  passport.use(localStrategy);
   if (!req.body.user.email) {
     return res.status(422).json({errors: {email: "can't be blank"}});
   }
@@ -61,8 +64,89 @@ export const login = (req, res, next) => {
   })(req, res, next);
 };
 
+// for facebook login (soon)
+export const facebookLogin = (req, res, next) => {
+  passport.use(facebookStrategy);
+  passport.authenticate("facebook", {
+    scope: ["email"],
+    failureRedirect: "/",
+  })(req, res, next);
+};
+
+// for facebook login (soon)
+export const facebookCallback = (req, res, next) => {
+  passport.use(facebookStrategy);
+  passport.authenticate(
+    "facebook",
+    {failureRedirect: "/"},
+    function (err, user) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.redirect("/");
+      }
+
+      res.redirect("/");
+    }
+  )(req, res, next);
+};
+
+export const googleAuth = (req, res, next) => {
+  passport.use(googleStrategy);
+  passport.authenticate("google", function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (user) {
+      // if user is already authenticated with a local strategy, do nothing
+      return res.send("Already logged in");
+    } else {
+      // if user is not authenticated with a local strategy, initiate Google authentication
+      return passport.authenticate("google", {scope: ["profile", "email"]})(
+        req,
+        res,
+        next
+      );
+    }
+  })(req, res, next);
+};
+
+export const googleCallback = (req, res, next) => {
+  passport.use(googleStrategy);
+  passport.authenticate(
+    "google",
+    {failureRedirect: "/login"},
+    function (err, user) {
+      if (err) {
+        return next(err);
+      }
+      user.token = user.generateJWT();
+      const cookieData = user.toAuthJSON();
+
+      res.cookie("auth", cookieData, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        expires: 0,
+        path: "/",
+      });
+      res.cookie(
+        "userID",
+        {userID: user._id},
+        {
+          sameSite: "lax",
+          secure: true,
+          expires: 0,
+          path: "/",
+        }
+      );
+      res.redirect(process.env.FRONTEND_PORT);
+    }
+  )(req, res, next);
+};
+
 export const addUserInfo = async (req, res, next) => {
-  console.log("Add!");
   const id = req.body.id;
   try {
     let user = await User.findById(id);
@@ -73,6 +157,7 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.image != null) user.image = req.body.image;
       if (req.body.owncars != null) user.owncars = req.body.owncars;
       if (req.body.isLessor != null) user.isLessor = req.body.isLessor;
+      if (req.body.isAdmin != null) user.isLessor = req.body.isAdmin;
       if (req.body.firstName != null) user.firstName = req.body.firstName;
       if (req.body.lastName != null) user.lastName = req.body.lastName;
       if (req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
@@ -96,7 +181,6 @@ export const addUserInfo = async (req, res, next) => {
 };
 
 export const getUserInfo = async (req, res, next) => {
-  console.log("View!");
   const id = req.body.id;
   try {
     let user = await User.findById(id);
@@ -121,7 +205,6 @@ export const getUserInfo = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   // also use for collecting log in the future
   const cookie_name = req.body.cookie_name;
-  console.log(cookie_name);
   res.clearCookie(cookie_name, {
     path: "/",
   });
@@ -231,10 +314,16 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
-export const updateRole = async (req, res, next) => {
+export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
+  const prefix = req.body.prefix;
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
+  const phone_number = req.body.mobile_number;
+  const driving_license = req.body.driving_license;
+  const identification_number = req.body.identification_number;
+
   let user;
-  console.log(user_id);
   try {
     user = await User.findById(user_id);
     if (user == null) {
@@ -245,10 +334,52 @@ export const updateRole = async (req, res, next) => {
   }
 
   user.isLessor = true;
+  user.prefix = prefix;
+  user.firstName = first_name;
+  user.lastName = last_name;
+  user.phoneNumber = phone_number;
+  user.drivingLicenseNumber = driving_license;
+  user.IDCardNumber = identification_number;
   user.save();
-  res.send("role updated");
+  res.send("role lessor updated");
+};
+
+export const updateRoleAdmin = async (req, res, next) => {
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.isAdmin = true;
+  user.save();
+  res.send("role admin updated");
 };
 
 export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});
+};
+
+export const addLesserInfo = async (req, res, next) => {
+  const id = req.body.id;
+  let user;
+  try {
+    let user = await User.findById(id);
+    if (user == null) {
+      return res.status(404).json({message: "Cannot find user"});
+    }
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+  }
+  user.drivingLicense = req.body.drivingLicense;
+  user.IDCardNumber = req.body.IDCardNumber;
+  user.drivingLicenseImage = req.body.drivingLicenseImage;
+  user.IDCardImage = req.body.IDCardImage;
+  user.save();
+  res.send("complete!");
 };

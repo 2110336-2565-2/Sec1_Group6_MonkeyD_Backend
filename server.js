@@ -19,15 +19,14 @@ app.use(bodyParser.json());
 app.use(customLogger);
 app.use(customCORS);
 app.use(cookieParser());
-
 // deprecate **change later**
 mongoose.set("strictQuery", true);
 
 if (isProduction) {
   mongoose.connect(process.env.MONGO_URI);
 } else {
-  mongoose.connect("mongodb://localhost:27017/testDatabase");
-  // mongoose.connect("mongodb://127.0.0.1:27017/testDatabase");
+  // mongoose.connect("mongodb://localhost:27017/testDatabase");
+  mongoose.connect("mongodb://127.0.0.1:27017/testDatabase");
   mongoose.set("debug", true);
 }
 

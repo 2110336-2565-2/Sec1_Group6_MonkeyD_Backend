@@ -4,7 +4,6 @@ import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
-  console.log(req.body);
   const car = new Car();
   const {
     owner,
@@ -17,6 +16,7 @@ export const createCars = (req, res, next) => {
     registration_book_id,
     registration_book_url,
     description,
+    available_location,
     energy_types,
     province,
     available_times,
@@ -35,6 +35,7 @@ export const createCars = (req, res, next) => {
   if (registration_book_id) car.registration_book_id = registration_book_id;
   if (registration_book_url) car.registration_book_url = registration_book_url;
   if (description) car.description = description;
+  if (available_location) car.available_location = available_location;
   if (energy_types) car.energy_types = energy_types;
   if (province) car.province = province;
   if (rental_price) car.rental_price = rental_price;
@@ -165,7 +166,6 @@ export const getMyCar = async (req, res, next) => {
         car_images: 1,
       }
     ).lean();
-    console.log(username);
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
@@ -174,7 +174,6 @@ export const getMyCar = async (req, res, next) => {
       const user_image = await User.findOne({username: car.owner}, {image: 1});
       car.user_image = user_image.image;
     }
-    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -217,6 +216,21 @@ export const toggleRented = async (req, res, next) => {
     car.renter = "";
     car.save();
     res.send("car available");
+  }
+};
+
+export const deleteCar = async (req, res, next) => {
+  const car_id = req.headers.car_id;
+  let car;
+  try {
+    car = await Car.findByIdAndDelete(car_id);
+    if (car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+    res.send({message: `Car with ID ${car_id} deleted successfully`});
+  } catch (err) {
+    console.log.error(err.message);
+    return res.status(500).json({message: err.message});
   }
 };
 
