@@ -15,9 +15,17 @@ const corsOptions = {
     "car_id",
     "renter_id",
     "lessor_id",
+    "match_id",
     "username",
   ],
-  exposedHeaders: ["user_id", "car_id", "renter_id", "lessor_id", "username"],
+  exposedHeaders: [
+    "user_id",
+    "car_id",
+    "renter_id",
+    "lessor_id",
+    "match_id",
+    "username",
+  ],
   optionsSuccessStatus: 200,
 };
 
