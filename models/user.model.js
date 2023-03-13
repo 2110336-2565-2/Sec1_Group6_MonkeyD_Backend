@@ -75,6 +75,22 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    drivingLicenseNumber: {
+      type: String,
+      default: "",
+    },
+    IDCardNumber: {
+      type: String,
+      default: "",
+    },
+    drivingLicenseImage: {
+      type: String,
+      default: "",
+    },
+    IDCardImage: {
+      type: String,
+      default: "",
+    },
     hash: String,
     salt: String,
   },
