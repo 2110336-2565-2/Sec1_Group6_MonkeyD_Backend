@@ -141,6 +141,16 @@ export const googleCallback = (req, res, next) => {
           path: "/",
         }
       );
+      res.cookie(
+        "username",
+        {username: user.username},
+        {
+          sameSite: "lax",
+          secure: true,
+          expires: 0,
+          path: "/",
+        }
+      );
       res.redirect(process.env.FRONTEND_PORT);
     }
   )(req, res, next);
@@ -371,4 +381,20 @@ export const updateRoleAdmin = async (req, res, next) => {
 
 export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});
+};
+
+export const getUserRole = async (req, res, next) => {
+  const id = req.body.id;
+  try {
+    let user = await User.findById(id);
+    if (user == null) {
+      res.status(404).json({message: "Cannot find user"});
+    } else {
+      res.send({
+        userRole: user.isLessor ? "lessor" : "renter",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
 };
