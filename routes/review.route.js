@@ -9,7 +9,8 @@ const router = express.Router();
 
 router
   .route("/review")
-  .get(auth.required, getReviews)
+  // .get(auth.required, getReviews)
+  .get(getReviews)
   .post(auth.required, createReview);
 router.route("/review/:id").get(auth.required, getReviewInfo);
 
