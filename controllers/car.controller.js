@@ -207,7 +207,7 @@ export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
   const pickUpDateTime = req.body.pickUpDateTime;
-  const returnDateTime = rew.body.returnDateTime;
+  const returnDateTime = req.body.returnDateTime;
   let car;
   try {
     car = await Car.findById(car_id);
@@ -233,7 +233,7 @@ export const toggleRented = async (req, res, next) => {
   //if (car.status == "Available") {
     //car.status = "Rented";
     //car.renter = renter.username;
-    (car.status==="Unavailable")?"Unavailable":"Available";
+    car.status=(car.status==="Unavailable")?"Unavailable":"Available";
     car.rentedOutCount += 1;
     car.unavailable_times.push({start:pickUpDateTime, end:returnDateTime, username:renter.username});
     car.save();
