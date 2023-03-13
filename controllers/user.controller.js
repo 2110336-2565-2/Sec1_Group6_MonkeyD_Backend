@@ -188,14 +188,7 @@ export const getUserInfo = async (req, res, next) => {
       res.status(404).json({message: "Cannot find user"});
     } else {
       res.send({
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        prefix: user.prefix,
-        owncars: user.owncars,
-        image: user.image,
+        user
       });
     }
   } catch (error) {
@@ -365,21 +358,3 @@ export const checkLogin = async (req, res, next) => {
   return res.status(200).json({isLogin: true});
 };
 
-export const addLesserInfo = async (req, res, next) => {
-  const id = req.body.id;
-  let user;
-  try {
-    let user = await User.findById(id);
-    if (user == null) {
-      return res.status(404).json({message: "Cannot find user"});
-    }
-  } catch (error) {
-    return res.status(500).json({message: error.message});
-  }
-  user.drivingLicense = req.body.drivingLicense;
-  user.IDCardNumber = req.body.IDCardNumber;
-  user.drivingLicenseImage = req.body.drivingLicenseImage;
-  user.IDCardImage = req.body.IDCardImage;
-  user.save();
-  res.send("complete!");
-};
