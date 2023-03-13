@@ -60,6 +60,9 @@ export const createReview = async (req, res, next) => {
 
 export const getReviews = async (req, res, next) => {
   let condition = {};
+  if (req.body.carID){
+    condition.status = req.body.carID;
+  }
   try {
     let reviews = await Review.find(condition);
     const sendReviews = reviews.map((e) => e.toAuthJSON());
