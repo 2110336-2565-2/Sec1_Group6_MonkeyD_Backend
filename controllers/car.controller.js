@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Car from "../models/car.model.js";
+import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
 
 export const createCars = (req, res, next) => {
@@ -154,7 +155,9 @@ export const getMyCar = async (req, res, next) => {
     let cars = await Car.find(
       {renter: username},
       {
+        _id: 1,
         owner: 1,
+        status: 1,
         brand: 1,
         model: 1,
         gear_type: 1,
@@ -164,22 +167,42 @@ export const getMyCar = async (req, res, next) => {
         province: 1,
         rental_price: 1,
         car_images: 1,
+        rentedOutCount: 1,
       }
     ).lean();
+    console.log(username);
+    const user_image = await User.findOne({username: car.owner}, {image: 1}).lean();
     for (const car of cars) {
+      if (car.status == "Rented"){
+        const match = await Match.findOne(
+          {carID: car._id, status: "Rented"},
+          {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
+        car.pickUpDateTime = match.pickUpDateTime;
+        car.pickupLocation = match.pickupLocation;
+        car.returnDateTime = match.returnDateTime;
+        car.returnLocation = match.returnLocation;
+        car.totalprice = match.price;
+      }
+      else{
+        car.pickUpDateTime = null;
+        car.pickupLocation = null;
+        car.returnDateTime = null;
+        car.returnLocation = null;
+        car.totalprice = null;
+      }
       if (car.car_images && car.car_images.length) {
         car.car_image = car.car_images[0];
         delete car.car_images;
       }
-      const user_image = await User.findOne({username: car.owner}, {image: 1});
+      delete car._id
       car.user_image = user_image.image;
     }
+    console.log(cars);
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
 };
-
 export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
