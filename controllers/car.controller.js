@@ -257,6 +257,19 @@ export const deleteCar = async (req, res, next) => {
   }
 };
 
+export const getNumberOfRentals = async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    let car = await Car.findOne({_id: id},{rentedOutCount: 1});
+    if (car == null) {
+      return res.status(404).json({message: "Cannot find car"});
+    } else {
+      return res.json(car);
+    }
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+  }
+};
 export const changeCarInfo = async (req, res, next) => {
   const car_id = req.header.car_id;
   try {
