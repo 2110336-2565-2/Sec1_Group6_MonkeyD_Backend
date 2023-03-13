@@ -12,7 +12,6 @@ import {
   checkLogin,
   addUserInfo,
   getUserInfo,
-  addLesserInfo,
   // facebookLogin,
   // facebookCallback,
   googleAuth,
@@ -32,6 +31,7 @@ router.route("/auth/google/callback").get(googleCallback);
 router
   .route("/user/info")
   .post(auth.required, getUserInfo)
+  // .post(getUserInfo)
   .patch(auth.required, addUserInfo); // get user's info & add user info
 router.route("/user/logout").post(auth.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email
@@ -40,6 +40,5 @@ router.route("/user/navbar").get(auth.required, getNavbarInfo); // get navbar in
 router.route("/user/update-role").patch(auth.required, updateRoleLessor); // change role
 router.route("/user/update-role-admin").patch(auth.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(auth.required, checkLogin); // check if user login
-router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
 
 export default router;
