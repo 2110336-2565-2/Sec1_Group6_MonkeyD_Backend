@@ -271,40 +271,30 @@ export const getNumberOfRentals = async (req, res, next) => {
   }
 };
 export const changeCarInfo = async (req, res, next) => {
-  const car_id = req.header.car_id;
-  try {
-    let car = await Car.findById(car_id);
+  const car_id = req.headers.car_id;
+  let car;
+  try{
+    car = await Car.findById(car_id);
     if (car == null) {
       return res.status(404).json({message: "Cannot find car"});
     }
 
-    if (req.body.sttaus != null && req.body.status != "unavailable") {
+    if (req.body.status !== null && req.body.status !== "Unavailable") {
       return res.status(400).json(({message: "Status can only be changed to Unavailable"}));
     }
-  
-    car.brand = req.body.brand || car.brand;
-    car.model = req.body.model || car.model;
-    car.gear_type = req.body.gear_type || car.gear_type;
-    car.year = req.body.year || car.year;
-    car.description = req.body.description || car.description;
-    car.license_plate = req.body.license_plate || car.license_plate;
-    car.registration_book_id = req.body.registration_book_id || car.registration_book_id;
-    car.registration_book_url = req.body.registration_book_url || car.registration_book_url;
-    car.energy_types = req.body.energy_types || car.energy_types;
-    car.province = req.body.province || car.province;
-    car.available_times.start = req.body.available_times.start || car.available_times.start;
-    car.available_times.end = req.body.available_times.end || car.available_times.end;
-    car.car_images = req.body.car_images || car.car_images;
-    car.rental_price = req.body.rental_price || car.rental_price;
-    car.passenger = req.body.passenger || car.passenger;
-    car.available_location = req.body.available_location || car.available_location;
 
-    await car.save();
-
-    return res.json({car});
-  } catch (err) {
+    Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(car);
+      }
+    });
+    res.send({message: `Car with ID ${car_id} updated successfully`});
+  }catch (err) {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
 
 };
+
