@@ -18,6 +18,6 @@ router
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
-router.route("/car/me/:username").get(auth.required, getMyCar);
+router.route("/car/me/:username").get(getMyCar);
 
 export default router;
