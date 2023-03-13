@@ -29,6 +29,7 @@ const ReviewSchema = new mongoose.Schema(
     matchID: {
       type: mongoose.ObjectId,
       required: [true, "can't be blank"],
+      unique: true,
     },
     reviewerID: {
       type: mongoose.ObjectId,
@@ -55,6 +56,24 @@ ReviewSchema.methods.toAuthJSON = function () {
     matchID: this.matchID,
     carID: this.carID,
     reviewerID: this.reviewerID,
+  };
+};
+
+ReviewSchema.methods.toCarDetailJSON = function () {
+  //console.log(this.createdAt);
+  const options = {day: "numeric", month: "long", year: "numeric"};
+
+  return {
+    _id: this._id,
+    hygeine: this.hygeine,
+    carCondition: this.carCondition,
+    service: this.service,
+    comment: this.comment,
+    reviewerID: this.reviewerID._id,
+    reviewer: this.reviewerID.username,
+    reviewerImg: this.reviewerID.image,
+    rating: (this.carCondition + this.service + this.hygeine) / 3,
+    createdAt: this.createdAt.toLocaleDateString("en-US", options),
   };
 };
 

@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Match from "../models/match.model.js";
+import Car from "../models/car.model.js";
 
 export const createMatch = (req, res, next) => {
   const match = new Match();
@@ -69,8 +70,8 @@ export const getMatches = async (req, res, next) => {
 export const getMatchInfo = async (req, res, next) => {
   const {id} = req.params;
   try {
-    const match = await Match.findById(id);
-    return res.json({match: match.toAuthJSON()});
+    const match = await Match.findById(id).populate("carID");
+    return res.json({match: match.toMyBookingJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
@@ -104,7 +105,6 @@ export const cancelReserevation = async (req, res, next) => {
   let car;
   try {
     car = await Car.findById(car_id);
-    console.log(car);
     if (car == null) {
       return res.status(404).send({message: "Cannot find car"});
     }
@@ -120,14 +120,12 @@ export const cancelReserevation = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-  console.log(car);
-  console.log(match);
   car.renter = "";
   car.status = "Available";
   match.status = "Cancelled";
   Promise.all([match.save(), car.save()])
     .then(function () {
-      return res.json({result: match.toAuthJSON()});
+      return res.json(match);
     })
     .catch(function (error) {
       console.log(error);

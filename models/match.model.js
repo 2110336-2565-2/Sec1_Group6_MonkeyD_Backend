@@ -47,6 +47,11 @@ const MatchSchema = new mongoose.Schema(
       type: Number,
       required: [true, "can't be blank"],
     },
+    isReview: {
+      type: Boolean,
+      required: [true, "can't be blank"],
+      default: false,
+    },
   },
 
   {timestamps: true}
@@ -64,6 +69,7 @@ MatchSchema.methods.toAuthJSON = function () {
     returnLocation: this.returnLocation,
     returnDateTime: this.returnDateTime,
     price: this.price,
+    isReview: this.isReview,
   };
 };
 
@@ -79,6 +85,7 @@ MatchSchema.methods.toMyBookingJSON = function () {
     returnLocation: this.returnLocation,
     returnDateTime: this.returnDateTime,
     price: this.price,
+    isReview: this.isReview,
   };
 };
 

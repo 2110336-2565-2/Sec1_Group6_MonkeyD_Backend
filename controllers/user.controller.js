@@ -188,14 +188,7 @@ export const getUserInfo = async (req, res, next) => {
       res.status(404).json({message: "Cannot find user"});
     } else {
       res.send({
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        prefix: user.prefix,
-        owncars: user.owncars,
-        image: user.image,
+        user,
       });
     }
   } catch (error) {
