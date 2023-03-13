@@ -206,6 +206,8 @@ export const getMyCar = async (req, res, next) => {
 export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
+  const pickUpDateTime = req.body.pickUpDateTime;
+  const returnDateTime = req.body.returnDateTime;
   let car;
   try {
     car = await Car.findById(car_id);
@@ -228,18 +230,20 @@ export const toggleRented = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 
-  if (car.status == "Available") {
-    car.status = "Rented";
-    car.renter = renter.username;
+  //if (car.status == "Available") {
+    //car.status = "Rented";
+    //car.renter = renter.username;
+    car.status=(car.status==="Unavailable")?"Unavailable":"Available";
     car.rentedOutCount += 1;
+    car.unavailable_times.push({start:pickUpDateTime, end:returnDateTime, username:renter.username});
     car.save();
     res.send("car rented");
-  } else {
-    car.status = "Available";
-    car.renter = "";
-    car.save();
-    res.send("car available");
-  }
+  //} else {
+    //car.status = "Available";
+    //car.renter = "";
+   // car.save();
+    //res.send("car available");
+  //}
 };
 
 export const deleteCar = async (req, res, next) => {

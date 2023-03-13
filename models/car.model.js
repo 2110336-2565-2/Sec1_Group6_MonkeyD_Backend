@@ -107,6 +107,19 @@ const CarSchema = new mongoose.Schema(
         },
       },
     ],
+    unavailable_times: [
+      {
+        start: {
+          type: Date,
+        },
+        end: {
+          type: Date,
+        },
+        username: {
+          type:String,
+        },
+      },
+    ],
     car_images: {
       type: [String],
       validate: (v) => Array.isArray(v) && v.length > 0,
