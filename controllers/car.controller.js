@@ -153,10 +153,10 @@ export const getMyCar = async (req, res, next) => {
 
   try {
     let cars = await Car.find(
-      {renter: username},
+      {owner: username},
       {
         _id: 1,
-        owner: 1,
+        renter: 1,
         status: 1,
         brand: 1,
         model: 1,
@@ -171,11 +171,11 @@ export const getMyCar = async (req, res, next) => {
       }
     ).lean();
     console.log(username);
-    const user_image = await User.findOne({username: car.owner}, {image: 1}).lean();
+    const user_image = await User.findOne({username: username}, {image: 1}).lean();
     for (const car of cars) {
       if (car.status == "Rented"){
         const match = await Match.findOne(
-          {carID: car._id, status: "Rented"},
+          {carID: car._id, status: 'Rented'},
           {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
         car.pickUpDateTime = match.pickUpDateTime;
         car.pickupLocation = match.pickupLocation;
