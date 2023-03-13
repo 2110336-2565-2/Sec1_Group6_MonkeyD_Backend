@@ -232,9 +232,10 @@ export const toggleRented = async (req, res, next) => {
 
   //if (car.status == "Available") {
     //car.status = "Rented";
-    car.renter = renter.username;
+    //car.renter = renter.username;
+    (car.status==="Unavailable")?"Unavailable":"Available";
     car.rentedOutCount += 1;
-    car.available_times.push({start:pickUpDateTime, end:returnDateTime, username:car.renter});
+    car.unavailable_times.push({start:pickUpDateTime, end:returnDateTime, username:renter.username});
     car.save();
     res.send("car rented");
   //} else {
