@@ -11,7 +11,8 @@ router
   .route("/review")
   // .get(auth.required, getReviews)
   .get(getReviews)
-  .post(auth.required, createReview);
+  // .post(auth.required, createReview);
+  .post(createReview);
 router.route("/review/:id").get(auth.required, getReviewInfo);
 
 export default router;

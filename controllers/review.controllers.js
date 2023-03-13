@@ -37,6 +37,16 @@ export const getReviews = async (req, res, next) => {
   }
   try {
     let reviews = await Review.find(condition);
+    for (const review of reviews){
+      review.overall = (review.carCondition + review.hygeine + review.service)/3
+    }
+    reviews.sort(function(a, b) {
+      return b.overall - a.overall;
+    });
+    for (const review of reviews){
+      delete review.overall;
+    }
+    console.log(reviews);
     const sendReviews = reviews.map((e) => e.toAuthJSON());
     return res.json({reviews: sendReviews});
   } catch (err) {
