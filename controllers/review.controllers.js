@@ -73,8 +73,8 @@ export const createReview = async (req, res, next) => {
 
 export const getReviews = async (req, res, next) => {
   let condition = {};
-  if (req.query.carID) {
-    condition.carID = req.query.carID;
+  if (req.body.review.carID) {
+    condition.carID = req.body.review.carID;
   }
   console.log(condition, req.query);
   try {
