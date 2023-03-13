@@ -20,7 +20,9 @@ router
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
-router.route("/car/number-of-retal/:id").get(auth.required, getNumberOfRentals);
+//router.route("/car/number-of-rental/:id").get(getNumberOfRentals);
+router.route("/car/number-of-rental/:id").get(auth.required, getNumberOfRentals);
+
 router.route("/car/me/:username").get(auth.required, getMyCar);
 router.route("/car/change-car-info").patch(changeCarInfo);
 
