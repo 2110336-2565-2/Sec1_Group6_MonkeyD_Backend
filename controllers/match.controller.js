@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Match from "../models/match.model.js";
+import Car from "../models/car.model.js";
 
 export const createMatch = (req, res, next) => {
   const match = new Match();
@@ -97,3 +98,45 @@ export const getMyBooking = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const cancelReserevation = async (req, res, next) => {
+  const car_id = req.headers.car_id;
+  const match_id = req.headers.match_id;
+  let car;
+  try {
+    car = await Car.findById(car_id);
+    if(car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  }catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  let match;
+  try {
+    match = await Match.findById(match_id);
+    if(car == null) {
+      return res.status(404).send({message: "Cannot find match"});
+    }
+  }catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  car.renter = "";
+  car.status = "Available";
+  match.status = "Cancelled";
+  Promise.all([match.save(), car.save()])
+        .then(function () {
+          return res.json(match);
+        })
+        .catch(function (error) {
+          console.log(error);
+          if (error.code === 11000) {
+            return res.status(400).send({
+              error: "Something already exists",
+            });
+          }
+          console.log(error);
+          next(error);
+        });
+
+};
+

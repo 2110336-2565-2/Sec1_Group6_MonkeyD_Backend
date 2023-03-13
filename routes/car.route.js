@@ -6,7 +6,6 @@ import {
   toggleRented,
   getMyCar,
   deleteCar,
-  cancelReserevation,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 
@@ -15,10 +14,10 @@ const router = express.Router();
 router
   .route("/car")
   .get(getCars)
-  .post(auth.required, createCars)
+  .post( createCars)
+  // .post(auth.required, createCars)
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
 router.route("/car/:id").get(getCarInfo);
 router.route("/car/me/:username").get(auth.required, getMyCar);
-router.route("/car/cancel-reservation").patch(auth.required, cancelReserevation);
 export default router;
