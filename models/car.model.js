@@ -111,11 +111,9 @@ const CarSchema = new mongoose.Schema(
       {
         start: {
           type: Date,
-          required: [true, "can't be blank"],
         },
         end: {
           type: Date,
-          required: [true, "can't be blank"],
         },
         username: {
           type:String,
