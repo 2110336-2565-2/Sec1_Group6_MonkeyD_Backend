@@ -72,7 +72,7 @@ const CarSchema = new mongoose.Schema(
     },
     available_location: {
       type: String,
-      required: [true, "can't be blank"],
+      // required: [true, "can't be blank"],
     },
     energy_types: [
       {
@@ -116,7 +116,7 @@ const CarSchema = new mongoose.Schema(
           type: Date,
         },
         username: {
-          type:String,
+          type: String,
         },
       },
     ],
