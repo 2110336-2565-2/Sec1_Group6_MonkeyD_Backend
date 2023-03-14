@@ -77,6 +77,16 @@ export const getMatchInfo = async (req, res, next) => {
   }
 };
 
+export const getMatchStatuses = async (req, res, next) => {
+  try {
+    //console.log(Match);
+    return res.json({status: Match.schema.path("status").enumValues});
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({message: err.message});
+  }
+};
+
 export const getMyBooking = async (req, res, next) => {
   let condition = {};
   condition.renterID = req.params.id;

@@ -8,7 +8,7 @@ const MatchSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "can't be blank"],
-      enum: ["Pending", "Cancelled", "Rented", "Complete"],
+      enum: ["Pending", "Cancelled", "Rented", "Completed"],
       default: "Pending",
     },
     pickupLocation: {
