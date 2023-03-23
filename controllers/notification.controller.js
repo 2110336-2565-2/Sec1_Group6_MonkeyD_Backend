@@ -24,3 +24,23 @@ export const createNotification = (req, res, next) => {
       next(error);
     });
 }
+
+export const getNotifications = async (req, res, next) => {
+    const { date, time } = req.query;
+    const start = new Date(`${date} ${time}`);
+  
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+  
+    try {
+      const notifications = await Notification.find({
+        createdAt: { $gte: start, $lt: end },
+      })
+  
+      const sendNotifications = notifications.map((n) => n.toAuthJSON());
+  
+      return res.json({ notifications: sendNotifications });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+};
+  
