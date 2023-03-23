@@ -7,8 +7,8 @@ import {
 const router = express.Router();
 
 router
-  .route("/match")
-  .get(auth.required, getPayments)
-  .post(auth.required, createPayment);
+  .route("/payment")
+  .get(getPayments)
+  .post(createPayment);
 
 export default router;

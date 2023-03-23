@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import Match from "../models/match.model.js";
 import Payment from "../models/payment.model.js";
 
-export const createMatch = (req, res, next) => {
-  const match = new Match();
+export const createPayment = (req, res, next) => {
+  const payment = new Payment();
   const {
     status,
     lessorID,
