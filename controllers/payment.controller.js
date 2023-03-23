@@ -15,7 +15,7 @@ export const createPayment = (req, res, next) => {
   if (status) payment.status = status;
   if (lessorID) payment.lessorID = lessorID;
   if (renterID) payment.renterID = renterID;
-  if (matchID) payment.renterID = matchID;
+  if (matchID) payment.matchID = matchID;
   if (price) payment.price = price;
 
   payment
