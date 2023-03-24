@@ -18,6 +18,10 @@ const NotificationSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "can't be blank"],
     },
+    isRead:{
+      type:Boolean,
+      default: false,
+    }
   },
 
   {timestamps: true}
@@ -33,5 +37,5 @@ NotificationSchema.methods.toAuthJSON = function () {
 };
 
 
-const Notification = mongoose.model("Notification", ReviewSchema);
+const Notification = mongoose.model("Notification", NotificationSchema);
 export default Notification;
