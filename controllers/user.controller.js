@@ -25,6 +25,7 @@ export const createUser = (req, res, next) => {
     })
     .catch(function (error) {
       if (error.code === 11000) {
+        console.log(error);
         return res
           .status(400)
           .send({error: "Username or E-mail already exists"});
