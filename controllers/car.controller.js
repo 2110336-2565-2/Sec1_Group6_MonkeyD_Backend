@@ -3,29 +3,55 @@ import mongoose from "mongoose";
 import Car from "../models/car.model.js";
 import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
-
-export const createCars = (req, res, next) => {
+import {uploadImage, getImageUrl} from "../utils/gcs.utils.js";
+import {ObjectId} from "bson";
+export const createCars = async (req, res, next) => {
   const car = new Car();
+
   const {
     owner,
-    status,
+    status = "Pending",
     brand,
     model,
     year,
     gear_type,
     license_plate,
     registration_book_id,
-    registration_book_url,
     description,
     available_location,
     energy_types,
     province,
     available_times,
     passenger,
-    rating,
+    rating = 0,
     rental_price,
-    car_images,
-  } = req.body.car;
+  } = req.body;
+
+  const id = req.body.owner_user_id;
+  const carId = new ObjectId();
+
+  const car_images = req.files["car_images"];
+  const car_image_uris = [];
+  for (const car_image of car_images) {
+    const imageUri = await uploadImage(
+      car_image,
+      process.env.GCS_CAR_IMAGES_BUCKET,
+      `${id}/${carId}`,
+      null
+    );
+    car_image_uris.push(imageUri);
+  }
+
+  const registration_book_image = req.files["registration_book_image"];
+
+  const registration_book_image_uri = await uploadImage(
+    registration_book_image[0],
+    process.env.GCS_CAR_REGISTRATION_BOOK_BUCKET,
+    "",
+    carId
+  );
+  console.log(energy_types);
+  car._id = carId;
   if (owner) car.owner = owner;
   if (status) car.status = status;
   if (brand) car.brand = brand;
@@ -34,7 +60,8 @@ export const createCars = (req, res, next) => {
   if (gear_type) car.gear_type = gear_type;
   if (license_plate) car.license_plate = license_plate;
   if (registration_book_id) car.registration_book_id = registration_book_id;
-  if (registration_book_url) car.registration_book_url = registration_book_url;
+  if (registration_book_image_uri)
+    car.registration_book_url = registration_book_image_uri;
   if (description) car.description = description;
   if (available_location) car.available_location = available_location;
   if (energy_types) car.energy_types = energy_types;
@@ -42,7 +69,7 @@ export const createCars = (req, res, next) => {
   if (rental_price) car.rental_price = rental_price;
   if (passenger) car.passenger = passenger;
   if (rating) car.rating = rating;
-  if (car_images) car.car_images = car_images;
+  if (car_image_uris.length) car.car_images = car_image_uris;
   if (available_times) car.setAvailableTimes(available_times);
 
   car
@@ -119,11 +146,32 @@ export const getCars = async (req, res, next) => {
     let cars = await Car.find(condition, show_attrs).lean();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
-        car.car_image = car.car_images[0];
+        const user = await User.findOne(
+          {username: car.owner},
+          {_id: 1, image: 1}
+        );
+        let userImageUrl;
+        if (user.image.startsWith("https://lh3.googleusercontent.com")) {
+          userImageUrl = user.image;
+        } else {
+          userImageUrl = await getImageUrl(
+            process.env.GCS_PROFILE_BUCKET,
+            null,
+            user.image
+          );
+        }
+        car.user_image = userImageUrl;
+
+        const carImageUrl = await getImageUrl(
+          process.env.GCS_CAR_IMAGES_BUCKET,
+          null,
+          car.car_images[0]
+        );
+        console.log(`${user._id}/${car._id}`, car.car_images[0], carImageUrl);
+
+        car.car_image = carImageUrl;
         delete car.car_images;
       }
-      const user_image = await User.findOne({username: car.owner}, {image: 1});
-      car.user_image = user_image.image;
     }
     return res.json(cars);
   } catch (err) {

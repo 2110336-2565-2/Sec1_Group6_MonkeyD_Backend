@@ -3,6 +3,7 @@ import findOrCreate from "mongoose-findorcreate";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import {getImageUrl} from "../utils/gcs.utils.js";
 
 dotenv.config({path: ".env"});
 
@@ -36,7 +37,7 @@ const UserSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "https://pic.onlinewebfonts.com/svg/img_264157.png",
+      default: "default.png",
     },
     owncars: {
       type: [String],
@@ -136,6 +137,7 @@ UserSchema.methods.generateJWT = function () {
 UserSchema.methods.toAuthJSON = function () {
   return this.generateJWT();
 };
+
 UserSchema.methods.getIdJSON = function () {
   return {
     user_id: this._id,
@@ -143,11 +145,55 @@ UserSchema.methods.getIdJSON = function () {
   };
 };
 
-UserSchema.methods.getNavbarJSON = function () {
+UserSchema.methods.getUserInfoJSON = async function () {
+  let imageUrl;
+  if (this.image.startsWith("https://lh3.googleusercontent.com")) {
+    imageUrl = this.image;
+  } else {
+    imageUrl = await getImageUrl(
+      process.env.GCS_PROFILE_BUCKET,
+      null,
+      this.image
+    );
+  }
+  return {
+    username: this.username,
+    email: this.email,
+    firstName: this.firstName,
+    lastName: this.lastName,
+    phoneNumber: this.phoneNumber,
+    prefix: this.prefix,
+    ownProducts: this.ownProducts,
+    image: imageUrl,
+    IDCardImage: this.IDCardImage,
+    IDCardNumber: this.IDCardNumber,
+    drivingLicenseImage: this.drivingLicenseImage,
+    drivingLicenseNumber: this.drivingLicenseNumber,
+    prefix: this.prefix,
+    isAdmin: this.isAdmin,
+    isLessor: this.isLessor,
+    rating: this.rating,
+    rentedCount: this.rentedCount,
+    rentedOutCount: this.rentedOutCount,
+  };
+};
+
+UserSchema.methods.getNavbarInfoJSON = async function () {
+  let imageUrl;
+  if (this.image.startsWith("https://lh3.googleusercontent.com")) {
+    imageUrl = this.image;
+  } else {
+    imageUrl = await getImageUrl(
+      process.env.GCS_PROFILE_BUCKET,
+      null,
+      this.image
+    );
+  }
+
   return {
     username: this.username,
     user_id: this._id,
-    image: this.image,
+    image: imageUrl,
     isLessor: this.isLessor,
     isAdmin: this.isAdmin,
   };

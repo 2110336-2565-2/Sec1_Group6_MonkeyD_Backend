@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import {uploadImage} from "../utils/gcs.utils.js";
 import {
   localStrategy,
   googleStrategy,
@@ -159,20 +160,24 @@ export const googleCallback = (req, res, next) => {
 
 export const addUserInfo = async (req, res, next) => {
   const id = req.body.id;
+  console.log(id);
   try {
     let user = await User.findById(id);
     if (user == null) {
       res.status(404).json({message: "Cannot find user"});
     } else {
-      if (req.body.username != null) user.username = req.body.username;
-      if (req.body.image != null) user.image = req.body.image;
-      if (req.body.owncars != null) user.owncars = req.body.owncars;
-      if (req.body.isLessor != null) user.isLessor = req.body.isLessor;
-      if (req.body.isAdmin != null) user.isLessor = req.body.isAdmin;
-      if (req.body.firstName != null) user.firstName = req.body.firstName;
-      if (req.body.lastName != null) user.lastName = req.body.lastName;
-      if (req.body.phoneNumber != null) user.phoneNumber = req.body.phoneNumber;
-      if (req.body.prefix != null) user.prefix = req.body.prefix;
+      const imageUri = req.file
+        ? await uploadImage(req.file, process.env.GCS_PROFILE_BUCKET, null, id)
+        : null;
+      if (req.body.username) user.username = req.body.username;
+      if (imageUri) user.image = imageUri;
+      if (req.body.owncars) user.owncars = req.body.owncars;
+      if (req.body.isLessor) user.isLessor = req.body.isLessor;
+      if (req.body.isAdmin) user.isLessor = req.body.isAdmin;
+      if (req.body.firstName) user.firstName = req.body.firstName;
+      if (req.body.lastName) user.lastName = req.body.lastName;
+      if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
+      if (req.body.prefix) user.prefix = req.body.prefix;
 
       user
         .save()
@@ -198,14 +203,13 @@ export const getUserInfo = async (req, res, next) => {
     if (user == null) {
       res.status(404).json({message: "Cannot find user"});
     } else {
-      res.send({
-        user,
-      });
+      res.send(await user.getUserInfoJSON());
     }
   } catch (error) {
     res.status(500).json({message: error.message});
   }
 };
+
 export const logout = async (req, res, next) => {
   // also use for collecting log in the future
   const cookie_name = req.body.cookie_name;
@@ -327,7 +331,7 @@ export const carRented = async (req, res, next) => {
 export const getNavbarInfo = async (req, res, next) => {
   try {
     const user = await User.findOne({_id: req.headers.user_id});
-    return res.json({user: user.getNavbarJSON()});
+    return res.json({user: await user.getNavbarInfoJSON()});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
