@@ -76,7 +76,7 @@ const CarSchema = new mongoose.Schema(
     },
     energy_types: [
       {
-        type: String,
+        type: [String],
         enum: [
           "DieselB7",
           "DieselB10",
@@ -160,7 +160,7 @@ const CarSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
       min: 0,
       max: 5,
-      default: 5,
+      default: 0,
     },
     reviewCount: {
       type: Number,

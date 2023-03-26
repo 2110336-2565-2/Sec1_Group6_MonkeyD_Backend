@@ -39,3 +39,4 @@ node_modules
 # Environment
 
 .env
+gcs-admin-key.json

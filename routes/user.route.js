@@ -21,6 +21,7 @@ import {
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import auth from "../middlewares/jwt.middleware.js";
+import {upload} from "../middlewares/image.middleware.js";
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.route("/user/role").post(auth.required, getUserRole);
 router
   .route("/user/info")
   .post(auth.required, getUserInfo)
-  .patch(auth.required, addUserInfo); // get user's info & add user info
+  .patch(auth.required, upload.single("image"), addUserInfo); // get user's info & update user info
 router.route("/user/logout").post(auth.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email
 router.route("/user/reset-password").post(resetPassword); // reset password

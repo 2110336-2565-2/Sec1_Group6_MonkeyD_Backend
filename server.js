@@ -14,8 +14,10 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: "10mb"}));
+app.use(bodyParser.urlencoded({limit: "10mb", extended: true}));
 app.use(bodyParser.json());
+
 app.use(customLogger);
 app.use(customCORS);
 app.use(cookieParser());
@@ -25,7 +27,7 @@ mongoose.set("strictQuery", true);
 if (isProduction) {
   mongoose.connect(process.env.MONGO_URI);
 } else {
-   //mongoose.connect("mongodb://localhost:27017/testDatabase");
+  //mongoose.connect("mongodb://localhost:27017/testDatabase");
   mongoose.connect("mongodb://127.0.0.1:27017/testDatabase");
   mongoose.set("debug", true);
 }
