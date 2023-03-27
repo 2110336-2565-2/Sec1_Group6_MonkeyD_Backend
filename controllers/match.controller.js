@@ -87,7 +87,7 @@ export const getMatchStatuses = async (req, res, next) => {
   }
 };
 
-export const getMyBooking = async (req, res, next) => {
+export const getMyBookings = async (req, res, next) => {
   let condition = {};
   condition.renterID = req.params.id;
   if (req.query.status) {
@@ -103,7 +103,7 @@ export const getMyBooking = async (req, res, next) => {
   try {
     let matches = await Match.find(condition).populate("carID");
     const sendMatches = matches.map((e) => e.toMyBookingJSON());
-    return res.json({matches: sendMatches});
+    return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }

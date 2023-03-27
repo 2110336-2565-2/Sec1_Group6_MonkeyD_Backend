@@ -4,7 +4,7 @@ import {
   createMatch,
   getMatches,
   getMatchInfo,
-  getMyBooking,
+  getMyBookings,
   cancelReserevation,
   getMatchStatuses,
 } from "../controllers/match.controller.js";
@@ -16,7 +16,7 @@ router
   .post(auth.required, createMatch);
 router.route("/match/status").get(getMatchStatuses);
 router.route("/match/:id").get(auth.required, getMatchInfo);
-router.route("/match/me/:id").get(auth.required, getMyBooking);
+router.route("/match/me/:id").get(auth.required, getMyBookings);
 router
   .route("/match/cancel-reservation")
   .patch(auth.required, cancelReserevation);
