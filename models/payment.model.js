@@ -48,5 +48,17 @@ PaymentSchema.methods.toAuthJSON = function () {
   };
 };
 
+PaymentSchema.methods.getByIDJSON = function () {
+  return {
+    _id: this._id,
+    carID: this.carID,
+    lessorID: this.lessorID,
+    renterID: this.renterID,
+    status: this.status,
+    price: this.price,
+    createdAt: this.createdAt,
+  };
+};
+
 const Payment = mongoose.model("Payment", PaymentSchema);
 export default Payment;

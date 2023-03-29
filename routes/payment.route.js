@@ -3,6 +3,7 @@ import auth from "../middlewares/jwt.middleware.js";
 import {
   createPayment,
   getPayments,
+  getPaymentsByID,
 } from "../controllers/payment.controller.js";
 const router = express.Router();
 
@@ -11,4 +12,6 @@ router
   .get(getPayments)
   .post(createPayment);
 
+router.route("/payment/:id")
+  .get(getPaymentsByID);
 export default router;
