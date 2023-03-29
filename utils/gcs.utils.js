@@ -68,3 +68,21 @@ export const getImageUrl = async (bucketName, subfolderName, imageName) => {
 
   return url;
 };
+
+export const deleteImage = async (bucketName, subfolderName, imageName) => {
+  const bucket = storage.bucket(bucketName);
+  let file;
+  if (!subfolderName) {
+    file = bucket.file(imageName);
+  } else {
+    file = bucket.file(`${subfolderName}/${imageName}`);
+  }
+
+  try {
+    await file.delete();
+    console.log(`File ${imageName} deleted successfully.`);
+  } catch (err) {
+    console.error(`Error deleting file ${imageName}:`, err);
+    throw err;
+  }
+};
