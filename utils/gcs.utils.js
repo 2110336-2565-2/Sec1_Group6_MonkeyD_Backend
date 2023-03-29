@@ -53,6 +53,12 @@ export const uploadImage = async (
 };
 
 export const getImageUrl = async (bucketName, subfolderName, imageName) => {
+  if (
+    bucketName === process.env.GCS_PROFILE_BUCKET &&
+    imageName.startsWith("https://lh3.googleusercontent.com")
+  ) {
+    return imageName;
+  }
   const bucket = storage.bucket(bucketName);
   let file;
   if (!subfolderName) {

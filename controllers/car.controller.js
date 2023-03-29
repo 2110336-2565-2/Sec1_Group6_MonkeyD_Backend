@@ -5,6 +5,7 @@ import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
 import {uploadImage, getImageUrl} from "../utils/gcs.utils.js";
 import {ObjectId} from "bson";
+
 export const createCars = async (req, res, next) => {
   const car = new Car();
 
@@ -151,15 +152,11 @@ export const getCars = async (req, res, next) => {
           {_id: 1, image: 1}
         );
         let userImageUrl;
-        if (user.image.startsWith("https://lh3.googleusercontent.com")) {
-          userImageUrl = user.image;
-        } else {
-          userImageUrl = await getImageUrl(
-            process.env.GCS_PROFILE_BUCKET,
-            null,
-            user.image
-          );
-        }
+        userImageUrl = await getImageUrl(
+          process.env.GCS_PROFILE_BUCKET,
+          null,
+          user.image
+        );
         car.user_image = userImageUrl;
 
         const carImageUrl = await getImageUrl(
@@ -167,7 +164,6 @@ export const getCars = async (req, res, next) => {
           null,
           car.car_images[0]
         );
-        console.log(`${user._id}/${car._id}`, car.car_images[0], carImageUrl);
 
         car.car_image = carImageUrl;
         delete car.car_images;
@@ -187,7 +183,26 @@ export const getCarInfo = async (req, res, next) => {
       {username: car.owner},
       {_id: 1, image: 1, rating: 1}
     );
-    car.user_image = user.image;
+
+    let car_url = [];
+
+    for (const car_image in car.car_images) {
+      console.log(car.car_images[car_image]);
+      let carImageUrl = await getImageUrl(
+        process.env.GCS_CAR_IMAGES_BUCKET,
+        null,
+        car.car_images[car_image]
+      );
+      car_url.push(carImageUrl);
+    }
+
+    const user_image = await getImageUrl(
+      process.env.GCS_PROFILE_BUCKET,
+      null,
+      user.image
+    );
+    car.car_images = car_url;
+    car.user_image = user_image;
     car.user_rating = user.rating;
     car.owner_id = user._id;
     return res.json(car);
@@ -256,6 +271,7 @@ export const getMyCar = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
 export const toggleRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
   const renter_id = req.headers.renter_id;
@@ -331,6 +347,7 @@ export const getNumberOfRentals = async (req, res, next) => {
     return res.status(500).json({message: error.message});
   }
 };
+
 export const changeCarInfo = async (req, res, next) => {
   const car_id = req.headers.car_id;
   let car;
