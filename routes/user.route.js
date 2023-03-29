@@ -41,7 +41,15 @@ router.route("/user/logout").post(auth.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email
 router.route("/user/reset-password").post(resetPassword); // reset password
 router.route("/user/navbar").get(auth.required, getNavbarInfo); // get navbar info
-router.route("/user/update-role").patch(auth.required, updateRoleLessor); // change role
+router                                                           // change role
+  .route("/user/update-role")
+  .patch(
+    auth.required,
+    upload.fields([
+      {name: "drivingLicenseImage", maxCount: 1},
+      {name: "IDCardImage", maxCount: 1},
+    ]),
+  updateRoleLessor);
 router.route("/user/update-role-admin").patch(auth.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(auth.required, checkLogin); // check if user login
 //router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
