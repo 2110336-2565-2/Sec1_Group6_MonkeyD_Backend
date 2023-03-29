@@ -266,6 +266,10 @@ export const getMyCar = async (req, res, next) => {
 
     console.log(cars);
 
+    cars.sort(function (a,b){
+      return b.rental_price - a.rental_price || b.rating - a.rating
+    });
+
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
