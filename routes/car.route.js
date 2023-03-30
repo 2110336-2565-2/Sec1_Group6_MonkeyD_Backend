@@ -27,12 +27,14 @@ router
   )
   .patch(auth.required, toggleRented)
   .delete(auth.required, deleteCar);
+router.route("/car/me").get(getMyCar);
 router.route("/car/:id").get(getCarInfo);
 router
   .route("/car/number-of-rental/:id")
   .get(auth.required, getNumberOfRentals);
 
-router.route("/car/me/:username").get(auth.required, getMyCar);
+// router.route("/car/me").get(auth.required, getMyCar);
+// router.route("/car/me").get(getMyCar);
 router.route("/car/change-car-info").patch(auth.required, changeCarInfo);
 
 export default router;
