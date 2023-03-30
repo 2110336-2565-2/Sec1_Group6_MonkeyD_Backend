@@ -256,10 +256,20 @@ export const getMyCar = async (req, res, next) => {
         car.totalprice = null;
       }*/
       if (car.car_images && car.car_images.length) {
-        car.car_image = car.car_images[0];
-        delete car.car_images;
+        const correctURLs = [];
+        for (let i = 0; i < car.car_images.length; i += 1) {
+          const carImageUrl = await getImageUrl(
+            process.env.GCS_CAR_IMAGES_BUCKET,
+            null,
+            car.car_images[i]
+          );
+          if (i == 0) car.car_image = carImageUrl;
+          correctURLs.push(carImageUrl);
+        }
+        car.show_images = correctURLs;
       }
       car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
+
       //delete car._id
       //car.user_image = user_image.image;
     }
@@ -358,16 +368,16 @@ export const changeCarInfo = async (req, res, next) => {
     }
 
     if (
-      req.body.status !== null &&
-      req.body.status !== "Unavailable" &&
-      req.body.status !== "Available"
+      body.status !== null &&
+      body.status !== "Unavailable" &&
+      body.status !== "Available"
     ) {
       return res
         .status(400)
         .json({message: "Status can only be changed to Unavailable"});
     }
 
-    Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
+    Car.findOneAndUpdate({_id: car_id}, body, {new: true}, (err, car) => {
       if (err) {
         console.log(err);
       } else {
