@@ -25,7 +25,16 @@ import {upload} from "../middlewares/image.middleware.js";
 
 const router = express.Router();
 
-router.route("/user").post(createUser).patch(auth.required, carRented); // register & add rented count of renter and lessor
+router
+  .route("/user")
+  .post(createUser)
+  .patch(
+    // auth.required,
+    upload.fields([
+      {name: "drivingLicenseImage", maxCount: 1},
+      {name: "IDCardImage", maxCount: 1},
+    ]),
+    carRented); // register & add rented count of renter and lessor
 router.route("/user/login").post(localLogin); // login
 // router.route("/user/login/facebook").get(facebookLogin);
 // router.route("/auth/facebook/callback").get(facebookCallback);

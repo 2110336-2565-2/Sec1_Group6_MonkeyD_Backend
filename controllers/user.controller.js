@@ -315,6 +315,32 @@ export const carRented = async (req, res, next) => {
     identification_number,
   } = req.body;
 
+  let drivingLicenseImageUri;
+  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
+    const drivingLicenseImage = req.files["drivingLicenseImage"];
+
+    drivingLicenseImageUri = await uploadImage(
+      drivingLicenseImage[0],
+      process.env.GCS_DRIVER_LICENSE_BUCKET,
+      "",
+      renter_id
+    );
+    renter.drivingLicenseImage = drivingLicenseImageUri;
+  }
+
+  let IDCardImageUri;
+  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+    const IDCardImage = req.files["IDCardImage"];
+
+    IDCardImageUri = await uploadImage(
+      IDCardImage[0],
+      process.env.GCS_ID_CARD_BUCKET,
+      "",
+      renter_id
+    );
+    renter.IDCardImage = IDCardImageUri;
+  }
+
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
   if (prefix) renter.prefix = prefix;
