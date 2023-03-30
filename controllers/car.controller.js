@@ -368,16 +368,16 @@ export const changeCarInfo = async (req, res, next) => {
     }
 
     if (
-      body.status !== null &&
-      body.status !== "Unavailable" &&
-      body.status !== "Available"
+      req.body.status !== null &&
+      req.body.status !== "Unavailable" &&
+      req.body.status !== "Available"
     ) {
       return res
         .status(400)
         .json({message: "Status can only be changed to Unavailable"});
     }
 
-    Car.findOneAndUpdate({_id: car_id}, body, {new: true}, (err, car) => {
+    Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
       if (err) {
         console.log(err);
       } else {
