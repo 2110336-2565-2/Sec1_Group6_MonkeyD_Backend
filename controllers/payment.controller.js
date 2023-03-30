@@ -52,3 +52,17 @@ export const getPayments = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
+
+export const getPaymentsByID = async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    let payment = await Payment.findById(id);
+    if (payment == null) {
+      return res.status(404).json({message: "Cannot find payment"});
+    } else {
+      return res.send(payment.getByIDJSON());
+    }
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+  }
+};
