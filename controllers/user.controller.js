@@ -9,6 +9,7 @@ import {
   googleStrategy,
   facebookStrategy,
 } from "../configs/passport.config.js";
+import { upload } from "../middlewares/image.middleware.js";
 
 dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
@@ -354,6 +355,32 @@ export const updateRoleLessor = async (req, res, next) => {
     }
   } catch (err) {
     return res.status(500).json({message: err.message});
+  }
+  
+  let drivingLicenseImageUri;
+  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"]){
+    const drivingLicenseImage = req.files["drivingLicenseImage"];
+
+    drivingLicenseImageUri = await uploadImage(
+      drivingLicenseImage[0],
+      process.env.GCS_DRIVER_LICENSE_BUCKET,
+      "",
+      user_id
+    );
+    user.drivingLicenseImage = drivingLicenseImageUri;
+  }
+
+  let IDCardImageUri;
+  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+    const IDCardImage = req.files["IDCardImage"];
+
+    IDCardImageUri = await uploadImage(
+      IDCardImage[0],
+      process.env.GCS_ID_CARD_BUCKET,
+      "",
+      user_id
+    );
+    user.IDCardImage = IDCardImageUri;
   }
 
   user.isLessor = true;
