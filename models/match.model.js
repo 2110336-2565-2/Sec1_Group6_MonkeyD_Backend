@@ -8,8 +8,14 @@ const MatchSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "can't be blank"],
-      enum: ["Pending", "Cancelled", "Rented", "Completed"],
-      default: "Pending",
+      enum: [
+        "Unverified renter",
+        "Wait for payment",
+        "Cancelled",
+        "Rented",
+        "Completed",
+      ],
+      //default: "Unverified renter",
     },
     pickupLocation: {
       type: String,
@@ -69,6 +75,7 @@ MatchSchema.methods.toAuthJSON = function () {
     returnLocation: this.returnLocation,
     returnDateTime: this.returnDateTime,
     price: this.price,
+    status: this.status,
     isReview: this.isReview,
   };
 };
