@@ -9,7 +9,7 @@ import {
   googleStrategy,
   facebookStrategy,
 } from "../configs/passport.config.js";
-import { upload } from "../middlewares/image.middleware.js";
+import {upload} from "../middlewares/image.middleware.js";
 
 dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
@@ -317,7 +317,11 @@ export const carRented = async (req, res, next) => {
   } = req.body;
 
   let drivingLicenseImageUri;
-  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
+  if (
+    req.files &&
+    req.files["drivingLicenseImage"] &&
+    req.files["drivingLicenseImage"].length > 0
+  ) {
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
@@ -330,7 +334,11 @@ export const carRented = async (req, res, next) => {
   }
 
   let IDCardImageUri;
-  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+  if (
+    req.files &&
+    req.files["IDCardImage"] &&
+    req.files["IDCardImage"].length > 0
+  ) {
     const IDCardImage = req.files["IDCardImage"];
 
     IDCardImageUri = await uploadImage(
@@ -382,9 +390,13 @@ export const updateRoleLessor = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-  
+
   let drivingLicenseImageUri;
-  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"]){
+  if (
+    req.files &&
+    req.files["drivingLicenseImage"] &&
+    req.files["drivingLicenseImage"]
+  ) {
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
@@ -397,7 +409,11 @@ export const updateRoleLessor = async (req, res, next) => {
   }
 
   let IDCardImageUri;
-  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+  if (
+    req.files &&
+    req.files["IDCardImage"] &&
+    req.files["IDCardImage"].length > 0
+  ) {
     const IDCardImage = req.files["IDCardImage"];
 
     IDCardImageUri = await uploadImage(
