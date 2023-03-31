@@ -65,7 +65,7 @@ const CarSchema = new mongoose.Schema(
     },
     energy_types: [
       {
-        type: [String],
+        type: String,
         enum: [
           "DieselB7",
           "DieselB10",
