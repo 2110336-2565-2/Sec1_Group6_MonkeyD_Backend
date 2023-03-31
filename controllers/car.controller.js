@@ -357,15 +357,15 @@ export const changeCarInfo = async (req, res, next) => {
       return res.status(404).json({message: "Cannot find car"});
     }
 
-    if (
-      req.body.status !== null &&
-      req.body.status !== "Unavailable" &&
-      req.body.status !== "Available"
-    ) {
-      return res
-        .status(400)
-        .json({message: "Status can only be changed to Unavailable"});
-    }
+    // if (
+    //   req.body.status !== null &&
+    //   req.body.status !== "Unavailable" &&
+    //   req.body.status !== "Available"
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({message: "Status can only be changed to Unavailable"});
+    // }
 
     Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
       if (err) {
