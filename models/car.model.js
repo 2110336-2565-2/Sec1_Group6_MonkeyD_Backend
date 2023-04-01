@@ -21,7 +21,7 @@ const CarSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "can't be blank"],
-      enum: ["Pending", "Unavailable", "Available", "Rented"],
+      enum: ["Pending", "Rejected", "Unavailable", "Available", "Rented"],
       default: "Pending",
     },
     brand: {
@@ -65,7 +65,7 @@ const CarSchema = new mongoose.Schema(
     },
     energy_types: [
       {
-        type: [String],
+        type: String,
         enum: [
           "DieselB7",
           "DieselB10",

@@ -39,6 +39,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "default.png",
     },
+    status: {
+      type: String,
+      required: [true, "can't be blank"],
+      enum: ["Pending", "Rejected", "Approved"],
+      default: "Pending",
+    },
     owncars: {
       type: [String],
       default: [],
@@ -195,6 +201,7 @@ UserSchema.methods.getUserInfoJSON = async function () {
     rating: this.rating,
     rentedCount: this.rentedCount,
     rentedOutCount: this.rentedOutCount,
+    status: this.status,
   };
 };
 
