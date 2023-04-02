@@ -237,11 +237,16 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const {username} = req.params;
+  const username = req.body.car.username;
+  const sortBy = req.body.car.sortBy;
+  const province = req.body.car.province;
+  var filter_province;
+  if (province) filter_province = req.body.car.province;
 
   try {
     let cars = await Car.find(
-      {owner: username},
+      {owner: username,
+      province: filter_province},
       {
         //_id: 1,
         //renter: 1,
@@ -301,6 +306,31 @@ export const getMyCar = async (req, res, next) => {
     }
 
     console.log(cars);
+
+    if (sortBy == "highest rating"){
+      cars.sort(function (a,b){
+        return b.rating - a.rating
+      });
+    }
+    else if (sortBy == "lowest rating"){
+      cars.sort(function (a,b){
+        return a.rating - b.rating
+      });
+    }
+    else if (sortBy == "highest price"){
+      cars.sort(function (a,b){
+        return b.rental_price - a.rental_price
+      });
+    }
+    else if (sortBy == "lowest price"){s
+      cars.sort(function (a,b){
+        return a.rental_price - b.rental_price
+      });
+    }
+
+    cars.sort(function (a,b){
+      return b.rental_price - a.rental_price || b.rating - a.rating
+    });
 
     return res.json(cars);
   } catch (err) {
