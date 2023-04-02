@@ -248,6 +248,7 @@ export const getMyCar = async (req, res, next) => {
         status: 1,
         energy_types: 1,
         rating: 1,
+        reviewCount: 1,
         rentedOutCount: 1,
         brand: 1,
         model: 1,
