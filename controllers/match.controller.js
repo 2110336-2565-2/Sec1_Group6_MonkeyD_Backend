@@ -175,3 +175,48 @@ export const cancelReserevation = async (req, res, next) => {
       next(error);
     });
 };
+
+export const getMatchesBySearch = async (req, res, next) => {
+  let condition = {};
+  let renterC = {};
+  let lessorC = {};
+  let carC = {};
+  if (req.query.status) {
+    condition.status = req.query.status;
+  }
+  if (req.query.renterUsername) {
+    renterC.username = {$regex: req.query.renterUsername, $options: "i"};
+  }
+  if (req.query.lessorUsername) {
+    lessorC.username = {$regex: req.query.lessorUsername, $options: "i"};
+  }
+  if (req.query.license_plate) {
+    carC.license_plate = {$regex: req.query.license_plate, $options: "i"};
+  }
+  try {
+    let matches = await Match.find(condition)
+    .populate({
+      path: 'renterID',
+      match: renterC
+    })
+    .populate({
+      path: 'lessorID',
+      match: lessorC
+    })
+    .populate({
+      path: 'carID',
+      match: carC
+    });
+
+    matches = matches.filter(match => 
+      match.renterID !== null && 
+      match.lessorID !== null && 
+      match.carID !== null);
+      
+    const sendMatches = matches.map((e) => e.toAuthJSON());
+    return res.json({matches: sendMatches, count: sendMatches.length});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
+

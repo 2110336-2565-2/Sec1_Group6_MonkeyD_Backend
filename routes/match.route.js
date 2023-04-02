@@ -7,18 +7,20 @@ import {
   getMyBookings,
   cancelReserevation,
   getMatchStatuses,
+  getMatchesBySearch,
 } from "../controllers/match.controller.js";
 const router = express.Router();
 
 router
   .route("/match")
   .get(auth.required, getMatches)
-  .post(auth.required, createMatch);
+  .post(createMatch);
+  // .post(auth.required, createMatch);
 router.route("/match/status").get(getMatchStatuses);
+router.route("/match/admin").get(getMatchesBySearch);
 router.route("/match/:id").get(auth.required, getMatchInfo);
 router.route("/match/me/:id").get(auth.required, getMyBookings);
 router
   .route("/match/cancel-reservation")
   .patch(auth.required, cancelReserevation);
-
 export default router;

@@ -119,12 +119,37 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
-    condition.available_times = {
-      $elemMatch: {
-        start: {$lte: new Date(req.query.startdate)},
-        end: {$gte: new Date(req.query.enddate)},
+    // condition.available_times = {
+    //   $elemMatch: {
+    //     start: {$lte: new Date(req.query.startdate)},
+    //     end: {$gte: new Date(req.query.enddate)},
+    //   },
+    // };
+    condition.unavailable_times = {
+      $not: {
+        $elemMatch: {
+          $or: [
+            {
+              start: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              end: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              start: {$lte: new Date(req.query.startdate)},
+              end: {$gte: new Date(req.query.enddate)},
+            },
+          ],
+        },
       },
     };
+    // console.log(new Date(req.query.startdate), new Date(req.query.enddate));
   }
   if (req.query.province) {
     condition.province = req.query.province;
@@ -212,17 +237,23 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const {username} = req.params;
+  const username = req.body.car.username;
+  const sortBy = req.body.car.sortBy;
+  const province = req.body.car.province;
+  var filter_province;
+  if (province) filter_province = req.body.car.province;
 
   try {
     let cars = await Car.find(
-      {owner: username},
+      {owner: username,
+      province: filter_province},
       {
         //_id: 1,
         //renter: 1,
         status: 1,
         energy_types: 1,
         rating: 1,
+        reviewCount: 1,
         rentedOutCount: 1,
         brand: 1,
         model: 1,
@@ -275,6 +306,31 @@ export const getMyCar = async (req, res, next) => {
     }
 
     console.log(cars);
+
+    if (sortBy == "highest rating"){
+      cars.sort(function (a,b){
+        return b.rating - a.rating
+      });
+    }
+    else if (sortBy == "lowest rating"){
+      cars.sort(function (a,b){
+        return a.rating - b.rating
+      });
+    }
+    else if (sortBy == "highest price"){
+      cars.sort(function (a,b){
+        return b.rental_price - a.rental_price
+      });
+    }
+    else if (sortBy == "lowest price"){s
+      cars.sort(function (a,b){
+        return a.rental_price - b.rental_price
+      });
+    }
+
+    cars.sort(function (a,b){
+      return b.rental_price - a.rental_price || b.rating - a.rating
+    });
 
     return res.json(cars);
   } catch (err) {
