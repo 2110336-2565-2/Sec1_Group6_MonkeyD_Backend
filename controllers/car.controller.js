@@ -256,8 +256,17 @@ export const getMyCar = async (req, res, next) => {
         car.totalprice = null;
       }*/
       if (car.car_images && car.car_images.length) {
-        car.car_image = car.car_images[0];
-        delete car.car_images;
+        const correctURLs = [];
+        for (let i = 0; i < car.car_images.length; i += 1) {
+          const carImageUrl = await getImageUrl(
+            process.env.GCS_CAR_IMAGES_BUCKET,
+            null,
+            car.car_images[i]
+          );
+          if (i == 0) car.car_image = carImageUrl;
+          correctURLs.push(carImageUrl);
+        }
+        car.show_images = correctURLs;
       }
       //car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
 
