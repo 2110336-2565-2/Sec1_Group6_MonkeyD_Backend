@@ -121,18 +121,15 @@ export const getMyBookings = async (req, res, next) => {
   try {
     let matches = await Match.find(condition).populate("carID");
     const sendMatches = matches.map((e) => e.toMyBookingJSON());
-    for (const sendMatch of sendMatches) {
-      let car_url = [];
-      for (const car_image of sendMatch.car.car_images) {
-        console.log(car_image);
-        let carImageUrl = await getImageUrl(
+    for (let match of sendMatches) {
+      if (match.car_image) {
+        const carImageUrl = await getImageUrl(
           process.env.GCS_CAR_IMAGES_BUCKET,
           null,
-          car_image
+          match.car_image
         );
-        car_url.push(carImageUrl);
+        match.car_image = carImageUrl;
       }
-      sendMatch.car.car_images = car_url;
     }
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
