@@ -82,9 +82,18 @@ MatchSchema.methods.toAuthJSON = function () {
 };
 
 MatchSchema.methods.toMyBookingJSON = function () {
+  let car_image = null;
+  let car = null;
+  if (this.carID) {
+    car = this.carID.toAuthJSON();
+  }
+  if (this.carID && this.carID.car_images.length) {
+    car_image = this.carID.car_images[0];
+  }
   return {
     _id: this._id,
-    car: this.carID,
+    car: car,
+    car_image: car_image,
     lessorID: this.lessorID,
     renterID: this.renterID,
     status: this.status,
