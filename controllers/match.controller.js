@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import Match from "../models/match.model.js";
 import Car from "../models/car.model.js";
+import {getImageUrl} from "../utils/gcs.utils.js";
 
 export const createMatch = (req, res, next) => {
   const {
@@ -93,8 +94,21 @@ export const getMatchStatuses = async (req, res, next) => {
 export const getMyBookings = async (req, res, next) => {
   let condition = {};
   condition.renterID = req.params.id;
+  // if (req.query.status) {
+  //   condition.status = req.query.status;
+  // }
   if (req.query.status) {
-    condition.status = req.query.status;
+    try {
+      const encoded_status = req.query.status;
+      const statuslist = JSON.parse(decodeURIComponent(encoded_status));
+      if (statuslist.length) {
+        condition.status = {
+          $in: statuslist,
+        };
+      }
+    } catch (err) {
+      return res.status(500).json({message: err.message});
+    }
   }
   if (req.query.carID) {
     condition.carID = req.query.carID;
@@ -106,6 +120,16 @@ export const getMyBookings = async (req, res, next) => {
   try {
     let matches = await Match.find(condition).populate("carID");
     const sendMatches = matches.map((e) => e.toMyBookingJSON());
+    for (let match of sendMatches) {
+      if (match.car_image) {
+        const carImageUrl = await getImageUrl(
+          process.env.GCS_CAR_IMAGES_BUCKET,
+          null,
+          match.car_image
+        );
+        match.car_image = carImageUrl;
+      }
+    }
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
