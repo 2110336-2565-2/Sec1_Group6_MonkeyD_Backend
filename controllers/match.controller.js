@@ -5,7 +5,6 @@ import Car from "../models/car.model.js";
 import {getImageUrl} from "../utils/gcs.utils.js";
 
 export const createMatch = (req, res, next) => {
-  const match = new Match();
   const {
     carID,
     lessorID,
@@ -17,6 +16,10 @@ export const createMatch = (req, res, next) => {
     returnDateTime,
     price,
   } = req.body.match;
+
+  if (renterID == lessorID) return res.send({message: "You can't rent your car."});
+
+  const match = new Match();
   if (carID) match.carID = carID;
   if (status) match.status = status;
   if (lessorID) match.lessorID = lessorID;
