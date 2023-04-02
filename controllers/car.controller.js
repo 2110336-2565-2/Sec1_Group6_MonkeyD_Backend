@@ -317,7 +317,7 @@ export const carRented = async (req, res, next) => {
   //   username: renter.username,
   // });
   car.save();
-  res.send("toggle rented");
+  res.send("car rented");
 };
 
 export const deleteCar = async (req, res, next) => {
@@ -508,7 +508,7 @@ export const getUnavailableTimes= async (req, res, next) => {
       {username: car.owner},
       {_id: 1, image: 1, rating: 1}
     );
-    
+
     return res.json(car);
   } catch (err) {
     return res.status(500).json({message: err.message});
