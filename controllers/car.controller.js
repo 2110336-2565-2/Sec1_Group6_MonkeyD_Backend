@@ -268,7 +268,7 @@ export const getMyCar = async (req, res, next) => {
         }
         car.show_images = correctURLs;
       }
-      car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
+      //car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
 
       //delete car._id
       //car.user_image = user_image.image;

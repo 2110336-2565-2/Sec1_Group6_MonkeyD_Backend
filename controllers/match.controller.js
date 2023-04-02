@@ -90,8 +90,21 @@ export const getMatchStatuses = async (req, res, next) => {
 export const getMyBookings = async (req, res, next) => {
   let condition = {};
   condition.renterID = req.params.id;
+  // if (req.query.status) {
+  //   condition.status = req.query.status;
+  // }
   if (req.query.status) {
-    condition.status = req.query.status;
+    try {
+      const encoded_status = req.query.status;
+      const statuslist = JSON.parse(decodeURIComponent(encoded_status));
+      if (statuslist.length) {
+        condition.status = {
+          $in: statuslist,
+        };
+      }
+    } catch (err) {
+      return res.status(500).json({message: err.message});
+    }
   }
   if (req.query.carID) {
     condition.carID = req.query.carID;
