@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "can't be blank"],
-      enum: ["Pending", "Rejected", "Approved"],
+      enum: ["Unverified", "Rejected", "Verified"],
       default: "Pending",
     },
     owncars: {

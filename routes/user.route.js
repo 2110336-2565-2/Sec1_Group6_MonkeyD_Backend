@@ -18,6 +18,7 @@ import {
   // facebookCallback,
   googleAuth,
   googleCallback,
+  toggleStatus,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import auth from "../middlewares/jwt.middleware.js";
@@ -62,5 +63,7 @@ router                                                           // change role
 router.route("/user/update-role-admin").patch(auth.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(auth.required, checkLogin); // check if user login
 //router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
+router.route("/user/status").patch(toggleStatus);
+// router.route("/user/status").patch(auth.required, toggleStatus);
 
 export default router;

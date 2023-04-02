@@ -8,6 +8,7 @@ import {
   deleteCar,
   getNumberOfRentals,
   changeCarInfo,
+  toggleStatus,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 import {upload} from "../middlewares/image.middleware.js";
@@ -34,5 +35,6 @@ router
 
 router.route("/car/me/:username").get(auth.required, getMyCar);
 router.route("/car/change-car-info").patch(auth.required, changeCarInfo);
-
+router.route("/car/status").patch(toggleStatus);
+// router.route("/car/status").patch(auth.required, toggleStatus);
 export default router;

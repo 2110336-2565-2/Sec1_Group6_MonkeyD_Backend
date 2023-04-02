@@ -172,3 +172,35 @@ export const cancelReserevation = async (req, res, next) => {
       next(error);
     });
 };
+
+export const toggleStatus = async (req, res, next) => {
+  const match_id = req.body.match.match_id;
+  const action = req.body.match.action;
+  let match;
+  try {
+    match = await Match.findById(match_id);
+    if (match == null) {
+      return res.status(404).json({message: "Cannot find match"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  if (match.status == "Wait for payment"){
+    if (action == "Cancel"){
+      match.status = "Cancelled";
+    }
+    else return res.json({message: "No Action can be taken"});
+  }
+  else if (match.status == "Unverified renter"){
+    if (action == "Cancel"){
+      match.status = "Cancelled";
+    }
+    else return res.json({message: "No Action can be taken"});
+  }
+  else {
+    return res.json({message: "No Action can be taken"});
+  }
+  match.save();
+  res.send("Match status changed");
+};
