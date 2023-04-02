@@ -138,48 +138,24 @@ export const getMyBookings = async (req, res, next) => {
 };
 
 export const cancelReserevation = async (req, res, next) => {
-  const car_id = req.headers.car_id;
   const match_id = req.headers.match_id;
-  let car;
-  try {
-    car = await Car.findById(car_id);
-    if (car == null) {
-      return res.status(404).send({message: "Cannot find car"});
-    }
-  } catch (err) {
-    return res.status(500).json({message: err.message});
-  }
   let match;
   try {
     match = await Match.findById(match_id);
-    if (car == null) {
+    if (match == null) {
       return res.status(404).send({message: "Cannot find match"});
     }
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-  car.renter = "";
-  car.status = "Available";
   match.status = "Cancelled";
-  Promise.all([match.save(), car.save()])
-    .then(function () {
-      return res.json(match);
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error.code === 11000) {
-        return res.status(400).send({
-          error: "Something already exists",
-        });
-      }
-      console.log(error);
-      next(error);
-    });
+  match.save();
+  return res.json(match);
 };
 
 export const toggleStatus = async (req, res, next) => {
-  const match_id = req.body.match.match_id;
-  const action = req.body.match.action;
+  const match_id = req.body.match_id;
+  const action = req.body.action;
   let match;
   try {
     match = await Match.findById(match_id);
@@ -193,6 +169,8 @@ export const toggleStatus = async (req, res, next) => {
   if (match.status == "Wait for payment") {
     if (action == "Cancel") {
       match.status = "Cancelled";
+    } else if (action == "Paid") {
+      match.status = "Rented";
     } else return res.json({message: "No Action can be taken"});
   } else if (match.status == "Unverified renter") {
     if (action == "Cancel") {

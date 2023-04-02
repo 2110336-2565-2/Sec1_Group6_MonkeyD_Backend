@@ -152,6 +152,7 @@ export const getCars = async (req, res, next) => {
     // console.log(new Date(req.query.startdate), new Date(req.query.enddate));
   }
   if (req.query.province) {
+    console.log(req.query.province);
     condition.province = req.query.province;
   }
   if (req.query.brandlist) {
