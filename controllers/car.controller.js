@@ -237,55 +237,34 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const username = req.body.car.username;
-  const sortBy = req.body.car.sortBy;
-  const province = req.body.car.province;
-  var filter_province;
-  if (province) filter_province = req.body.car.province;
+  const username = req.params.id;
+  const sortBy = req.body.sortBy;
+  const province = req.body.province;
+
+  let query = {owner: username};
+  if (province) {
+    query.province = province;
+  }
 
   try {
-    let cars = await Car.find(
-      {owner: username,
-      province: filter_province},
-      {
-        //_id: 1,
-        //renter: 1,
-        status: 1,
-        energy_types: 1,
-        rating: 1,
-        reviewCount: 1,
-        rentedOutCount: 1,
-        brand: 1,
-        model: 1,
-        gear_type: 1,
-        available_location: 1,
-        rental_price: 1,
-        passenger: 1,
-        car_images: 1,
-        available_times: 1,
-        unavailable_times: 1,
-      }
-    ).lean();
-    console.log(username);
-    //const user_image = await User.findOne({username: username}, {image: 1}).lean();
+    let cars = await Car.find(query, {
+      status: 1,
+      energy_types: 1,
+      rating: 1,
+      reviewCount: 1,
+      rentedOutCount: 1,
+      brand: 1,
+      model: 1,
+      gear_type: 1,
+      available_location: 1,
+      rental_price: 1,
+      passenger: 1,
+      car_images: 1,
+      available_times: 1,
+      unavailable_times: 1,
+    }).lean();
+
     for (const car of cars) {
-      /*if (car.status == "Rented"){
-        const match = await Match.findOne(
-          {carID: car._id, status: 'Rented'},
-          {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
-        car.pickUpDateTime = match.pickUpDateTime;
-        car.pickupLocation = match.pickupLocation;
-        car.returnDateTime = match.returnDateTime;
-        car.returnLocation = match.returnLocation;
-        car.totalprice = match.price;
-      }
-      else{
-        car.pickUpDateTime = null;
-        car.pickupLocation = null;
-        car.returnDateTime = null;
-        car.returnLocation = null;
-        car.totalprice = null;
-      }*/
       if (car.car_images && car.car_images.length) {
         const correctURLs = [];
         for (let i = 0; i < car.car_images.length; i += 1) {
@@ -299,38 +278,29 @@ export const getMyCar = async (req, res, next) => {
         }
         car.show_images = correctURLs;
       }
-      //car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
-
-      //delete car._id
-      //car.user_image = user_image.image;
     }
 
-    console.log(cars);
-
-    if (sortBy == "highest rating"){
-      cars.sort(function (a,b){
-        return b.rating - a.rating
+    if (sortBy == "highest rating") {
+      cars.sort(function (a, b) {
+        return b.rating - a.rating;
+      });
+    } else if (sortBy == "lowest rating") {
+      cars.sort(function (a, b) {
+        return a.rating - b.rating;
+      });
+    } else if (sortBy == "highest price") {
+      cars.sort(function (a, b) {
+        return b.rental_price - a.rental_price;
+      });
+    } else if (sortBy == "lowest price") {
+      cars.sort(function (a, b) {
+        return a.rental_price - b.rental_price;
+      });
+    } else {
+      cars.sort(function (a, b) {
+        return b.rental_price - a.rental_price || b.rating - a.rating;
       });
     }
-    else if (sortBy == "lowest rating"){
-      cars.sort(function (a,b){
-        return a.rating - b.rating
-      });
-    }
-    else if (sortBy == "highest price"){
-      cars.sort(function (a,b){
-        return b.rental_price - a.rental_price
-      });
-    }
-    else if (sortBy == "lowest price"){s
-      cars.sort(function (a,b){
-        return a.rental_price - b.rental_price
-      });
-    }
-
-    cars.sort(function (a,b){
-      return b.rental_price - a.rental_price || b.rating - a.rating
-    });
 
     return res.json(cars);
   } catch (err) {
@@ -438,8 +408,6 @@ export const changeCarInfo = async (req, res, next) => {
   }
 };
 
-
-
 export const toggleStatus = async (req, res, next) => {
   const car_id = req.body.car.car_id;
   const action = req.body.car.action;
@@ -453,21 +421,17 @@ export const toggleStatus = async (req, res, next) => {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
-  if (car.status == "Pending"){
-    if (action == "Approve"){
+  if (car.status == "Pending") {
+    if (action == "Approve") {
       car.status = "Available";
-    }
-    else if (action == "Reject"){
+    } else if (action == "Reject") {
       car.status = "Rejected";
     }
-  }
-  else if (car.status == "Rejected"){
-    if (action == "Approve"){
+  } else if (car.status == "Rejected") {
+    if (action == "Approve") {
       car.status = "Available";
-    }
-    else return res.json({message: "No Action can be taken"});
-  }
-  else {
+    } else return res.json({message: "No Action can be taken"});
+  } else {
     return res.json({message: "No Action can be taken"});
   }
   car.save();
@@ -485,23 +449,31 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
   }
   let cars;
   try {
-    if(filter == "approved"){
-      cars = await Car.find({status: {$in: ["Available", "Rented", "Unavailable"]}}, 
-      {registration_book_url: 1, license_plate: 1, registration_book_id: 1});
+    if (filter == "approved") {
+      cars = await Car.find(
+        {status: {$in: ["Available", "Rented", "Unavailable"]}},
+        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+      );
+    } else if (filter == "rejected") {
+      cars = await Car.find(
+        {status: "Rejected"},
+        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+      );
+    } else if (filter == "pending") {
+      cars = await Car.find(
+        {status: "Pending"},
+        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+      );
+    } else if ((filter == "all") | (filter == null)) {
+      cars = await Car.find(
+        {},
+        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+      );
     }
-    else if(filter == "rejected"){
-      cars = await Car.find({status: "Rejected"}, 
-      {registration_book_url: 1, license_plate: 1, registration_book_id: 1});
-    }
-    else if(filter == "pending"){
-      cars = await Car.find({status: "Pending"}, 
-      {registration_book_url: 1, license_plate: 1, registration_book_id: 1});
-    }
-    else if(filter == "all" | filter == null){
-      cars = await Car.find({}, {registration_book_url: 1, license_plate: 1, registration_book_id: 1});
-    }
-    if(search != null){
-      cars = cars.filter(car => car.license_plate.match(new RegExp(search, "i")));
+    if (search != null) {
+      cars = cars.filter((car) =>
+        car.license_plate.match(new RegExp(search, "i"))
+      );
     }
     return res.json({cars: cars, count: cars.length});
   } catch (err) {
@@ -522,7 +494,8 @@ export const carReserved = async (req, res, next) => {
     price,
   } = req.body.match;
 
-  if (renterID == lessorID) return res.send({message: "You can't rent your car."});
+  if (renterID == lessorID)
+    return res.send({message: "You can't rent your car."});
 
   let car;
   try {
@@ -539,7 +512,7 @@ export const carReserved = async (req, res, next) => {
     const intervalEnd = new Date(interval.end).getTime();
     const pickUpTime = new Date(pickUpDateTime).getTime();
     const returnTime = new Date(returnDateTime).getTime();
-  
+
     return pickUpTime < intervalEnd && returnTime > intervalStart;
   });
   console.log(isUnavailable);
@@ -592,10 +565,10 @@ export const carReserved = async (req, res, next) => {
   }
 };
 
-export const getUnavailableTimes= async (req, res, next) => {
+export const getUnavailableTimes = async (req, res, next) => {
   const {id} = req.params;
   try {
-    let car = await Car.findOne({_id: id},{unavailable_times:1}).lean();
+    let car = await Car.findOne({_id: id}, {unavailable_times: 1}).lean();
     const user = await User.findOne(
       {username: car.owner},
       {_id: 1, image: 1, rating: 1}
@@ -606,4 +579,3 @@ export const getUnavailableTimes= async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
-
