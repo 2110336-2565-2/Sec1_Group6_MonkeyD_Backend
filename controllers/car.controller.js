@@ -119,12 +119,37 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
-    condition.available_times = {
-      $elemMatch: {
-        start: {$lte: new Date(req.query.startdate)},
-        end: {$gte: new Date(req.query.enddate)},
+    // condition.available_times = {
+    //   $elemMatch: {
+    //     start: {$lte: new Date(req.query.startdate)},
+    //     end: {$gte: new Date(req.query.enddate)},
+    //   },
+    // };
+    condition.unavailable_times = {
+      $not: {
+        $elemMatch: {
+          $or: [
+            {
+              start: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              end: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              start: {$lte: new Date(req.query.startdate)},
+              end: {$gte: new Date(req.query.enddate)},
+            },
+          ],
+        },
       },
     };
+    // console.log(new Date(req.query.startdate), new Date(req.query.enddate));
   }
   if (req.query.province) {
     condition.province = req.query.province;
