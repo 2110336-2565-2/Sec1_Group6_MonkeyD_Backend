@@ -104,6 +104,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    omiseCustomerId: {
+      type: String,
+      default: null,
+    },
+    omiseRecipientId: {
+      type: String,
+      default: null,
+    },
     hash: String,
     salt: String,
   },

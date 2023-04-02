@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import {getImageUrl} from "../utils/gcs.utils.js";
 
 dotenv.config({path: ".env"});
 

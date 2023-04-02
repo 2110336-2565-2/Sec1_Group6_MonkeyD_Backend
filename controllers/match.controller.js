@@ -17,7 +17,8 @@ export const createMatch = (req, res, next) => {
     price,
   } = req.body.match;
 
-  if (renterID == lessorID) return res.send({message: "You can't rent your car."});
+  if (renterID == lessorID)
+    return res.send({message: "You can't rent your car."});
 
   const match = new Match();
   if (carID) match.carID = carID;
@@ -120,15 +121,18 @@ export const getMyBookings = async (req, res, next) => {
   try {
     let matches = await Match.find(condition).populate("carID");
     const sendMatches = matches.map((e) => e.toMyBookingJSON());
-    for (let match of sendMatches) {
-      if (match.car_image) {
-        const carImageUrl = await getImageUrl(
+    for (const sendMatch of sendMatches) {
+      let car_url = [];
+      for (const car_image of sendMatch.car.car_images) {
+        console.log(car_image);
+        let carImageUrl = await getImageUrl(
           process.env.GCS_CAR_IMAGES_BUCKET,
           null,
-          match.car_image
+          car_image
         );
-        match.car_image = carImageUrl;
+        car_url.push(carImageUrl);
       }
+      sendMatch.car.car_images = car_url;
     }
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
@@ -176,7 +180,6 @@ export const cancelReserevation = async (req, res, next) => {
     });
 };
 
-
 export const toggleStatus = async (req, res, next) => {
   const match_id = req.body.match.match_id;
   const action = req.body.match.action;
@@ -190,19 +193,15 @@ export const toggleStatus = async (req, res, next) => {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
-  if (match.status == "Wait for payment"){
-    if (action == "Cancel"){
+  if (match.status == "Wait for payment") {
+    if (action == "Cancel") {
       match.status = "Cancelled";
-    }
-    else return res.json({message: "No Action can be taken"});
-  }
-  else if (match.status == "Unverified renter"){
-    if (action == "Cancel"){
+    } else return res.json({message: "No Action can be taken"});
+  } else if (match.status == "Unverified renter") {
+    if (action == "Cancel") {
       match.status = "Cancelled";
-    }
-    else return res.json({message: "No Action can be taken"});
-  }
-  else {
+    } else return res.json({message: "No Action can be taken"});
+  } else {
     return res.json({message: "No Action can be taken"});
   }
   match.save();
@@ -228,29 +227,29 @@ export const getMatchesBySearch = async (req, res, next) => {
   }
   try {
     let matches = await Match.find(condition)
-    .populate({
-      path: 'renterID',
-      match: renterC
-    })
-    .populate({
-      path: 'lessorID',
-      match: lessorC
-    })
-    .populate({
-      path: 'carID',
-      match: carC
-    });
+      .populate({
+        path: "renterID",
+        match: renterC,
+      })
+      .populate({
+        path: "lessorID",
+        match: lessorC,
+      })
+      .populate({
+        path: "carID",
+        match: carC,
+      });
 
-    matches = matches.filter(match => 
-      match.renterID !== null && 
-      match.lessorID !== null && 
-      match.carID !== null);
-      
+    matches = matches.filter(
+      (match) =>
+        match.renterID !== null &&
+        match.lessorID !== null &&
+        match.carID !== null
+    );
+
     const sendMatches = matches.map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
 };
-
-
