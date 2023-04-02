@@ -10,6 +10,7 @@ import {
   carReserved,
   getCarsInfoFilterSearch,
   carRented,
+  getUnavailableTimes,
 } from "../controllers/car.controller.js";
 import auth from "../middlewares/jwt.middleware.js";
 import {upload} from "../middlewares/image.middleware.js";
@@ -20,17 +21,18 @@ router
   .route("/car")
   .get(getCars)
   .post(
-    // auth.required,
-    // upload.fields([
-    //   {name: "registration_book_image", maxCount: 1},
-    //   {name: "car_images", maxCount: 10},
-    // ]),
+     auth.required,
+     upload.fields([
+     {name: "registration_book_image", maxCount: 1},
+     {name: "car_images", maxCount: 10},
+     ]),
     createCars
   )
   .patch(auth.required, carRented)
   .delete(auth.required, deleteCar);
 router.route("/car/admin").get(getCarsInfoFilterSearch);
 router.route("/car/:id").get(getCarInfo);
+router.route("/car/busy/:id").get(getUnavailableTimes);
 router
   .route("/car/number-of-rental/:id")
   .get(auth.required, getNumberOfRentals);

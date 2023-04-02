@@ -500,5 +500,20 @@ export const carReserved = async (req, res, next) => {
   }
 };
 
+export const getUnavailableTimes= async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    let car = await Car.findOne({_id: id},{unavailable_times:1}).lean();
+    const user = await User.findOne(
+      {username: car.owner},
+      {_id: 1, image: 1, rating: 1}
+    );
+    
+    return res.json(car);
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
+
 
 
