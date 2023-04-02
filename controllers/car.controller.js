@@ -438,6 +438,42 @@ export const changeCarInfo = async (req, res, next) => {
   }
 };
 
+
+
+export const toggleStatus = async (req, res, next) => {
+  const car_id = req.body.car.car_id;
+  const action = req.body.car.action;
+  let car;
+  try {
+    car = await Car.findById(car_id);
+    if (car == null) {
+      return res.status(404).json({message: "Cannot find car"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  if (car.status == "Pending"){
+    if (action == "Approve"){
+      car.status = "Available";
+    }
+    else if (action == "Reject"){
+      car.status = "Rejected";
+    }
+  }
+  else if (car.status == "Rejected"){
+    if (action == "Approve"){
+      car.status = "Available";
+    }
+    else return res.json({message: "No Action can be taken"});
+  }
+  else {
+    return res.json({message: "No Action can be taken"});
+  }
+  car.save();
+  res.send("Car status changed");
+};
+
 export const getCarsInfoFilterSearch = async (req, res, next) => {
   let filter;
   let search;
@@ -570,6 +606,4 @@ export const getUnavailableTimes= async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
-
-
 

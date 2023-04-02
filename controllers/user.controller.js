@@ -473,6 +473,41 @@ export const getUserRole = async (req, res, next) => {
   }
 };
 
+
+export const toggleStatus = async (req, res, next) => {
+  const user_id = req.body.user.user_id;
+  const action = req.body.user.action;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "Cannot find user"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  if (user.status == "Unverified"){
+    if (action == "Approve"){
+      user.status = "Verified";
+    }
+    else if (action == "Reject"){
+      user.status = "Rejected";
+    }
+  }
+  else if (user.status == "Rejected"){
+    if (action == "Approve"){
+      user.status = "Verified";
+    }
+    else return res.json({message: "No Action can be taken"});
+  }
+  else {
+    return res.json({message: "No Action can be taken"});
+  }
+  user.save();
+  res.send("User status changed");
+};
+
 export const getUsersBySearch = async (req, res, next) => {
   let condition = {};
   if (req.query.status) {
@@ -495,4 +530,5 @@ export const getUsersBySearch = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 }
+
 
