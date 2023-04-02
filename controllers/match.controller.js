@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import Match from "../models/match.model.js";
 import Car from "../models/car.model.js";
+import {getImageUrl} from "../utils/gcs.utils.js";
 
 export const createMatch = (req, res, next) => {
   const match = new Match();
@@ -103,6 +104,19 @@ export const getMyBookings = async (req, res, next) => {
   try {
     let matches = await Match.find(condition).populate("carID");
     const sendMatches = matches.map((e) => e.toMyBookingJSON());
+    for (const sendMatch of sendMatches) {
+      let car_url = [];
+      for (const car_image of sendMatch.car.car_images) {
+        console.log(car_image);
+        let carImageUrl = await getImageUrl(
+          process.env.GCS_CAR_IMAGES_BUCKET,
+          null,
+          car_image
+        );
+        car_url.push(carImageUrl);
+      }
+      sendMatch.car.car_images = car_url;
+    }
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});

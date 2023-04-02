@@ -104,26 +104,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    // paymentMethodId: {
-    //   type: String,
-    //   default: null,
-    // },
     omiseCustomerId: {
       type: String,
       default: null,
     },
-    // omiseAccountId: {
-    //   type: String,
-    //   default: null,
-    // },
-    omiseWalletSourceId: {
+    omiseRecipientId: {
       type: String,
       default: null,
     },
-    // omiseAccountStatus: {
-    //   type: String,
-    //   default: null,
-    // },
     hash: String,
     salt: String,
   },
