@@ -473,6 +473,7 @@ export const getUserRole = async (req, res, next) => {
   }
 };
 
+
 export const toggleStatus = async (req, res, next) => {
   const user_id = req.body.user.user_id;
   const action = req.body.user.action;
@@ -506,3 +507,28 @@ export const toggleStatus = async (req, res, next) => {
   user.save();
   res.send("User status changed");
 };
+
+export const getUsersBySearch = async (req, res, next) => {
+  let condition = {};
+  if (req.query.status) {
+    condition.status = req.query.status;
+  }
+  if (req.query.username) {
+    condition.username = {$regex: req.query.username, $options: "i"}
+  }
+  try {
+    let users = await User.find({condition}, 
+      {
+        status: 1, username: 1, email: 1, firstName: 1, lastName: 1, 
+        phoneNumber: 1, drivingLicenseNumber: 1, IDCardNumber: 1, 
+        drivingLicenseImage: 1, IDCardImage: 1
+      });
+
+    // const sendCars = cars.map((e) => e.toAuthJSON());
+    return res.json({users: users, count: users.length});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+}
+
+
