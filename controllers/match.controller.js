@@ -185,24 +185,31 @@ export const toggleStatus = async (req, res, next) => {
 
 export const getMatchesBySearch = async (req, res, next) => {
   let condition = {};
-  let path = ["renterID", "lessorID", "carID"];
-  let search = [{},{},{}];
+  let search = [[{},{},{}],[{},{},{}],[{},{},{}],];
   let idd = [];
   let allMatches = new Set();
   if (req.query.status) {
     condition.status = req.query.status;
   }
   if (req.query.search) {
-    search[0].username = {$regex: req.query.search, $options: "i"};
-    search[1].username = {$regex: req.query.search, $options: "i"};
-    search[2].license_plate = {$regex: req.query.search, $options: "i"};
+    search[0][0].username = {$regex: req.query.search, $options: "i"};
+    search[1][1].username = {$regex: req.query.search, $options: "i"};
+    search[2][2].license_plate = {$regex: req.query.search, $options: "i"};
   }
   try {
     for (let i = 0; i < 3; i++) {
       let matches = await Match.find(condition)
         .populate({
-          path: path[i],
-          match: search[i],
+          path: "renterID",
+          match: search[i][0],
+        })
+        .populate({
+          path: "lessorID",
+          match: search[i][1],
+        })
+        .populate({
+          path: "carID",
+          match: search[i][2],
         });
 
       matches = matches.filter(
