@@ -33,6 +33,7 @@ NotificationSchema.methods.toAuthJSON = function () {
     text: this.text,
     images: this.images,
     userID: this.userID,
+    isRead: this.isRead,
     createdAt: this.createdAt,
   };
 };

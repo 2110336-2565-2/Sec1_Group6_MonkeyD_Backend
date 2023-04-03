@@ -85,7 +85,7 @@ MatchSchema.methods.toMyBookingJSON = function () {
   let car_image = null;
   let car = null;
   if (this.carID) {
-    car = this.carID.toAuthJSON();
+    car = this.carID;
   }
   if (this.carID && this.carID.car_images.length) {
     car_image = this.carID.car_images[0];

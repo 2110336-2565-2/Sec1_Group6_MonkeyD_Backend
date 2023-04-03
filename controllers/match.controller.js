@@ -185,44 +185,42 @@ export const toggleStatus = async (req, res, next) => {
 
 export const getMatchesBySearch = async (req, res, next) => {
   let condition = {};
-  let renterC = {};
-  let lessorC = {};
-  let carC = {};
+  let path = ["renterID", "lessorID", "carID"];
+  let search = [{},{},{}];
+  let idd = [];
+  let allMatches = new Set();
   if (req.query.status) {
     condition.status = req.query.status;
   }
-  if (req.query.renterUsername) {
-    renterC.username = {$regex: req.query.renterUsername, $options: "i"};
-  }
-  if (req.query.lessorUsername) {
-    lessorC.username = {$regex: req.query.lessorUsername, $options: "i"};
-  }
-  if (req.query.license_plate) {
-    carC.license_plate = {$regex: req.query.license_plate, $options: "i"};
+  if (req.query.search) {
+    search[0].username = {$regex: req.query.search, $options: "i"};
+    search[1].username = {$regex: req.query.search, $options: "i"};
+    search[2].license_plate = {$regex: req.query.search, $options: "i"};
   }
   try {
-    let matches = await Match.find(condition)
-      .populate({
-        path: "renterID",
-        match: renterC,
-      })
-      .populate({
-        path: "lessorID",
-        match: lessorC,
-      })
-      .populate({
-        path: "carID",
-        match: carC,
+    for (let i = 0; i < 3; i++) {
+      let matches = await Match.find(condition)
+        .populate({
+          path: path[i],
+          match: search[i],
+        });
+
+      matches = matches.filter(
+        (match) =>
+          match.renterID !== null &&
+          match.lessorID !== null &&
+          match.carID !== null
+      );
+      // matches.forEach((match) => {allMatches.add(match)});
+      matches.forEach((match) => {
+        if (!idd.includes((match._id).toString())) {
+          allMatches.add(match);
+          idd.push((match._id).toString());
+          console.log((match._id).toString());
+        }
       });
-
-    matches = matches.filter(
-      (match) =>
-        match.renterID !== null &&
-        match.lessorID !== null &&
-        match.carID !== null
-    );
-
-    const sendMatches = matches.map((e) => e.toAuthJSON());
+    }
+    const sendMatches = [...allMatches].map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});

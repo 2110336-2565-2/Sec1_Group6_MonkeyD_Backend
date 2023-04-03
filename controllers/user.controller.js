@@ -509,23 +509,40 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getUsersBySearch = async (req, res, next) => {
-  let condition = {};
+  let condition = [{},{},{}];
+  let allUsers = new Set();
+  let idd = [];
   if (req.query.status) {
-    condition.status = req.query.status;
+    condition[0].status = req.query.status;
+    condition[1].status = req.query.status;
+    condition[2].status = req.query.status;
   }
-  if (req.query.username) {
-    condition.username = {$regex: req.query.username, $options: "i"}
+  if (req.query.search) {
+    condition[0].username = {$regex: req.query.search, $options: "i"}
+    condition[1].firstName = {$regex: req.query.search, $options: "i"}
+    condition[2].lastName = {$regex: req.query.search, $options: "i"}
   }
   try {
-    let users = await User.find({condition}, 
-      {
-        status: 1, username: 1, email: 1, firstName: 1, lastName: 1, 
-        phoneNumber: 1, drivingLicenseNumber: 1, IDCardNumber: 1, 
-        drivingLicenseImage: 1, IDCardImage: 1
+    for (let i = 0; i < 3; i++) {
+      let users = await User.find(condition[i], 
+        {
+          status: 1, username: 1, email: 1, firstName: 1, lastName: 1, 
+          phoneNumber: 1, drivingLicenseNumber: 1, IDCardNumber: 1, 
+          drivingLicenseImage: 1, IDCardImage: 1
+        });
+      users.forEach((user) => {
+        if (!idd.includes((user._id).toString())) {
+          allUsers.add(user);
+          idd.push((user._id).toString());
+          console.log((user._id).toString());
+        }
       });
-
+      // count += users.length;
     // const sendCars = cars.map((e) => e.toAuthJSON());
-    return res.json({users: users, count: users.length});
+    // return res.json({users: users, count: users.length});
+    }
+    const sendUsers = Array.from(allUsers);
+    return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
