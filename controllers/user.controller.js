@@ -528,9 +528,14 @@ export const getUsersBySearch = async (req, res, next) => {
     condition[2].status = req.query.status;
   }
   if (req.query.search) {
-    condition[0].username = {$regex: req.query.search, $options: "i"};
-    condition[1].firstName = {$regex: req.query.search, $options: "i"};
-    condition[2].lastName = {$regex: req.query.search, $options: "i"};
+    condition[0].username = {$regex: req.query.search, $options: "i"}
+    condition[1].firstName = {$regex: req.query.search, $options: "i"}
+    condition[2].lastName = {$regex: req.query.search, $options: "i"}
+    if(req.query.search.split(" ").length==2){
+      let Name = req.query.search.split(" ");
+      condition[2].firstName = {$regex: Name[0], $options: "i"}
+      condition[2].lastName = {$regex: Name[1], $options: "i"}
+    }
   }
   try {
     for (let i = 0; i < 3; i++) {
