@@ -179,7 +179,8 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.lastName) user.lastName = req.body.lastName;
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
       if (req.body.prefix) user.prefix = req.body.prefix;
-
+      if (req.body.IDCardNumber) user.IDCardNumber = req.body.IDCardNumber;
+      if (req.body.drivingLicenseNumber) user.drivingLicenseNumber = req.body.drivingLicenseNumber;
       user
         .save()
         .then(function () {
