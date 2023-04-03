@@ -439,6 +439,7 @@ export const changeCarInfo = async (req, res, next) => {
     for (const image of imagesToRemove) {
       deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, "", image);
     }
+
     //Add image//
     if (req.files && req.files["car_images"]) {
       for (const image of req.files["car_images"]) {
@@ -552,6 +553,17 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
       cars = cars.filter((car) =>
         car.license_plate.match(new RegExp(search, "i"))
       );
+    }
+    // console.log(sendUsers, "in");
+    for (const car of cars) {
+      const registration_book_image = car.registration_book_url
+        ? await getImageUrl(
+            process.env.GCS_CAR_REGISTRATION_BOOK_BUCKET,
+            null,
+            car.registration_book_url
+          )
+        : "";
+      car.registration_book_url = registration_book_image;
     }
     return res.json({cars: cars, count: cars.length});
   } catch (err) {
