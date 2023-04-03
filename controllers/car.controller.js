@@ -403,7 +403,8 @@ export const changeCarInfo = async (req, res, next) => {
 
     if(req.body.delete_image){
       for(const url of req.body.delete_image) {
-        const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
+        const regex = /monkeyd-car-images\/(.+?)\?GoogleAccessId/;
+        //const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
         const match = url.match(regex);
   
         if (match && match[1]) {
@@ -425,10 +426,10 @@ export const changeCarInfo = async (req, res, next) => {
         }
       });
       }
-
     for (const image of imagesToRemove) {
-      deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, `${id}/${car_id}`, image);
+      deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, "", image);
     }
+
     //Add image//
     if(req.files) {
       for(const image of req.files["car_images"]) {
