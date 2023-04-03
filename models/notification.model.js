@@ -9,10 +9,6 @@ const NotificationSchema = new mongoose.Schema(
       type: String,
       required: [true, "can't be blank"],
     },
-    images: {
-      type: [String],
-      validate: (v) => Array.isArray(v) && v.length > 0,
-    },
     userID: {
       type: mongoose.ObjectId,
       ref: "User",
@@ -31,7 +27,6 @@ NotificationSchema.methods.toAuthJSON = function () {
   return {
     _id: this._id,
     text: this.text,
-    images: this.images,
     userID: this.userID,
     isRead: this.isRead,
     createdAt: this.createdAt,

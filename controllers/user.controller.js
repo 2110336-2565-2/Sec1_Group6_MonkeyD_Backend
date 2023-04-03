@@ -537,9 +537,12 @@ export const getUsersBySearch = async (req, res, next) => {
       condition[2].lastName = {$regex: Name[1], $options: "i"};
     }
   }
-  condition[0].IDCardImage = { $ne: "" };
-  condition[1].IDCardImage = { $ne: "" };
-  condition[2].IDCardImage = { $ne: "" };
+  condition[0].IDCardImage = {$ne: ""};
+  condition[1].IDCardImage = {$ne: ""};
+  condition[2].IDCardImage = {$ne: ""};
+  condition[0].drivingLicenseImage = {$ne: ""};
+  condition[1].drivingLicenseImage = {$ne: ""};
+  condition[2].drivingLicenseImage = {$ne: ""};
   try {
     for (let i = 0; i < 3; i++) {
       let users = await User.find(condition[i], show_attrs);

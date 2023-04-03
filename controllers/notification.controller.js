@@ -6,9 +6,10 @@ import Notification from "../models/notification.model.js";
 
 export const createNotification = (req, res, next) => {
   const notification = new Notification();
-  const {text, images, userID} = req.body.notification;
+  const {text, userID} = req.body.notification;
+  console.log(text, userID);
   if (text) notification.text = text;
-  if (images) notification.images = images;
+
   if (userID) notification.userID = userID;
   notification
     .save()
@@ -22,17 +23,17 @@ export const createNotification = (req, res, next) => {
 };
 
 export const getNotifications = async (req, res, next) => {
-  const {date, userID} = req.query;
-  const start = new Date(date);
+  const {userID} = req.query;
+  // const start = new Date(date);
 
-  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+  // const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   try {
     const notifications = await Notification.find({
-      createdAt: {$gte: start, $lt: end},
+      // createdAt: {$gte: start, $lt: end},
       userID: userID,
     });
     const sendNotifications = notifications.map((n) => n.toAuthJSON());
-
+    console.log(sendNotifications);
     return res.json({notifications: sendNotifications});
   } catch (err) {
     return res.status(500).json({message: err.message});
