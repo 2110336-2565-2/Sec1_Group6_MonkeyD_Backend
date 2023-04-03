@@ -103,6 +103,7 @@ export const getCars = async (req, res, next) => {
     province: 1,
     rental_price: 1,
     car_images: 1,
+    reviewCount: 1,
   };
 
   let condition = {renter: null || ""};
@@ -119,14 +120,40 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
-    condition.available_times = {
-      $elemMatch: {
-        start: {$lte: new Date(req.query.startdate)},
-        end: {$gte: new Date(req.query.enddate)},
+    // condition.available_times = {
+    //   $elemMatch: {
+    //     start: {$lte: new Date(req.query.startdate)},
+    //     end: {$gte: new Date(req.query.enddate)},
+    //   },
+    // };
+    condition.unavailable_times = {
+      $not: {
+        $elemMatch: {
+          $or: [
+            {
+              start: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              end: {
+                $gte: new Date(req.query.startdate),
+                $lte: new Date(req.query.enddate),
+              },
+            },
+            {
+              start: {$lte: new Date(req.query.startdate)},
+              end: {$gte: new Date(req.query.enddate)},
+            },
+          ],
+        },
       },
     };
+    // console.log(new Date(req.query.startdate), new Date(req.query.enddate));
   }
   if (req.query.province) {
+    console.log(req.query.province);
     condition.province = req.query.province;
   }
   if (req.query.brandlist) {
@@ -212,59 +239,70 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const {username} = req.params;
+  const username = req.params.id;
+  const sortBy = req.body.sortBy;
+  const province = req.body.province;
+
+  let query = {owner: username};
+  if (province) {
+    query.province = province;
+  }
 
   try {
-    let cars = await Car.find(
-      {owner: username},
-      {
-        //_id: 1,
-        //renter: 1,
-        status: 1,
-        energy_types: 1,
-        rating: 1,
-        rentedOutCount: 1,
-        brand: 1,
-        model: 1,
-        gear_type: 1,
-        available_location: 1,
-        rental_price: 1,
-        passenger: 1,
-        car_images: 1,
-        available_times: 1,
-        unavailable_times: 1,
-      }
-    ).lean();
-    console.log(username);
-    //const user_image = await User.findOne({username: username}, {image: 1}).lean();
+    let cars = await Car.find(query, {
+      status: 1,
+      energy_types: 1,
+      rating: 1,
+      reviewCount: 1,
+      rentedOutCount: 1,
+      brand: 1,
+      model: 1,
+      gear_type: 1,
+      available_location: 1,
+      rental_price: 1,
+      passenger: 1,
+      car_images: 1,
+      available_times: 1,
+      unavailable_times: 1,
+    }).lean();
+
     for (const car of cars) {
-      /*if (car.status == "Rented"){
-        const match = await Match.findOne(
-          {carID: car._id, status: 'Rented'},
-          {pickUpDateTime: 1, pickupLocation: 1, returnDateTime:1, returnLocation: 1, price: 1}).lean();
-        car.pickUpDateTime = match.pickUpDateTime;
-        car.pickupLocation = match.pickupLocation;
-        car.returnDateTime = match.returnDateTime;
-        car.returnLocation = match.returnLocation;
-        car.totalprice = match.price;
-      }
-      else{
-        car.pickUpDateTime = null;
-        car.pickupLocation = null;
-        car.returnDateTime = null;
-        car.returnLocation = null;
-        car.totalprice = null;
-      }*/
       if (car.car_images && car.car_images.length) {
-        car.car_image = car.car_images[0];
-        delete car.car_images;
+        const correctURLs = [];
+        for (let i = 0; i < car.car_images.length; i += 1) {
+          const carImageUrl = await getImageUrl(
+            process.env.GCS_CAR_IMAGES_BUCKET,
+            null,
+            car.car_images[i]
+          );
+          if (i == 0) car.car_image = carImageUrl;
+          correctURLs.push(carImageUrl);
+        }
+        car.show_images = correctURLs;
       }
-      car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
-      //delete car._id
-      //car.user_image = user_image.image;
     }
 
-    console.log(cars);
+    if (sortBy == "highest rating") {
+      cars.sort(function (a, b) {
+        return b.rating - a.rating;
+      });
+    } else if (sortBy == "lowest rating") {
+      cars.sort(function (a, b) {
+        return a.rating - b.rating;
+      });
+    } else if (sortBy == "highest price") {
+      cars.sort(function (a, b) {
+        return b.rental_price - a.rental_price;
+      });
+    } else if (sortBy == "lowest price") {
+      cars.sort(function (a, b) {
+        return a.rental_price - b.rental_price;
+      });
+    } else {
+      cars.sort(function (a, b) {
+        return b.rental_price - a.rental_price || b.rating - a.rating;
+      });
+    }
 
     return res.json(cars);
   } catch (err) {
@@ -272,11 +310,11 @@ export const getMyCar = async (req, res, next) => {
   }
 };
 
-export const toggleRented = async (req, res, next) => {
+export const carRented = async (req, res, next) => {
   const car_id = req.headers.car_id;
-  const renter_id = req.headers.renter_id;
-  const pickUpDateTime = req.body.pickUpDateTime;
-  const returnDateTime = req.body.returnDateTime;
+  // const renter_id = req.headers.renter_id;
+  // const pickUpDateTime = req.body.pickUpDateTime;
+  // const returnDateTime = req.body.returnDateTime;
   let car;
   try {
     car = await Car.findById(car_id);
@@ -288,35 +326,26 @@ export const toggleRented = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 
-  let renter;
-  try {
-    renter = await User.findById(renter_id);
-    if (renter == null) {
-      return res.status(404).json({message: "Cannot find user"});
-    }
-  } catch (err) {
-    console.log(err.message);
-    return res.status(500).json({message: err.message});
-  }
+  // let renter;
+  // try {
+  //   renter = await User.findById(renter_id);
+  //   if (renter == null) {
+  //     return res.status(404).json({message: "Cannot find user"});
+  //   }
+  // } catch (err) {
+  //   console.log(err.message);
+  //   return res.status(500).json({message: err.message});
+  // }
 
-  //if (car.status == "Available") {
-  //car.status = "Rented";
-  //car.renter = renter.username;
-  car.status = car.status === "Unavailable" ? "Unavailable" : "Available";
+  // car.status = car.status === "Rented" ? "Rented" : "Available";
   car.rentedOutCount += 1;
-  car.unavailable_times.push({
-    start: pickUpDateTime,
-    end: returnDateTime,
-    username: renter.username,
-  });
+  // car.unavailable_times.push({
+  //   start: pickUpDateTime,
+  //   end: returnDateTime,
+  //   username: renter.username,
+  // });
   car.save();
   res.send("car rented");
-  //} else {
-  //car.status = "Available";
-  //car.renter = "";
-  // car.save();
-  //res.send("car available");
-  //}
 };
 
 export const deleteCar = async (req, res, next) => {
@@ -370,6 +399,7 @@ export const changeCarInfo = async (req, res, next) => {
     //Remove image//
     const imagesToRemove = [];
     const car_images_uris = [];
+
 
     if(req.body.delete_image){
       for(const url of req.body.delete_image) {
@@ -436,6 +466,190 @@ export const changeCarInfo = async (req, res, next) => {
     res.send({message: `Car with ID ${car_id} updated successfully`});
   } catch (err) {
     console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+};
+
+export const toggleStatus = async (req, res, next) => {
+  const car_id = req.body.car_id;
+  const action = req.body.action;
+  let car;
+  try {
+    car = await Car.findById(car_id);
+    if (car == null) {
+      return res.status(404).json({message: "Cannot find car"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  if (car.status == "Pending") {
+    if (action == "Approve") {
+      car.status = "Available";
+    } else if (action == "Reject") {
+      car.status = "Rejected";
+    }
+  } else if (car.status == "Rejected") {
+    if (action == "Approve") {
+      car.status = "Available";
+    } else return res.json({message: "No Action can be taken"});
+  } else {
+    return res.json({message: "No Action can be taken"});
+  }
+  car.save();
+  res.send("Car status changed");
+};
+
+export const getCarsInfoFilterSearch = async (req, res, next) => {
+  const show_attrs = {
+    _id: 1,
+    owner: 1,
+    renter: 1,
+    brand: 1,
+    model: 1,
+    year: 1,
+    registration_book_url: 1,
+    registration_book_id: 1,
+    license_plate: 1,
+    status: 1,
+  };
+  let filter;
+  let search;
+  if (req.query.filter) {
+    filter = req.query.filter;
+  }
+  if (req.query.search) {
+    search = req.query.search;
+  }
+  let cars;
+  try {
+    if (filter == "approved") {
+      cars = await Car.find(
+        {status: {$in: ["Available", "Rented", "Unavailable"]}},
+        show_attrs
+      );
+    } else if (filter == "rejected") {
+      cars = await Car.find(
+        {status: "Rejected"},
+        show_attrs
+      );
+    } else if (filter == "pending") {
+      cars = await Car.find(
+        {status: "Pending"},
+        show_attrs
+      );
+    } else if ((filter == "all") | (filter == null)) {
+      cars = await Car.find(
+        {},
+        show_attrs
+      );
+    }
+    if (search != null) {
+      cars = cars.filter((car) =>
+        car.license_plate.match(new RegExp(search, "i"))
+      );
+    }
+    return res.json({cars: cars, count: cars.length});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+};
+
+export const carReserved = async (req, res, next) => {
+  const {
+    carID,
+    lessorID,
+    renterID,
+    status,
+    pickupLocation,
+    pickUpDateTime,
+    returnLocation,
+    returnDateTime,
+    price,
+  } = req.body.match;
+
+  if (renterID == lessorID)
+    return res.send({message: "You can't rent your car."});
+
+  let car;
+  try {
+    car = await Car.findById(carID);
+    if (car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  const isUnavailable = car.unavailable_times.some((interval) => {
+    const intervalStart = new Date(interval.start).getTime();
+    const intervalEnd = new Date(interval.end).getTime();
+    const pickUpTime = new Date(pickUpDateTime).getTime();
+    const returnTime = new Date(returnDateTime).getTime();
+
+    return pickUpTime < intervalEnd && returnTime > intervalStart;
+  });
+  console.log(isUnavailable);
+  console.log(pickUpDateTime);
+  console.log(returnDateTime);
+  console.log(car.unavailable_times);
+
+  if (isUnavailable) return res.send("The target time is unavailable.");
+
+  let renter;
+  try {
+    renter = await User.findById(renterID);
+    if (renter == null) {
+      return res.status(404).send({message: "Cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  car.unavailable_times.push({
+    start: pickUpDateTime,
+    end: returnDateTime,
+    username: renter.username,
+  });
+
+  const match = new Match();
+  if (carID) match.carID = carID;
+  if (status) match.status = status;
+  if (lessorID) match.lessorID = lessorID;
+  if (renterID) match.renterID = renterID;
+  if (pickupLocation) match.pickupLocation = pickupLocation;
+  if (pickUpDateTime) match.pickUpDateTime = new Date(pickUpDateTime);
+  if (returnLocation) match.returnLocation = returnLocation;
+  if (returnDateTime) match.returnDateTime = new Date(returnDateTime);
+  if (price) match.price = price;
+
+  try {
+    await car.save();
+    await match.save();
+    return res.json({match: match.toAuthJSON()});
+  } catch (error) {
+    console.log(error);
+    if (error.code === 11000) {
+      return res.status(400).send({
+        error: "something already exists",
+      });
+    }
+    console.log(error);
+    next(error);
+  }
+};
+
+export const getUnavailableTimes = async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    let car = await Car.findOne({_id: id}, {unavailable_times: 1}).lean();
+    const user = await User.findOne(
+      {username: car.owner},
+      {_id: 1, image: 1, rating: 1}
+    );
+
+    return res.json(car);
+  } catch (err) {
     return res.status(500).json({message: err.message});
   }
 };

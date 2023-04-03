@@ -21,18 +21,7 @@ const CarSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "can't be blank"],
-      enum: [
-        "Pending",
-        // "Verified",
-        // "Updating",
-        "Unavailable",
-        "Available",
-        "Rented",
-        // "WaitForInspectation",
-        // "Inspected",
-        // "FixingOrPreparing",
-        // "CarChecking",
-      ],
+      enum: ["Pending", "Rejected", "Unavailable", "Available", "Rented"],
       default: "Pending",
     },
     brand: {
