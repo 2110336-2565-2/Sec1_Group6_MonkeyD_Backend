@@ -9,7 +9,7 @@ import {
   googleStrategy,
   facebookStrategy,
 } from "../configs/passport.config.js";
-import { upload } from "../middlewares/image.middleware.js";
+import {upload} from "../middlewares/image.middleware.js";
 
 dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
@@ -317,7 +317,11 @@ export const carRented = async (req, res, next) => {
   } = req.body;
 
   let drivingLicenseImageUri;
-  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
+  if (
+    req.files &&
+    req.files["drivingLicenseImage"] &&
+    req.files["drivingLicenseImage"].length > 0
+  ) {
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
@@ -330,7 +334,11 @@ export const carRented = async (req, res, next) => {
   }
 
   let IDCardImageUri;
-  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+  if (
+    req.files &&
+    req.files["IDCardImage"] &&
+    req.files["IDCardImage"].length > 0
+  ) {
     const IDCardImage = req.files["IDCardImage"];
 
     IDCardImageUri = await uploadImage(
@@ -382,9 +390,10 @@ export const updateRoleLessor = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-  
+
   let drivingLicenseImageUri;
   if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
+
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
@@ -397,7 +406,11 @@ export const updateRoleLessor = async (req, res, next) => {
   }
 
   let IDCardImageUri;
-  if(req.files["IDCardImage"] && req.files["IDCardImage"].length > 0){
+  if (
+    req.files &&
+    req.files["IDCardImage"] &&
+    req.files["IDCardImage"].length > 0
+  ) {
     const IDCardImage = req.files["IDCardImage"];
 
     IDCardImageUri = await uploadImage(
@@ -454,5 +467,90 @@ export const getUserRole = async (req, res, next) => {
     }
   } catch (error) {
     res.status(500).json({message: error.message});
+  }
+};
+
+export const toggleStatus = async (req, res, next) => {
+  const user_id = req.body.user_id;
+  const action = req.body.action;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "Cannot find user"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  if (user.status == "Unverified") {
+    if (action == "Approve") {
+      user.status = "Verified";
+    } else if (action == "Reject") {
+      user.status = "Rejected";
+    }
+  } else if (user.status == "Rejected") {
+    if (action == "Approve") {
+      user.status = "Verified";
+    } else return res.json({message: "No Action can be taken"});
+  } else {
+    return res.json({message: "No Action can be taken"});
+  }
+  user.save();
+  res.send("User status changed");
+};
+
+export const getUsersBySearch = async (req, res, next) => {
+  const show_attrs = {
+    _id: 1,
+    image: 1,
+    username: 1,
+    email: 1,
+    prefix: 1,
+    firstName: 1,
+    lastName: 1,
+    phoneNumber: 1,
+    IDCardNumber: 1,
+    IDCardImage: 1,
+    drivingLicenseNumber: 1,
+    drivingLicenseImage: 1,
+    status: 1,
+  };
+  let condition = [{}, {}, {}];
+  let allUsers = new Set();
+  let idd = [];
+  if (req.query.status) {
+    condition[0].status = req.query.status;
+    condition[1].status = req.query.status;
+    condition[2].status = req.query.status;
+  }
+  if (req.query.search) {
+    condition[0].username = {$regex: req.query.search, $options: "i"}
+    condition[1].firstName = {$regex: req.query.search, $options: "i"}
+    condition[2].lastName = {$regex: req.query.search, $options: "i"}
+    if(req.query.search.split(" ").length==2){
+      let Name = req.query.search.split(" ");
+      condition[2].firstName = {$regex: Name[0], $options: "i"}
+      condition[2].lastName = {$regex: Name[1], $options: "i"}
+    }
+  }
+  try {
+    for (let i = 0; i < 3; i++) {
+      let users = await User.find(condition[i], show_attrs);
+      users.forEach((user) => {
+        if (!idd.includes(user._id.toString())) {
+          allUsers.add(user);
+          idd.push(user._id.toString());
+          console.log(user._id.toString());
+        }
+      });
+      // count += users.length;
+      // const sendCars = cars.map((e) => e.toAuthJSON());
+      // return res.json({users: users, count: users.length});
+    }
+    const sendUsers = Array.from(allUsers);
+    return res.json({users: sendUsers, count: sendUsers.length});
+  } catch (err) {
+    return res.status(500).json({message: err.message});
   }
 };

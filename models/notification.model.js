@@ -10,18 +10,18 @@ const NotificationSchema = new mongoose.Schema(
       required: [true, "can't be blank"],
     },
     images: {
-        type: [String],
-        validate: (v) => Array.isArray(v) && v.length > 0,
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0,
     },
     userID: {
       type: mongoose.ObjectId,
       ref: "User",
       required: [true, "can't be blank"],
     },
-    isRead:{
-      type:Boolean,
+    isRead: {
+      type: Boolean,
       default: false,
-    }
+    },
   },
 
   {timestamps: true}
@@ -33,9 +33,10 @@ NotificationSchema.methods.toAuthJSON = function () {
     text: this.text,
     images: this.images,
     userID: this.userID,
+    isRead: this.isRead,
+    createdAt: this.createdAt,
   };
 };
-
 
 const Notification = mongoose.model("Notification", NotificationSchema);
 export default Notification;

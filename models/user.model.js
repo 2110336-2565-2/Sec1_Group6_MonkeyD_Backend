@@ -39,6 +39,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "default.png",
     },
+    status: {
+      type: String,
+      required: [true, "can't be blank"],
+      enum: ["Unverified", "Rejected", "Verified"],
+      default: "Unverified",
+    },
     owncars: {
       type: [String],
       default: [],
@@ -97,6 +103,14 @@ const UserSchema = new mongoose.Schema(
     IDCardImage: {
       type: String,
       default: "",
+    },
+    omiseCustomerId: {
+      type: String,
+      default: null,
+    },
+    omiseRecipientId: {
+      type: String,
+      default: null,
     },
     hash: String,
     salt: String,
@@ -175,6 +189,7 @@ UserSchema.methods.getUserInfoJSON = async function () {
     rating: this.rating,
     rentedCount: this.rentedCount,
     rentedOutCount: this.rentedOutCount,
+    status: this.status,
   };
 };
 
