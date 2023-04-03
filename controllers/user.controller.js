@@ -384,7 +384,7 @@ export const updateRoleLessor = async (req, res, next) => {
   }
   
   let drivingLicenseImageUri;
-  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"]){
+  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
