@@ -473,10 +473,9 @@ export const getUserRole = async (req, res, next) => {
   }
 };
 
-
 export const toggleStatus = async (req, res, next) => {
-  const user_id = req.body.user.user_id;
-  const action = req.body.user.action;
+  const user_id = req.body.user_id;
+  const action = req.body.action;
   let user;
   try {
     user = await User.findById(user_id);
@@ -487,21 +486,17 @@ export const toggleStatus = async (req, res, next) => {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
-  if (user.status == "Unverified"){
-    if (action == "Approve"){
+  if (user.status == "Unverified") {
+    if (action == "Approve") {
       user.status = "Verified";
-    }
-    else if (action == "Reject"){
+    } else if (action == "Reject") {
       user.status = "Rejected";
     }
-  }
-  else if (user.status == "Rejected"){
-    if (action == "Approve"){
+  } else if (user.status == "Rejected") {
+    if (action == "Approve") {
       user.status = "Verified";
-    }
-    else return res.json({message: "No Action can be taken"});
-  }
-  else {
+    } else return res.json({message: "No Action can be taken"});
+  } else {
     return res.json({message: "No Action can be taken"});
   }
   user.save();
@@ -509,7 +504,22 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getUsersBySearch = async (req, res, next) => {
-  let condition = [{},{},{}];
+  const show_attrs = {
+    _id: 1,
+    image: 1,
+    username: 1,
+    email: 1,
+    prefix: 1,
+    firstName: 1,
+    lastName: 1,
+    phoneNumber: 1,
+    IDCardNumber: 1,
+    IDCardImage: 1,
+    drivingLicenseNumber: 1,
+    drivingLicenseImage: 1,
+    status: 1,
+  };
+  let condition = [{}, {}, {}];
   let allUsers = new Set();
   let idd = [];
   if (req.query.status) {
@@ -529,28 +539,21 @@ export const getUsersBySearch = async (req, res, next) => {
   }
   try {
     for (let i = 0; i < 3; i++) {
-      let users = await User.find(condition[i], 
-        {
-          status: 1, username: 1, email: 1, firstName: 1, lastName: 1, 
-          phoneNumber: 1, drivingLicenseNumber: 1, IDCardNumber: 1, 
-          drivingLicenseImage: 1, IDCardImage: 1
-        });
+      let users = await User.find(condition[i], show_attrs);
       users.forEach((user) => {
-        if (!idd.includes((user._id).toString())) {
+        if (!idd.includes(user._id.toString())) {
           allUsers.add(user);
-          idd.push((user._id).toString());
-          console.log((user._id).toString());
+          idd.push(user._id.toString());
+          console.log(user._id.toString());
         }
       });
       // count += users.length;
-    // const sendCars = cars.map((e) => e.toAuthJSON());
-    // return res.json({users: users, count: users.length});
+      // const sendCars = cars.map((e) => e.toAuthJSON());
+      // return res.json({users: users, count: users.length});
     }
     const sendUsers = Array.from(allUsers);
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-}
-
-
+};
