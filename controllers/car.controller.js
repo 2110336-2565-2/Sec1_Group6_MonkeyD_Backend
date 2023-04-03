@@ -103,6 +103,7 @@ export const getCars = async (req, res, next) => {
     province: 1,
     rental_price: 1,
     car_images: 1,
+    reviewCount: 1,
   };
 
   let condition = {renter: null || ""};
