@@ -41,7 +41,16 @@ router.route("/car/busy/:id").get(getUnavailableTimes);
 router
   .route("/car/number-of-rental/:id")
   .get(auth.required, getNumberOfRentals);
-router.route("/car/change-car-info").patch(auth.required, changeCarInfo);
+
+router.route("/car/me/:username").get(auth.required, getMyCar);
+router
+  .route("/car/change-car-info")
+  .patch(
+    auth.required,
+    upload.fields([{name: "car_images", maxCount:10}]),
+    changeCarInfo
+  );
+
 
 router.route("/car/status").patch(auth.required, toggleStatus);
 

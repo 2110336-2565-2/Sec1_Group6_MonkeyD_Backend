@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import Car from "../models/car.model.js";
 import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
-import {uploadImage, getImageUrl} from "../utils/gcs.utils.js";
+import {uploadImage, getImageUrl, deleteImage} from "../utils/gcs.utils.js";
 import {ObjectId} from "bson";
 
 export const createCars = async (req, res, next) => {
@@ -378,6 +378,7 @@ export const getNumberOfRentals = async (req, res, next) => {
 };
 
 export const changeCarInfo = async (req, res, next) => {
+  const id = req.headers.user_id;
   const car_id = req.headers.car_id;
   let car;
   try {
@@ -386,17 +387,75 @@ export const changeCarInfo = async (req, res, next) => {
       return res.status(404).json({message: "Cannot find car"});
     }
 
-    // if (
-    //   req.body.status !== null &&
-    //   req.body.status !== "Unavailable" &&
-    //   req.body.status !== "Available"
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({message: "Status can only be changed to Unavailable"});
-    // }
+    if (
+      req.body.status !== null &&
+      req.body.status !== "Unavailable" &&
+      req.body.status !== "Available"
+    ) {
+      return res
+        .status(400)
+        .json({message: "Status can only be changed to Unavailable"});
+    }
+    //Remove image//
+    const imagesToRemove = [];
+    const car_images_uris = [];
 
-    Car.findOneAndUpdate({_id: car_id}, req.body, {new: true}, (err, car) => {
+
+    if(req.body.delete_image){
+      for(const url of req.body.delete_image) {
+        const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
+        const match = url.match(regex);
+  
+        if (match && match[1]) {
+          const desiredSubstring = match[1];
+          imagesToRemove.push(desiredSubstring);
+        } else {
+          console.log('Pattern not found');
+        }
+      }
+      Car.findOneAndUpdate(
+        {_id: car_id},
+        {
+          $pull: { car_images: { $in: imagesToRemove } },
+        }, 
+        {new: true}, 
+        (err, car) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      }
+
+    for (const image of imagesToRemove) {
+      deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, `${id}/${car_id}`, image);
+    }
+    //Add image//
+    if(req.files) {
+      for(const image of req.files["car_images"]) {
+        const imageUri = await uploadImage(
+          image,
+          process.env.GCS_CAR_IMAGES_BUCKET,
+          `${id}/${car_id}`,
+          null
+        );
+        car_images_uris.push(imageUri);
+      }
+      Car.findOneAndUpdate(
+        {_id: car_id},
+        {
+          $push: { car_images: { $each: car_images_uris } },
+        }, 
+        {new: true}, 
+        (err, car) => {
+        if (err) {
+          console.log(err);
+        } 
+      });
+      
+    }
+
+    Car.findOneAndUpdate(
+      {_id: car_id},{$set: req.body}, {new: true}, (err, car) => {
       if (err) {
         console.log(err);
       } else {
