@@ -386,9 +386,10 @@ export const changeCarInfo = async (req, res, next) => {
     if (car == null) {
       return res.status(404).json({message: "Cannot find car"});
     }
-
+    //console.log(req.body);
+    //console.log(req.body.status);
     if (
-      req.body.status !== null &&
+      req.body.status &&
       req.body.status !== "Unavailable" &&
       req.body.status !== "Available"
     ) {
@@ -400,38 +401,47 @@ export const changeCarInfo = async (req, res, next) => {
     const imagesToRemove = [];
     const car_images_uris = [];
 
-
-    if(req.body.delete_image){
-      for(const url of req.body.delete_image) {
-        const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
+    if (req.body.delete_image) {
+      let delete_images = [];
+      if (typeof req.body.delete_image !== "object") {
+        delete_images = [req.body.delete_image];
+      } else {
+        delete_images = req.body.delete_image;
+      }
+      for (const url of delete_images) {
+        //console.log(url);
+        const regex = /monkeyd-car-images\/(.+?)\?GoogleAccessId/;
+        //const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
         const match = url.match(regex);
-  
+
         if (match && match[1]) {
           const desiredSubstring = match[1];
           imagesToRemove.push(desiredSubstring);
         } else {
-          console.log('Pattern not found');
+          console.log("Pattern not found");
         }
       }
+      //console.log(imagesToRemove);
       Car.findOneAndUpdate(
         {_id: car_id},
         {
-          $pull: { car_images: { $in: imagesToRemove } },
-        }, 
-        {new: true}, 
+          $pull: {car_images: {$in: imagesToRemove}},
+        },
+        {new: true},
         (err, car) => {
-        if (err) {
-          console.log(err);
+          if (err) {
+            console.log(err);
+          }
         }
-      });
-      }
+      );
+    }
 
     for (const image of imagesToRemove) {
-      deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, `${id}/${car_id}`, image);
+      deleteImage(process.env.GCS_CAR_IMAGES_BUCKET, "", image);
     }
     //Add image//
-    if(req.files) {
-      for(const image of req.files["car_images"]) {
+    if (req.files && req.files["car_images"]) {
+      for (const image of req.files["car_images"]) {
         const imageUri = await uploadImage(
           image,
           process.env.GCS_CAR_IMAGES_BUCKET,
@@ -443,25 +453,29 @@ export const changeCarInfo = async (req, res, next) => {
       Car.findOneAndUpdate(
         {_id: car_id},
         {
-          $push: { car_images: { $each: car_images_uris } },
-        }, 
-        {new: true}, 
+          $push: {car_images: {$each: car_images_uris}},
+        },
+        {new: true},
         (err, car) => {
-        if (err) {
-          console.log(err);
-        } 
-      });
-      
+          if (err) {
+            console.log(err);
+          }
+        }
+      );
     }
 
     Car.findOneAndUpdate(
-      {_id: car_id},{$set: req.body}, {new: true}, (err, car) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(car);
+      {_id: car_id},
+      {$set: req.body},
+      {new: true},
+      (err, car) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(car);
+        }
       }
-    });
+    );
     res.send({message: `Car with ID ${car_id} updated successfully`});
   } catch (err) {
     console.log(err.message);
@@ -528,20 +542,11 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
         show_attrs
       );
     } else if (filter == "rejected") {
-      cars = await Car.find(
-        {status: "Rejected"},
-        show_attrs
-      );
+      cars = await Car.find({status: "Rejected"}, show_attrs);
     } else if (filter == "pending") {
-      cars = await Car.find(
-        {status: "Pending"},
-        show_attrs
-      );
+      cars = await Car.find({status: "Pending"}, show_attrs);
     } else if ((filter == "all") | (filter == null)) {
-      cars = await Car.find(
-        {},
-        show_attrs
-      );
+      cars = await Car.find({}, show_attrs);
     }
     if (search != null) {
       cars = cars.filter((car) =>
