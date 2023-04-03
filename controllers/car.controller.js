@@ -411,8 +411,8 @@ export const changeCarInfo = async (req, res, next) => {
 };
 
 export const toggleStatus = async (req, res, next) => {
-  const car_id = req.body.car.car_id;
-  const action = req.body.car.action;
+  const car_id = req.body.car_id;
+  const action = req.body.action;
   let car;
   try {
     car = await Car.findById(car_id);
@@ -441,6 +441,18 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getCarsInfoFilterSearch = async (req, res, next) => {
+  const show_attrs = {
+    _id: 1,
+    owner: 1,
+    renter: 1,
+    brand: 1,
+    model: 1,
+    year: 1,
+    registration_book_url: 1,
+    registration_book_id: 1,
+    license_plate: 1,
+    status: 1,
+  };
   let filter;
   let search;
   if (req.query.filter) {
@@ -454,22 +466,22 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
     if (filter == "approved") {
       cars = await Car.find(
         {status: {$in: ["Available", "Rented", "Unavailable"]}},
-        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+        show_attrs
       );
     } else if (filter == "rejected") {
       cars = await Car.find(
         {status: "Rejected"},
-        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+        show_attrs
       );
     } else if (filter == "pending") {
       cars = await Car.find(
         {status: "Pending"},
-        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+        show_attrs
       );
     } else if ((filter == "all") | (filter == null)) {
       cars = await Car.find(
         {},
-        {registration_book_url: 1, license_plate: 1, registration_book_id: 1}
+        show_attrs
       );
     }
     if (search != null) {
