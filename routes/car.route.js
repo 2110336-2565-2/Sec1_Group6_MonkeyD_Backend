@@ -36,7 +36,7 @@ router.route("/car/me/:username").get(auth.required, getMyCar);
 router
   .route("/car/change-car-info")
   .patch(
-    auth.required,
+    // auth.required,
     upload.fields([{name: "car_images", maxCount:10}]),
     changeCarInfo
   );
