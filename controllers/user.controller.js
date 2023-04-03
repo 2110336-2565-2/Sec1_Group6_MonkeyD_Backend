@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import {uploadImage} from "../utils/gcs.utils.js";
+import {uploadImage, getImageUrl} from "../utils/gcs.utils.js";
 import {
   localStrategy,
   googleStrategy,
@@ -392,8 +392,10 @@ export const updateRoleLessor = async (req, res, next) => {
   }
 
   let drivingLicenseImageUri;
-  if(req.files["drivingLicenseImage"] && req.files["drivingLicenseImage"].length > 0){
-
+  if (
+    req.files["drivingLicenseImage"] &&
+    req.files["drivingLicenseImage"].length > 0
+  ) {
     const drivingLicenseImage = req.files["drivingLicenseImage"];
 
     drivingLicenseImageUri = await uploadImage(
@@ -525,18 +527,19 @@ export const getUsersBySearch = async (req, res, next) => {
     condition[2].status = req.query.status;
   }
   if (req.query.search) {
-    condition[0].username = {$regex: req.query.search, $options: "i"}
-    condition[1].firstName = {$regex: req.query.search, $options: "i"}
-    condition[2].lastName = {$regex: req.query.search, $options: "i"}
-    if(req.query.search.split(" ").length==2){
+    condition[0].username = {$regex: req.query.search, $options: "i"};
+    condition[1].firstName = {$regex: req.query.search, $options: "i"};
+    condition[2].lastName = {$regex: req.query.search, $options: "i"};
+    if (req.query.search.split(" ").length == 2) {
       let Name = req.query.search.split(" ");
-      condition[2].firstName = {$regex: Name[0], $options: "i"}
-      condition[2].lastName = {$regex: Name[1], $options: "i"}
+      condition[2].firstName = {$regex: Name[0], $options: "i"};
+      condition[2].lastName = {$regex: Name[1], $options: "i"};
     }
   }
   try {
     for (let i = 0; i < 3; i++) {
       let users = await User.find(condition[i], show_attrs);
+      console.log(users);
       users.forEach((user) => {
         if (!idd.includes(user._id.toString())) {
           allUsers.add(user);
@@ -549,6 +552,34 @@ export const getUsersBySearch = async (req, res, next) => {
       // return res.json({users: users, count: users.length});
     }
     const sendUsers = Array.from(allUsers);
+    // console.log(sendUsers, "in");
+    for (const sendUser of sendUsers) {
+      const userImage = sendUser.image
+        ? await getImageUrl(
+            process.env.GCS_PROFILE_BUCKET,
+            null,
+            sendUser.image
+          )
+        : "";
+      const drivingImage = sendUser.drivingLicenseImage
+        ? await getImageUrl(
+            process.env.GCS_DRIVER_LICENSE_BUCKET,
+            null,
+            sendUser.drivingLicenseImage
+          )
+        : "";
+      const IDCardImage = sendUser.IDCardImage
+        ? await getImageUrl(
+            process.env.GCS_ID_CARD_BUCKET,
+            null,
+            sendUser.IDCardImage
+          )
+        : "";
+      sendUser.IDCardImage = IDCardImage;
+      sendUser.image = userImage;
+      sendUser.drivingLicenseImage = drivingImage;
+    }
+    // console.log(sendUsers);
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
