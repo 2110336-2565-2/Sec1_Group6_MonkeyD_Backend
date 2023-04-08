@@ -67,34 +67,6 @@ export const localLogin = (req, res, next) => {
   })(req, res, next);
 };
 
-// for facebook login (soon)
-export const facebookLogin = (req, res, next) => {
-  passport.use(facebookStrategy);
-  passport.authenticate("facebook", {
-    scope: ["email"],
-    failureRedirect: "/",
-  })(req, res, next);
-};
-
-// for facebook login (soon)
-export const facebookCallback = (req, res, next) => {
-  passport.use(facebookStrategy);
-  passport.authenticate(
-    "facebook",
-    {failureRedirect: "/"},
-    function (err, user) {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.redirect("/");
-      }
-
-      res.redirect("/");
-    }
-  )(req, res, next);
-};
-
 export const googleAuth = (req, res, next) => {
   passport.use(googleStrategy);
   passport.authenticate("google", function (err, user, info) {
@@ -180,7 +152,8 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
       if (req.body.prefix) user.prefix = req.body.prefix;
       if (req.body.IDCardNumber) user.IDCardNumber = req.body.IDCardNumber;
-      if (req.body.drivingLicenseNumber) user.drivingLicenseNumber = req.body.drivingLicenseNumber;
+      if (req.body.drivingLicenseNumber)
+        user.drivingLicenseNumber = req.body.drivingLicenseNumber;
       user
         .save()
         .then(function () {
@@ -590,5 +563,24 @@ export const getUsersBySearch = async (req, res, next) => {
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
+  }
+};
+
+export const getAllChat = async (req, res, next) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId).populate("chatRooms");
+    if (!user) {
+      return res.status(404).json({error: "User not found"});
+    }
+    let chats = user.chatRooms;
+    for (let chat of chats) {
+      const peer = chat.allowedUsers.find((id) => !id.equals(userId));
+      let peerUsername = await User.findById(peer, {username: 1});
+      chat.name = peerUsername.username;
+    }
+    res.json({chats});
+  } catch (error) {
+    res.status(500).json({error: "An error occurred while getting chat rooms"});
   }
 };

@@ -13,7 +13,7 @@ import {
   carRented,
   getUnavailableTimes,
 } from "../controllers/car.controller.js";
-import auth from "../middlewares/jwt.middleware.js";
+import {authenticateUser} from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/image.middleware.js";
 
 const router = express.Router();
@@ -22,15 +22,15 @@ router
   .route("/car")
   .get(getCars)
   .post(
-    auth.required,
+    authenticateUser.required,
     upload.fields([
       {name: "registration_book_image", maxCount: 1},
       {name: "car_images", maxCount: 10},
     ]),
     createCars
   )
-  .patch(auth.required, carRented)
-  .delete(auth.required, deleteCar);
+  .patch(authenticateUser.required, carRented)
+  .delete(authenticateUser.required, deleteCar);
 
 router.route("/car/admin").get(getCarsInfoFilterSearch);
 
@@ -40,19 +40,18 @@ router.route("/car/:id").get(getCarInfo);
 router.route("/car/busy/:id").get(getUnavailableTimes);
 router
   .route("/car/number-of-rental/:id")
-  .get(auth.required, getNumberOfRentals);
+  .get(authenticateUser.required, getNumberOfRentals);
 
-router.route("/car/me/:username").get(auth.required, getMyCar);
+router.route("/car/me/:username").get(authenticateUser.required, getMyCar);
 router
   .route("/car/change-car-info")
   .patch(
-    auth.required,
-    upload.fields([{name: "car_images", maxCount:10}]),
+    authenticateUser.required,
+    upload.fields([{name: "car_images", maxCount: 10}]),
     changeCarInfo
   );
 
-
-router.route("/car/status").patch(auth.required, toggleStatus);
+router.route("/car/status").patch(authenticateUser.required, toggleStatus);
 
 router.route("/car/reserve").patch(carReserved);
 

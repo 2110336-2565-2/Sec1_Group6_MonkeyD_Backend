@@ -95,9 +95,6 @@ export const getMatchStatuses = async (req, res, next) => {
 export const getMyBookings = async (req, res, next) => {
   let condition = {};
   condition.renterID = req.params.id;
-  // if (req.query.status) {
-  //   condition.status = req.query.status;
-  // }
   if (req.query.status) {
     try {
       const encoded_status = req.query.status;
@@ -185,7 +182,11 @@ export const toggleStatus = async (req, res, next) => {
 
 export const getMatchesBySearch = async (req, res, next) => {
   let condition = {};
-  let search = [[{},{},{}],[{},{},{}],[{},{},{}],];
+  let search = [
+    [{}, {}, {}],
+    [{}, {}, {}],
+    [{}, {}, {}],
+  ];
   let idd = [];
   let allMatches = new Set();
   if (req.query.status) {
@@ -218,12 +219,11 @@ export const getMatchesBySearch = async (req, res, next) => {
           match.lessorID !== null &&
           match.carID !== null
       );
-      // matches.forEach((match) => {allMatches.add(match)});
       matches.forEach((match) => {
-        if (!idd.includes((match._id).toString())) {
+        if (!idd.includes(match._id.toString())) {
           allMatches.add(match);
-          idd.push((match._id).toString());
-          console.log((match._id).toString());
+          idd.push(match._id.toString());
+          console.log(match._id.toString());
         }
       });
     }

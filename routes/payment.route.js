@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "../middlewares/jwt.middleware.js";
+import {authenticateUser} from "../middlewares/auth.middleware.js";
 import {
   createPayment,
   getPayments,

@@ -112,6 +112,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    chatRooms: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat",
+      },
+    ],
     hash: String,
     salt: String,
   },

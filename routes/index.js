@@ -5,6 +5,7 @@ import matchRouter from "./match.route.js";
 import paymentRouter from "./payment.route.js";
 import reviewRouter from "./review.route.js";
 import notificationRouter from "./notification.route.js";
+import chatRouter from "./chat.route.js";
 import {
   checkValidationError,
   errorHandler,
@@ -12,7 +13,16 @@ import {
 
 const router = express.Router();
 
-router.use("/", usersRouter, carsRouter, matchRouter, reviewRouter, paymentRouter, notificationRouter);
+router.use(
+  "/",
+  usersRouter,
+  carsRouter,
+  matchRouter,
+  reviewRouter,
+  paymentRouter,
+  notificationRouter,
+  chatRouter
+);
 router.use(checkValidationError, errorHandler);
 
 export default router;

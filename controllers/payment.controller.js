@@ -7,7 +7,7 @@ import {
   createCustomer,
   getCharges,
   getTransfers,
-} from "../utils/stripe.utils.js";
+} from "../utils/omise.utils.js";
 import Match from "../models/match.model.js";
 import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";

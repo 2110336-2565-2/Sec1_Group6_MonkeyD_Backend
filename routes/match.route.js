@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "../middlewares/jwt.middleware.js";
+import {authenticateUser} from "../middlewares/auth.middleware.js";
 import {
   createMatch,
   getMatches,
@@ -9,24 +9,23 @@ import {
   getMatchStatuses,
   toggleStatus,
   getMatchesBySearch,
-
 } from "../controllers/match.controller.js";
 const router = express.Router();
 
 router
   .route("/match")
-  .get(auth.required, getMatches)
+  .get(authenticateUser.required, getMatches)
   .post(createMatch);
-  // .post(auth.required, createMatch);
+// .post(auth.required, createMatch);
 router.route("/match/status").get(getMatchStatuses);
 router.route("/match/admin").get(getMatchesBySearch);
-router.route("/match/:id").get(auth.required, getMatchInfo);
-router.route("/match/me/:id").get(auth.required, getMyBookings);
+router.route("/match/:id").get(authenticateUser.required, getMatchInfo);
+router.route("/match/me/:id").get(authenticateUser.required, getMyBookings);
 router
   .route("/match/cancel-reservation")
-  .patch(auth.required, cancelReserevation);
+  .patch(authenticateUser.required, cancelReserevation);
 
 // router.route("/match/status").patch(toggleStatus);
-router.route("/match/status").patch(auth.required, toggleStatus);
+router.route("/match/status").patch(authenticateUser.required, toggleStatus);
 
 export default router;

@@ -15,6 +15,7 @@
     "express": "^4.18.2",
     "express-jwt": "5.3.1",
     "express-session": "^1.17.3",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.0",
     "moment-timezone": "^0.5.40",
     "mongoose": "^6.9.0",
@@ -27,6 +28,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
+    "socket.io": "^4.6.1",
     "stripe": "^11.17.0"
   },
   "scripts": {

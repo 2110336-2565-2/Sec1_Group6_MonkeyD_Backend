@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "../middlewares/jwt.middleware.js";
+import {authenticateUser} from "../middlewares/auth.middleware.js";
 import {
   createReview,
   getReviews,
@@ -12,7 +12,7 @@ router
   .get(getReviews)
   // .post(createReview);
   // .get(auth.required, getReviews)
-  .post(auth.required, createReview);
-router.route("/review/:id").get(auth.required, getReviewInfo);
+  .post(authenticateUser.required, createReview);
+router.route("/review/:id").get(authenticateUser.required, getReviewInfo);
 
 export default router;
