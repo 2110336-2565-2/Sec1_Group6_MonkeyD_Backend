@@ -18,6 +18,7 @@ import {
   toggleStatus,
   getUsersBySearch,
   getAllChat,
+  getCSRF,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import {authenticateUser} from "../middlewares/auth.middleware.js";
@@ -64,9 +65,11 @@ router
   .patch(authenticateUser.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(authenticateUser.required, checkLogin); // check if user login
 //router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
-//router.route("/user/status").patch(toggleStatus);
 router.route("/user/status").patch(authenticateUser.required, toggleStatus);
 router.route("/user/admin").get(getUsersBySearch); //get users by search and filter
-router.route("/user/chatRooms/:userId").get(getAllChat);
+router
+  .route("/api/user/chatRooms/:userId")
+  .get(authenticateUser.required, getAllChat);
+router.route("/csrf-token").get(authenticateUser.required, getCSRF);
 
 export default router;

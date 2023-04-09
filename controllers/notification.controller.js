@@ -7,7 +7,6 @@ import Notification from "../models/notification.model.js";
 export const createNotification = (req, res, next) => {
   const notification = new Notification();
   const {text, userID} = req.body.notification;
-  console.log(text, userID);
   if (text) notification.text = text;
 
   if (userID) notification.userID = userID;
@@ -33,7 +32,6 @@ export const getNotifications = async (req, res, next) => {
       userID: userID,
     });
     const sendNotifications = notifications.map((n) => n.toAuthJSON());
-    console.log(sendNotifications);
     return res.json({notifications: sendNotifications});
   } catch (err) {
     return res.status(500).json({message: err.message});
