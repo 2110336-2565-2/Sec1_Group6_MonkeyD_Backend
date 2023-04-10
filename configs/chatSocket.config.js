@@ -18,7 +18,6 @@ const configureChatSocket = (server) => {
     socket.userId = socket.handshake.query.userId;
     authenticateUser.socket(socket, next);
   });
-
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
