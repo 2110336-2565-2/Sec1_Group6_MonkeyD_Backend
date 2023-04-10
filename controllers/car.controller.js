@@ -304,6 +304,24 @@ export const getMyCar = async (req, res, next) => {
       });
     }
 
+    let ts = Date.now();
+    for (const car of cars) {
+      for (const unavailable_time of car.unavailable_times) {
+        let unavailableTimeStart = new Date(unavailable_time.start).getTime();
+        let unavailableTimeEnd = new Date(unavailable_time.end).getTime();
+        console.log(
+          unavailableTimeStart <= ts && unavailableTimeEnd >= ts,
+          unavailableTimeStart,
+          ts,
+          unavailableTimeEnd
+        );
+        if (unavailableTimeStart <= ts && unavailableTimeEnd >= ts) {
+          car.status = "On rent";
+          break;
+        }
+      }
+    }
+
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
