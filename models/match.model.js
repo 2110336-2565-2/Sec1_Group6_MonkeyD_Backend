@@ -16,7 +16,6 @@ const MatchSchema = new mongoose.Schema(
         "Rented",
         "Completed",
       ],
-      //default: "Unverified renter",
     },
     pickupLocation: {
       type: String,

@@ -31,8 +31,10 @@ const jwtMiddleware = (options) => {
 
 const jwtSocketMiddleware = (socket, next) => {
   try {
-    const token = socket.handshake.headers.cookie.split("=")[1];
-
+    const token = socket.handshake.headers.cookie
+      .split(" ")[0]
+      .split("=")[1]
+      .split(";")[0];
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
     }

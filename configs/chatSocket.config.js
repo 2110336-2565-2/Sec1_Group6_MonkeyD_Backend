@@ -4,6 +4,7 @@ import {authenticateUser} from "../middlewares/auth.middleware.js";
 import {
   isUserAllowedInRoom,
   isUsernameAllowedInRoom,
+  validateInput,
 } from "../utils/chat.utils.js";
 const configureChatSocket = (server) => {
   const io = new socketIO(server, {
@@ -13,16 +14,21 @@ const configureChatSocket = (server) => {
       credentials: true,
     },
   });
-
   io.use((socket, next) => {
     socket.userId = socket.handshake.query.userId;
     authenticateUser.socket(socket, next);
   });
-
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("join", async ({chatId, user}) => {
+      const sanitizedChatId = validateInput(chatId);
+      const sanitizedUser = validateInput(user);
+
+      if (!sanitizedChatId || !sanitizedUser) {
+        socket.emit("error", "Invalid input data");
+        return;
+      }
       const userId = socket.decoded_token && socket.decoded_token.id;
       if (userId && user === socket.decoded_token.username) {
         const allowed = await isUserAllowedInRoom(socket.userId, chatId);
@@ -39,6 +45,17 @@ const configureChatSocket = (server) => {
     });
 
     socket.on("message", async (message) => {
+      const sanitizedMessageUser = validateInput(message.user);
+      const sanitizedMessageChatId = validateInput(message.chatId);
+      const sanitizedMessageText = validateInput(message.text);
+      if (
+        !sanitizedMessageUser ||
+        !sanitizedMessageChatId ||
+        !sanitizedMessageText
+      ) {
+        socket.emit("error", "Invalid input data");
+        return;
+      }
       const allowed = await isUsernameAllowedInRoom(
         message.user,
         message.chatId

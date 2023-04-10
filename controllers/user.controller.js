@@ -2,6 +2,8 @@ import passport from "passport";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import express from "express";
+import csrf from "csrf";
 import dotenv from "dotenv";
 import {uploadImage, getImageUrl} from "../utils/gcs.utils.js";
 import {
@@ -13,6 +15,7 @@ import {upload} from "../middlewares/image.middleware.js";
 
 dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
+const csrfProtection = new csrf();
 
 export const createUser = (req, res, next) => {
   const user = new User();
@@ -583,4 +586,15 @@ export const getAllChat = async (req, res, next) => {
   } catch (error) {
     res.status(500).json({error: "An error occurred while getting chat rooms"});
   }
+};
+
+export const getCSRF = async (req, res, next) => {
+  const token = csrfProtection.create(secret);
+  res.cookie("csrf-token", token, {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+    path: "/",
+  });
+  res.json({token});
 };
