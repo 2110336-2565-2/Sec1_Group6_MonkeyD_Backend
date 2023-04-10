@@ -304,6 +304,16 @@ export const getMyCar = async (req, res, next) => {
       });
     }
 
+    let ts = Date.now()
+    for (const car of cars){
+      for (const unavailable_time of car.unavailable_times){
+        console.log(unavailable_time.start <= ts,unavailable_time,ts);
+        if(unavailable_time.start <= ts && unavailable_time.end >= ts){
+          car.status = 'Unavailable';
+          break;
+        }
+      }
+    }
     return res.json(cars);
   } catch (err) {
     return res.status(500).json({message: err.message});
