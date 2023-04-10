@@ -7,9 +7,6 @@ export const createChat = async (req, res, next) => {
   try {
     const {allowedUsers, matchID} = req.body;
     const chat = new Chat({name: "", allowedUsers, matchID});
-    console.log("====================================");
-    console.log(chat);
-    console.log("====================================");
     await chat.save();
     // Add the new room to all allowed users' chatRooms
     await User.updateMany(
