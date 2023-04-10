@@ -60,7 +60,6 @@ ReviewSchema.methods.toAuthJSON = function () {
 };
 
 ReviewSchema.methods.toCarDetailJSON = function () {
-  //console.log(this.createdAt);
   const options = {day: "numeric", month: "long", year: "numeric"};
 
   return {

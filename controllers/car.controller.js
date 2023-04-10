@@ -51,7 +51,6 @@ export const createCars = async (req, res, next) => {
     "",
     carId
   );
-  console.log(energy_types);
   car._id = carId;
   if (owner) car.owner = owner;
   if (status) car.status = status;
@@ -150,10 +149,8 @@ export const getCars = async (req, res, next) => {
         },
       },
     };
-    // console.log(new Date(req.query.startdate), new Date(req.query.enddate));
   }
   if (req.query.province) {
-    console.log(req.query.province);
     condition.province = req.query.province;
   }
   if (req.query.brandlist) {
@@ -214,7 +211,6 @@ export const getCarInfo = async (req, res, next) => {
     let car_url = [];
 
     for (const car_image in car.car_images) {
-      console.log(car.car_images[car_image]);
       let carImageUrl = await getImageUrl(
         process.env.GCS_CAR_IMAGES_BUCKET,
         null,
@@ -309,12 +305,6 @@ export const getMyCar = async (req, res, next) => {
       for (const unavailable_time of car.unavailable_times) {
         let unavailableTimeStart = new Date(unavailable_time.start).getTime();
         let unavailableTimeEnd = new Date(unavailable_time.end).getTime();
-        console.log(
-          unavailableTimeStart <= ts && unavailableTimeEnd >= ts,
-          unavailableTimeStart,
-          ts,
-          unavailableTimeEnd
-        );
         if (unavailableTimeStart <= ts && unavailableTimeEnd >= ts) {
           car.status = "On rent";
           break;
@@ -343,25 +333,7 @@ export const carRented = async (req, res, next) => {
     console.log(err.message);
     return res.status(500).json({message: err.message});
   }
-
-  // let renter;
-  // try {
-  //   renter = await User.findById(renter_id);
-  //   if (renter == null) {
-  //     return res.status(404).json({message: "Cannot find user"});
-  //   }
-  // } catch (err) {
-  //   console.log(err.message);
-  //   return res.status(500).json({message: err.message});
-  // }
-
-  // car.status = car.status === "Rented" ? "Rented" : "Available";
   car.rentedOutCount += 1;
-  // car.unavailable_times.push({
-  //   start: pickUpDateTime,
-  //   end: returnDateTime,
-  //   username: renter.username,
-  // });
   car.save();
   res.send("car rented");
 };
@@ -404,8 +376,6 @@ export const changeCarInfo = async (req, res, next) => {
     if (car == null) {
       return res.status(404).json({message: "Cannot find car"});
     }
-    //console.log(req.body);
-    //console.log(req.body.status);
     if (
       req.body.status &&
       req.body.status !== "Unavailable" &&
@@ -427,9 +397,8 @@ export const changeCarInfo = async (req, res, next) => {
         delete_images = req.body.delete_image;
       }
       for (const url of delete_images) {
-        //console.log(url);
         const regex = /monkeyd-car-images\/(.+?)\?GoogleAccessId/;
-        //const regex = new RegExp(`${car_id}/(.*?)\\?GoogleAccessId`);
+
         const match = url.match(regex);
 
         if (match && match[1]) {
@@ -439,7 +408,7 @@ export const changeCarInfo = async (req, res, next) => {
           console.log("Pattern not found");
         }
       }
-      //console.log(imagesToRemove);
+
       Car.findOneAndUpdate(
         {_id: car_id},
         {
@@ -572,7 +541,7 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
         car.license_plate.match(new RegExp(search, "i"))
       );
     }
-    // console.log(sendUsers, "in");
+
     for (const car of cars) {
       const registration_book_image = car.registration_book_url
         ? await getImageUrl(
@@ -623,10 +592,6 @@ export const carReserved = async (req, res, next) => {
 
     return pickUpTime < intervalEnd && returnTime > intervalStart;
   });
-  console.log(isUnavailable);
-  console.log(pickUpDateTime);
-  console.log(returnDateTime);
-  console.log(car.unavailable_times);
 
   if (isUnavailable) return res.send("The target time is unavailable.");
 

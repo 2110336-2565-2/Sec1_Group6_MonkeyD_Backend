@@ -1,5 +1,6 @@
 import passport from "passport";
 import User from "../models/user.model.js";
+import Match from "../models/match.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import express from "express";
@@ -136,7 +137,6 @@ export const googleCallback = (req, res, next) => {
 
 export const addUserInfo = async (req, res, next) => {
   const id = req.body.id;
-  console.log(id);
   try {
     let user = await User.findById(id);
     if (user == null) {
@@ -475,8 +475,23 @@ export const toggleStatus = async (req, res, next) => {
   } else {
     return res.json({message: "No Action can be taken"});
   }
-  user.save();
-  res.send("User status changed");
+  await user.save();
+  if (action == "Approve") {
+    let query = {renterID: user_id};
+    try {
+      let matches = await Match.find(query);
+      console.log(matches);
+      for (const match of matches) {
+        if (match.status == "Unverified renter") {
+          match.status = "Wait for payment";
+        }
+        await match.save();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  res.send("User and Match status has been updated");
 };
 
 export const getUsersBySearch = async (req, res, next) => {
@@ -522,20 +537,14 @@ export const getUsersBySearch = async (req, res, next) => {
   try {
     for (let i = 0; i < 3; i++) {
       let users = await User.find(condition[i], show_attrs);
-      console.log(users);
       users.forEach((user) => {
         if (!idd.includes(user._id.toString())) {
           allUsers.add(user);
           idd.push(user._id.toString());
-          console.log(user._id.toString());
         }
       });
-      // count += users.length;
-      // const sendCars = cars.map((e) => e.toAuthJSON());
-      // return res.json({users: users, count: users.length});
     }
     const sendUsers = Array.from(allUsers);
-    // console.log(sendUsers, "in");
     for (const sendUser of sendUsers) {
       const userImage = sendUser.image
         ? await getImageUrl(
@@ -562,7 +571,7 @@ export const getUsersBySearch = async (req, res, next) => {
       sendUser.image = userImage;
       sendUser.drivingLicenseImage = drivingImage;
     }
-    // console.log(sendUsers);
+
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});

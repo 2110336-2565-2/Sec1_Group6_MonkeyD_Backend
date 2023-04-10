@@ -84,7 +84,6 @@ export const getMatchInfo = async (req, res, next) => {
 
 export const getMatchStatuses = async (req, res, next) => {
   try {
-    //console.log(Match);
     return res.json({status: Match.schema.path("status").enumValues});
   } catch (err) {
     console.log(err);
@@ -223,7 +222,6 @@ export const getMatchesBySearch = async (req, res, next) => {
         if (!idd.includes(match._id.toString())) {
           allMatches.add(match);
           idd.push(match._id.toString());
-          console.log(match._id.toString());
         }
       });
     }
