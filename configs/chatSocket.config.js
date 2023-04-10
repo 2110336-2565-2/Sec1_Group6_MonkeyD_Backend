@@ -74,9 +74,6 @@ const configureChatSocket = (server) => {
           createdAt: new Date(),
         });
         await newMessage.save();
-        // console.log('====================================');
-        // console.log();
-        // console.log('====================================');
         io.to(message.chatId).emit("message", newMessage);
       }
     });
