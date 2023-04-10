@@ -1,5 +1,6 @@
 import passport from "passport";
 import User from "../models/user.model.js";
+import Match from "../models/match.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import express from "express";
@@ -475,8 +476,22 @@ export const toggleStatus = async (req, res, next) => {
   } else {
     return res.json({message: "No Action can be taken"});
   }
-  user.save();
-  res.send("User status changed");
+  await user.save();
+  if (action == 'Approve'){
+    let query = {renterID: user_id};
+    try {
+      let matches = await Match.find(query).lean();
+      for (const match of matches){
+        if (match.status == 'Unverified renter'){
+          match.status = 'Wait for payment';
+        }
+        await match.save();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  res.send("User and Match status has been updated");
 };
 
 export const getUsersBySearch = async (req, res, next) => {
