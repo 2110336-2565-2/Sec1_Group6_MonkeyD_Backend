@@ -23,6 +23,6 @@ router.route("/payment/transfer/:id").post(createOmiseTransfer);
 
 router.route("/payment/transaction/:id").get(getOmiseTransactions);
 
-router.route("/payment/sorttransaction/:id").get(getOmiseTransactions);
+router.route("/payment/sortTransaction/:id").get(sortOmiseTransactions);
 
 export default router;
