@@ -88,7 +88,7 @@ export const createOmiseCharge = async (req, res, next) => {
     return res.json(charge);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({message: "Failed to get wallet balance"});
+    return res.status(500).json(error);
   }
 };
 
