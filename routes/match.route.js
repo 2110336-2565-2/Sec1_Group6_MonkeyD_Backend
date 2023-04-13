@@ -9,6 +9,7 @@ import {
   getMatchStatuses,
   toggleStatus,
   getMatchesBySearch,
+  matchComplete,
 } from "../controllers/match.controller.js";
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router
 
 // router.route("/match/status").patch(toggleStatus);
 router.route("/match/status").patch(authenticateUser.required, toggleStatus);
-
+// router.route("/match/complete").patch(authenticateUser.required, matchComplete);
+router.route("/match/complete").patch(matchComplete);
 export default router;

@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import Match from "../models/match.model.js";
+import Chat from "../models/chat.model.js";
+import User from "../models/user.model.js";
 import Car from "../models/car.model.js";
 import {getImageUrl} from "../utils/gcs.utils.js";
 
@@ -230,4 +232,39 @@ export const getMatchesBySearch = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
+};
+
+export const matchComplete = async (req, res, next) => {
+  const match_id = req.headers.match_id;
+  let match;
+  try {
+    match = await Match.findById(match_id);
+    if (match == null) {
+      return res.status(404).json({message: "Cannot find match"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  match.status = "Completed";
+  match.save();
+  let chat;
+  try {
+    chat = await Chat.find({ matchID: match_id });
+    if (chat == null) {
+      return res.status(404).json({message: "Cannot find chat"});
+    }
+    for (let c of chat){
+      await User.updateMany(
+        {_id: {$in: c.allowedUsers}},
+        {$pull: {chatRooms: c._id}},
+        {new: true}
+      );
+      await Chat.deleteOne({ _id: c._id });
+    }
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({message: err.message});
+  }
+  res.send("Match status changed and Chat deleted");
 };
