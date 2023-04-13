@@ -165,3 +165,42 @@ export const getOmiseTransactions = async (req, res, next) => {
     return res.status(500).json({message: "Failed to get transaction"});
   }
 };
+
+export const sortOmiseTransactions = async (req, res, next) => {
+  const {id} = req.params;
+  const sortBy = req.body.sortBy;
+  try {
+    let user = await User.findById(id);
+    if (!user.omiseRecipientId && !user.omiseCustomerId) {
+      return res.json([]);
+    }
+    let charges = await getCharges(user.omiseCustomerId, 20, 0);
+    let transfers = await getTransfers(user.omiseRecipientId, 20, 0);
+    let transactions = [...charges, ...transfers];
+    if (sortBy == "newest date") {
+      transactions.sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    } else if (sortBy == "oldest date") {
+      transactions.sort(function (a, b) {
+        return new Date(a.created_at) - new Date(b.created_at);
+      });
+    } else if (sortBy == "highest price") {
+      transactions.sort(function (a, b) {
+        return b.rental_price - a.rental_price;
+      });
+    } else if (sortBy == "lowest price") {
+      transactions.sort(function (a, b) {
+        return a.rental_price - b.rental_price;
+      });
+    } else {
+      transactions.sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    }
+    return res.json(transactions);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({message: "Failed to get transaction"});
+  }
+};
