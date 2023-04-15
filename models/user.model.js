@@ -124,6 +124,12 @@ const UserSchema = new mongoose.Schema(
         ref: "Chat",
       },
     ],
+    muteList: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat",
+      },
+    ],
     hash: String,
     salt: String,
   },
