@@ -26,12 +26,6 @@ router
       {name: "registration_book_image", maxCount: 1},
       {name: "car_images", maxCount: 10},
     ]),
-    // .post(
-    //   authenticateUser.required,
-    //   upload.fields([
-    //     {name: "registration_book_image", maxCount: 1},
-    //     {name: "car_images", maxCount: 10},
-    //   ]),
     createCars
   )
   .patch(authenticateUser.required, carRented)
