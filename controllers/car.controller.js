@@ -27,10 +27,8 @@ export const createCars = async (req, res, next) => {
     rating = 0,
     rental_price,
   } = req.body;
-
   const id = req.body.owner_user_id;
   const carId = new ObjectId();
-
   const car_images = req.files["car_images"];
   const car_image_uris = [];
   for (const car_image of car_images) {
@@ -71,7 +69,6 @@ export const createCars = async (req, res, next) => {
   if (rating) car.rating = rating;
   if (car_image_uris.length) car.car_images = car_image_uris;
   if (available_times) car.setAvailableTimes(available_times);
-
   car
     .save()
     .then(function () {
@@ -119,12 +116,6 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
-    // condition.available_times = {
-    //   $elemMatch: {
-    //     start: {$lte: new Date(req.query.startdate)},
-    //     end: {$gte: new Date(req.query.enddate)},
-    //   },
-    // };
     condition.unavailable_times = {
       $not: {
         $elemMatch: {
@@ -166,9 +157,13 @@ export const getCars = async (req, res, next) => {
       return res.status(500).json({message: err.message});
     }
   }
-
+  const page = req.query.page || 1;
+  const size = req.query.size || 25;
   try {
-    let cars = await Car.find(condition, show_attrs).lean();
+    let cars = await Car.find(condition, show_attrs)
+      .skip((page-1)*size)
+      .limit(size)
+      .exec();
     for (const car of cars) {
       if (car.car_images && car.car_images.length) {
         const user = await User.findOne(
@@ -193,7 +188,14 @@ export const getCars = async (req, res, next) => {
         delete car.car_images;
       }
     }
-    return res.json(cars);
+    const count = await Car.countDocuments(condition);
+    return res.json({
+      currentPage: page,
+      pages: Math.ceil(count / size),
+      currentCount: cars.length,
+      totalCount: count,
+      data: cars
+    });
   } catch (err) {
     return res.status(500).json({message: err.message});
   }

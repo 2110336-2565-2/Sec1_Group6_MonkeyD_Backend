@@ -22,7 +22,7 @@ router
   .route("/car")
   .get(getCars)
   .post(
-    authenticateUser.required,
+  authenticateUser.required,
     upload.fields([
       {name: "registration_book_image", maxCount: 1},
       {name: "car_images", maxCount: 10},
