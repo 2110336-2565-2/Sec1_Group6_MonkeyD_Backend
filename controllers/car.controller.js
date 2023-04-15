@@ -116,12 +116,6 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
-    // condition.available_times = {
-    //   $elemMatch: {
-    //     start: {$lte: new Date(req.query.startdate)},
-    //     end: {$gte: new Date(req.query.enddate)},
-    //   },
-    // };
     condition.unavailable_times = {
       $not: {
         $elemMatch: {
@@ -660,29 +654,3 @@ export const getUnavailableTimes = async (req, res, next) => {
     return res.status(500).json({message: err.message});
   }
 };
-
-// export const carPagination = async (req, res, next) => {
-//   try {
-//     const page = req.query.page || 1;
-//     const size = req.query.size || 25;
-
-//     const [_results, _count] = await Promise.all([
-//       Car.find()
-//         .skip(calSkip(page, size))
-//         .limit(size)
-//         .exec(),
-//       Car.countDocuments().exec()
-//     ]);
-
-//     return res.json({
-//       currentPage: page,
-//       pages: calPage(_count, size),
-//       currentCount: _results.length,
-//       totalCount: _count,
-//       data: _results
-//     });
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
