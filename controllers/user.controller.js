@@ -148,8 +148,9 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.username) user.username = req.body.username;
       if (imageUri) user.image = imageUri;
       if (req.body.owncars) user.owncars = req.body.owncars;
-      if (req.body.isLessor) user.isLessor = req.body.isLessor;
-      if (req.body.isAdmin) user.isLessor = req.body.isAdmin;
+      if (req.body.role) user.role = req.body.role;
+      // if (req.body.isLessor) user.isLessor = req.body.isLessor;
+      // if (req.body.isAdmin) user.isLessor = req.body.isAdmin;
       if (req.body.firstName) user.firstName = req.body.firstName;
       if (req.body.lastName) user.lastName = req.body.lastName;
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
@@ -401,7 +402,8 @@ export const updateRoleLessor = async (req, res, next) => {
     user.IDCardImage = IDCardImageUri;
   }
 
-  user.isLessor = true;
+  //user.isLessor = true;
+  user.role = "renter";
   user.prefix = prefix;
   user.firstName = first_name;
   user.lastName = last_name;
@@ -423,8 +425,8 @@ export const updateRoleAdmin = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-
-  user.isAdmin = true;
+  //user.isAdmin = true;
+  user.role = "admin";
   user.save();
   res.send("role admin updated");
 };
@@ -441,7 +443,7 @@ export const getUserRole = async (req, res, next) => {
       res.status(404).json({message: "Cannot find user"});
     } else {
       res.send({
-        userRole: user.isLessor ? "lessor" : "renter",
+        userRole: user.role,
       });
     }
   } catch (error) {
