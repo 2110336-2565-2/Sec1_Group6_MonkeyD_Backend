@@ -161,7 +161,7 @@ export const getCars = async (req, res, next) => {
   const size = req.query.size || 25;
   try {
     let cars = await Car.find(condition, show_attrs)
-      .skip((page-1)*size)
+      .skip((page - 1) * size)
       .limit(size)
       .exec();
     for (const car of cars) {
@@ -194,7 +194,7 @@ export const getCars = async (req, res, next) => {
       pages: Math.ceil(count / size),
       currentCount: cars.length,
       totalCount: count,
-      data: cars
+      data: cars,
     });
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -237,7 +237,7 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const username = req.params.id;
+  const username = req.params.username;
   const sortBy = req.body.sortBy;
   const province = req.body.province;
 

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import User from "../models/user.model.js";
 
 dotenv.config({path: ".env"});
 
@@ -52,14 +53,41 @@ const jwtSocketMiddleware = (socket, next) => {
 
 export const authenticateUser = {
   required: jwtMiddleware({
-    userProperty: "payload",
+    userProperty: "userCredential",
     getToken: getTokenFromCookie,
     credentialsRequired: true,
   }),
   optional: jwtMiddleware({
-    userProperty: "payload",
+    userProperty: "userCredential",
     getToken: getTokenFromCookie,
     credentialsRequired: false,
   }),
   socket: jwtSocketMiddleware,
+};
+
+export const authorizeUser = (...roles) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findOne({_id: req.userCredential.id}, {role: 1});
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      if (!roles.includes(user.role)) {
+        return res.status(403).json({
+          success: false,
+          message: `User role ${user.role} is not authorized to access this route.`,
+        });
+      }
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  };
 };
