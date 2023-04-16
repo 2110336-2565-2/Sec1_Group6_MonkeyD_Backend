@@ -201,7 +201,8 @@ export const getCars = async (req, res, next) => {
       pages: Math.ceil(count / size),
       currentCount: cars.length,
       totalCount: count,
-      data: cars,
+      remainCount: Math.max(count-page*size,0),
+      data: cars
     });
   } catch (err) {
     return res.status(500).json({message: err.message});
