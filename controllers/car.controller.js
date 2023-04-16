@@ -161,10 +161,14 @@ export const getCars = async (req, res, next) => {
   const size = req.query.size || 25;
   try {
     let cars = await Car.find(condition, show_attrs)
-      .skip((page-1)*size)
+      .skip((page - 1) * size)
       .limit(size)
+      .lean()
       .exec();
-    for (const car of cars) {
+
+    for (let i = 0; i < cars.length; i++) {
+      let car = cars[i];
+
       if (car.car_images && car.car_images.length) {
         const user = await User.findOne(
           {username: car.owner},
@@ -176,19 +180,22 @@ export const getCars = async (req, res, next) => {
           null,
           user.image
         );
-        car.user_image = userImageUrl;
 
         const carImageUrl = await getImageUrl(
           process.env.GCS_CAR_IMAGES_BUCKET,
           null,
           car.car_images[0]
         );
-
+        car.user_image = userImageUrl;
         car.car_image = carImageUrl;
-        delete car.car_images;
+
+        cars[i] = car;
+        delete cars[i].car_images;
       }
     }
+
     const count = await Car.countDocuments(condition);
+
     return res.json({
       currentPage: page,
       pages: Math.ceil(count / size),
@@ -238,7 +245,7 @@ export const getCarInfo = async (req, res, next) => {
 };
 
 export const getMyCar = async (req, res, next) => {
-  const username = req.params.id;
+  const username = req.params.username;
   const sortBy = req.body.sortBy;
   const province = req.body.province;
 

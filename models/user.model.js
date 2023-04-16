@@ -55,14 +55,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["renter", "lessor", "admin"],
       default: "renter",
     },
-    // isLessor: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // isAdmin: {
-    //   type: Boolean,
-    //   default: false,
-    // },
     firstName: {
       type: String,
       default: "",
@@ -202,8 +194,6 @@ UserSchema.methods.getUserInfoJSON = async function () {
     drivingLicenseImage: this.drivingLicenseImage,
     drivingLicenseNumber: this.drivingLicenseNumber,
     prefix: this.prefix,
-    // isAdmin: this.isAdmin,
-    // isLessor: this.isLessor,
     role: this.role,
     rating: this.rating,
     rentedCount: this.rentedCount,
@@ -229,8 +219,6 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
     user_id: this._id,
     image: imageUrl,
     role: this.role,
-    //isLessor: this.isLessor,
-    //isAdmin: this.isAdmin,
   };
 };
 
