@@ -55,4 +55,5 @@ const swaggerOptions = {
 
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
+//console.log(`http://localhost:8080/docs/#`);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
