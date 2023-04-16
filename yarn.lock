@@ -5279,9 +5279,9 @@ swagger-editor@^2.9.2:
   resolved "https://registry.npmjs.org/swagger-editor/-/swagger-editor-2.10.5.tgz"
   integrity sha512-hiutL0QlvyaS5mIIIWArI+mM+fUcaYq1ZineDuTAiiGWfEqh6Nq8ERXo+iS+EPmcvSBD2sDxT7JrlblR2pcSLQ==
 
-swagger-jsdoc@^6.0.0:
+swagger-jsdoc@6.0.0:
   version "6.0.0"
-  resolved "https://registry.npmjs.org/swagger-jsdoc/-/swagger-jsdoc-6.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/swagger-jsdoc/-/swagger-jsdoc-6.0.0.tgz#dee2e0b12950ea63fc842d9a6048d47ff8780334"
   integrity sha512-gI2GoziKS3alcnWI86LTpXeFobiRsfuMoPLUzbpivPRPeAybAN8yLPmjRFaEXXF67SCnH4a/68CnkGNBh/C7vQ==
   dependencies:
     commander "6.2.0"
@@ -5340,7 +5340,7 @@ swagger-ui-dist@>=4.11.0:
 
 swagger-ui-express@^4.6.2:
   version "4.6.2"
-  resolved "https://registry.npmjs.org/swagger-ui-express/-/swagger-ui-express-4.6.2.tgz"
+  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.6.2.tgz#61b2cb9fd7932cdccff99e0efdf700a5459e493c"
   integrity sha512-MHIOaq9JrTTB3ygUJD+08PbjM5Tt/q7x80yz9VTFIatw8j5uIWKcr90S0h5NLMzFEDC6+eVprtoeA5MDZXCUKQ==
   dependencies:
     swagger-ui-dist ">=4.11.0"
