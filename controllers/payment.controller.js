@@ -167,11 +167,11 @@ export const getOmiseTransactions = async (req, res, next) => {
       });
     } else if (sortBy == "highest price") {
       transactions.sort(function (a, b) {
-        return b.rental_price - a.rental_price;
+        return b.amount - a.amount;
       });
     } else if (sortBy == "lowest price") {
       transactions.sort(function (a, b) {
-        return a.rental_price - b.rental_price;
+        return a.amount - b.amount;
       });
     } else {
       transactions.sort(function (a, b) {
