@@ -16,13 +16,9 @@
     "csrf": "^3.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-<<<<<<< HEAD
-    "express-jwt": "^8.4.1",
-=======
-    "express-jwt": "5.3.1",
+    "express-jwt": "8.4.1",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^6.7.0",
->>>>>>> main
     "express-session": "^1.17.3",
     "helmet": "^6.1.5",
     "hpp": "^0.2.3",
