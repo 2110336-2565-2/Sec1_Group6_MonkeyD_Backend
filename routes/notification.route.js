@@ -98,15 +98,16 @@ import {
   haveNotifications,
 } from "../controllers/notification.controller.js";
 import {authenticateUser} from "../middlewares/auth.middleware.js";
-// import {
-// } from "../controllers/notification.controller.js";
+
 const router = express.Router();
 
 router
   .route("/notification")
-  .post(createNotification)
-  .get(getNotifications)
-  .patch(readNotifications);
-router.route("/notification/have-noti").get(haveNotifications);
+  .post(authenticateUser.required, createNotification)
+  .get(authenticateUser.required, getNotifications)
+  .patch(authenticateUser.required, readNotifications);
+router
+  .route("/notification/have-noti")
+  .get(authenticateUser.required, haveNotifications);
 
 export default router;

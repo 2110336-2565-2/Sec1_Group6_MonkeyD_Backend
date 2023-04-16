@@ -49,13 +49,11 @@ const UserSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    isLessor: {
-      type: Boolean,
-      default: false,
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    role: {
+      type: String,
+      required: [true, "can't be blank"],
+      enum: ["renter", "lessor", "admin"],
+      default: "renter",
     },
     firstName: {
       type: String,
@@ -113,6 +111,12 @@ const UserSchema = new mongoose.Schema(
       default: null,
     },
     chatRooms: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat",
+      },
+    ],
+    muteList: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
@@ -190,8 +194,7 @@ UserSchema.methods.getUserInfoJSON = async function () {
     drivingLicenseImage: this.drivingLicenseImage,
     drivingLicenseNumber: this.drivingLicenseNumber,
     prefix: this.prefix,
-    isAdmin: this.isAdmin,
-    isLessor: this.isLessor,
+    role: this.role,
     rating: this.rating,
     rentedCount: this.rentedCount,
     rentedOutCount: this.rentedOutCount,
@@ -215,8 +218,7 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
     username: this.username,
     user_id: this._id,
     image: imageUrl,
-    isLessor: this.isLessor,
-    isAdmin: this.isAdmin,
+    role: this.role,
   };
 };
 

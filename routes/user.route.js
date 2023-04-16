@@ -463,7 +463,10 @@ import {
   getCSRF,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
-import {authenticateUser} from "../middlewares/auth.middleware.js";
+import {
+  authenticateUser,
+  authorizeUser,
+} from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/image.middleware.js";
 
 const router = express.Router();
@@ -507,8 +510,12 @@ router
   .patch(authenticateUser.required, updateRoleAdmin); // change role
 router.route("/user/check-login").get(authenticateUser.required, checkLogin); // check if user login
 //router.route("/user/lesser-info").patch(auth.required, addLesserInfo); // check if user login
-router.route("/user/status").patch(authenticateUser.required, toggleStatus);
-router.route("/user/admin").get(getUsersBySearch); //get users by search and filter
+router
+  .route("/user/status")
+  .patch(authenticateUser.required, authorizeUser("admin"), toggleStatus);
+router
+  .route("/user/admin")
+  .get(authenticateUser.required, authorizeUser("admin"), getUsersBySearch); //get users by search and filter
 router
   .route("/api/user/chatRooms/:userId")
   .get(authenticateUser.required, getAllChat);

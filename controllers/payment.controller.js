@@ -148,6 +148,7 @@ export const createOmiseTransfer = async (req, res, next) => {
 
 export const getOmiseTransactions = async (req, res, next) => {
   const {id} = req.params;
+  const sortBy = req.body.sortBy;
   try {
     let user = await User.findById(id);
     if (!user.omiseRecipientId && !user.omiseCustomerId) {
@@ -156,9 +157,27 @@ export const getOmiseTransactions = async (req, res, next) => {
     let charges = await getCharges(user.omiseCustomerId, 20, 0);
     let transfers = await getTransfers(user.omiseRecipientId, 20, 0);
     let transactions = [...charges, ...transfers];
-    await transactions.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
+    if (sortBy == "newest date") {
+      transactions.sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    } else if (sortBy == "oldest date") {
+      transactions.sort(function (a, b) {
+        return new Date(a.created_at) - new Date(b.created_at);
+      });
+    } else if (sortBy == "highest price") {
+      transactions.sort(function (a, b) {
+        return b.amount - a.amount;
+      });
+    } else if (sortBy == "lowest price") {
+      transactions.sort(function (a, b) {
+        return a.amount - b.amount;
+      });
+    } else {
+      transactions.sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    }
     return res.json(transactions);
   } catch (error) {
     console.error(error);

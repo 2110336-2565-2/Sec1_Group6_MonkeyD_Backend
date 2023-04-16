@@ -187,7 +187,10 @@
 
 
 import express from "express";
-import {authenticateUser} from "../middlewares/auth.middleware.js";
+import {
+  authenticateUser,
+  authorizeUser,
+} from "../middlewares/auth.middleware.js";
 import {
   createPayment,
   getPayments,
@@ -198,16 +201,23 @@ import {
 } from "../controllers/payment.controller.js";
 const router = express.Router();
 
-router.route("/payment").get(getPayments).post(createPayment);
+router
+  .route("/payment")
+  .get(getPayments)
+  .post(authenticateUser.required, createPayment);
 
-router.route("/payment/:id").get(getPaymentsByID);
+router.route("/payment/:id").get(authenticateUser.required, getPaymentsByID);
 
-// router.route("/wallet/:id").post(createOmiseAccount);
+router
+  .route("/payment/charge/:id")
+  .post(authenticateUser.required, createOmiseCharge);
 
-router.route("/payment/charge/:id").post(createOmiseCharge);
+router
+  .route("/payment/transfer/:id")
+  .post(authenticateUser.required, createOmiseTransfer);
 
-router.route("/payment/transfer/:id").post(createOmiseTransfer);
-
-router.route("/payment/transaction/:id").get(getOmiseTransactions);
+router
+  .route("/payment/transaction/:id")
+  .post(authenticateUser.required, getOmiseTransactions);
 
 export default router;

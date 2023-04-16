@@ -18,3 +18,26 @@ export const createChat = async (req, res, next) => {
     res.status(500).json({error: error.message});
   }
 };
+export const toggleNotiChat = async (req, res, next) => {
+  const chat_id = req.headers.chat_id;
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).send({message: "Cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  const index = user.muteList.indexOf(chat_id);
+  if (index !== -1) {
+    user.muteList.splice(index, 1);
+    res.send("Turn on notification for this chat");
+  }
+  else{
+    user.muteList.push(chat_id);
+    res.send("Turn off notification for this chat");
+  }
+  user.save();
+};
