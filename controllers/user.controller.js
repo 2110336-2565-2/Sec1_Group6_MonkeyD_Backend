@@ -149,8 +149,6 @@ export const addUserInfo = async (req, res, next) => {
       if (imageUri) user.image = imageUri;
       if (req.body.owncars) user.owncars = req.body.owncars;
       if (req.body.role) user.role = req.body.role;
-      // if (req.body.isLessor) user.isLessor = req.body.isLessor;
-      // if (req.body.isAdmin) user.isLessor = req.body.isAdmin;
       if (req.body.firstName) user.firstName = req.body.firstName;
       if (req.body.lastName) user.lastName = req.body.lastName;
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
@@ -402,7 +400,6 @@ export const updateRoleLessor = async (req, res, next) => {
     user.IDCardImage = IDCardImageUri;
   }
 
-  //user.isLessor = true;
   user.role = "renter";
   user.prefix = prefix;
   user.firstName = first_name;
@@ -425,7 +422,7 @@ export const updateRoleAdmin = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({message: err.message});
   }
-  //user.isAdmin = true;
+
   user.role = "admin";
   user.save();
   res.send("role admin updated");
