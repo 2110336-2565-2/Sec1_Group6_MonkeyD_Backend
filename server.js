@@ -16,8 +16,8 @@ import http from "http";
 import connectToDatabase from "./configs/mongodb.config.js";
 import configureChatSocket from "./configs/chatSocket.config.js";
 
-import swaggerJsDoc from 'swagger-jsdoc';
-import swaggerUI from 'swagger-ui-express';
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
 
 dotenv.config({path: ".env"});
 const isProduction = process.env.NODE_ENV === "production";
@@ -58,17 +58,16 @@ server.listen(
 // Swagger documentation setup
 const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Library API',
-      version: '1.0.0',
-      description: 'A simple Express VacQ API'
-    }
+      title: "Library API",
+      version: "1.0.0",
+      description: "A simple Express VacQ API",
+    },
   },
-  apis: ['./routes/*.js'],
+  apis: ["./routes/*.js"],
 };
-
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 //console.log(`http://localhost:8080/docs/#`);
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
