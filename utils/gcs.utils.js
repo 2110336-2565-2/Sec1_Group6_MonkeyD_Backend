@@ -7,7 +7,7 @@ dotenv.config({path: ".env"});
 
 const storage = new Storage({
   projectId: process.env.GCP_PROJECT_ID,
-  keyFilename: "gcs-admin-key.json",
+  credentials: JSON.parse(process.env.GCS_KEY_FILE),
 });
 
 const upload = multer({storage: multer.memoryStorage()});
