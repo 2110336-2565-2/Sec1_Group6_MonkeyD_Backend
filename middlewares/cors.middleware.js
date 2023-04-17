@@ -7,7 +7,8 @@ const frontend_port = process.env.FRONTEND_PORT;
 const corsOptions = {
   origin: [
     "http://localhost:3000",
-    "https://monkey-d-frontend-87os4xas6-pwanstax.vercel.app",
+    "https://monkey-d-frontend-ekaqusb0q-pwanstax.vercel.app",
+    "https://monkey-d-frontend.vercel.app",
   ],
   credentials: true,
   methods: "POST, OPTIONS, GET, PUT, DELETE, PATCH",

@@ -9,7 +9,7 @@ import {
 const configureChatSocket = (server) => {
   const io = new socketIO(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://monkey-d-frontend.vercel.app",
       methods: ["GET", "POST"],
       credentials: true,
     },
