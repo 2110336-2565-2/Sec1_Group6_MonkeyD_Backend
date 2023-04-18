@@ -62,6 +62,7 @@ export const localLogin = (req, res, next) => {
         secure: true,
         expires: 0,
         path: "/",
+        domain: "monkeydcar.website",
       });
 
       res.header(user.getIdJSON()).send("Login success");
@@ -105,7 +106,7 @@ export const googleCallback = (req, res, next) => {
 
       res.cookie("auth", cookieData, {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "none",
         secure: true,
         expires: 0,
         path: "/",
@@ -114,20 +115,22 @@ export const googleCallback = (req, res, next) => {
         "userID",
         {userID: user._id},
         {
-          sameSite: "lax",
+          sameSite: "none",
           secure: true,
           expires: 0,
           path: "/",
+          domain: "monkeydcar.website",
         }
       );
       res.cookie(
         "username",
         {username: user.username},
         {
-          sameSite: "lax",
+          sameSite: "none",
           secure: true,
           expires: 0,
           path: "/",
+          domain: "monkeydcar.website",
         }
       );
       res.redirect(process.env.FRONTEND_PORT);
@@ -188,12 +191,16 @@ export const getUserInfo = async (req, res, next) => {
 };
 
 export const logout = async (req, res, next) => {
-  // also use for collecting log in the future
   const cookie_name = req.body.cookie_name;
   res.clearCookie(cookie_name, {
     path: "/",
+    domain: "monkeydcar.website",
   });
-  res.status(200).send("logout succesfully");
+  res.clearCookie(cookie_name, {
+    path: "/",
+    domain: "service.monkeydcar.website",
+  });
+  res.status(200).send("logout successfully");
 };
 
 export const forgotPassword = async (req, res, next) => {
