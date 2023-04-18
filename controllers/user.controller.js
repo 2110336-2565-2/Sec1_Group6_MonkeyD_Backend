@@ -407,7 +407,7 @@ export const updateRoleLessor = async (req, res, next) => {
     user.IDCardImage = IDCardImageUri;
   }
 
-  user.role = "renter";
+  user.role = "lessor";
   user.prefix = prefix;
   user.firstName = first_name;
   user.lastName = last_name;
