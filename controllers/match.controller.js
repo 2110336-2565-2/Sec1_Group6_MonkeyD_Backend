@@ -190,6 +190,10 @@ export const toggleStatus = async (req, res, next) => {
     if (action == "Cancel") {
       match.status = "Cancelled";
     } else return res.json({message: "No Action can be taken"});
+  } else if (match.status == "Rented") {
+    if (action == "Completed") {
+      match.status = "Completed";
+    } else return res.json({message: "No Action can be taken"});
   } else {
     return res.json({message: "No Action can be taken"});
   }
