@@ -64,7 +64,7 @@ export const getMatches = async (req, res, next) => {
   if (req.query.renterID) {
     condition.renterID = req.query.renterID;
   }
-
+  
   try {
     let matches = await Match.find(condition);
     const sendMatches = matches.map((e) => e.toAuthJSON());
