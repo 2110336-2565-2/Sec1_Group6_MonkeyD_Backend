@@ -84,6 +84,18 @@ const CarSchema = new mongoose.Schema(
       type: String,
       required: [true, "can't be blank"],
     },
+    available_times: [
+      {
+        start: {
+          type: Date,
+          required: [true, "can't be blank"],
+        },
+        end: {
+          type: Date,
+          required: [true, "can't be blank"],
+        },
+      },
+    ],
     unavailable_times: [
       {
         start: {
@@ -160,6 +172,18 @@ const CarSchema = new mongoose.Schema(
 //   };
 // };
 
+CarSchema.methods.setAvailableTimes = function (times) {
+  let available_times = times;
+  available_times.map(strToDate);
+  function strToDate(x) {
+    return {
+      start: new Date(x.start),
+      end: new Date(x.end),
+    };
+  }
+  this.available_times = available_times;
+};
+
 CarSchema.methods.toAuthJSON = function () {
   return {
     owner: this.owner,
@@ -170,6 +194,10 @@ CarSchema.methods.toAuthJSON = function () {
     year: this.year,
     energy_types: this.energy_types,
     province: this.province,
+    available_times: this.available_times.map((x) => ({
+      start: x.start,
+      end: x.end,
+    })),
     rental_price: this.rental_price,
     passenger: this.passenger,
     rating: this.rating,
