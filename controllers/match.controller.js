@@ -199,8 +199,10 @@ export const getMatchesBySearch = async (req, res, next) => {
     search[2][2].license_plate = {$regex: req.query.search, $options: "i"};
   }
   try {
-    for (let i = 0; i < 3; i++) {
-      let matches = await Match.find(condition)
+    for (let i = 0; i < 4; i++) {
+      let matches;
+      if(i!=3){
+        matches = await Match.find(condition)
         .populate({
           path: "renterID",
           match: search[i][0],
@@ -213,6 +215,13 @@ export const getMatchesBySearch = async (req, res, next) => {
           path: "carID",
           match: search[i][2],
         });
+      }
+      else{
+        if (req.query.search){
+          condition._id = {$regex: req.query.search, $options: "i"};
+        }
+        matches = await Match.find(condition)
+      }
 
       matches = matches.filter(
         (match) =>
@@ -227,7 +236,20 @@ export const getMatchesBySearch = async (req, res, next) => {
         }
       });
     }
-    const sendMatches = [...allMatches].map((e) => e.toAuthJSON());
+
+    let mats;
+    if (req.query.sortBy == "oldest date"){
+      mats =  [...allMatches].sort(function (a, b) {
+        return new Date(a.created_at) - new Date(b.created_at);
+      });
+    }
+    else{
+      mats =  [...allMatches].sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    }
+
+    const sendMatches = mats.map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
