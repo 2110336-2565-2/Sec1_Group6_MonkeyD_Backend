@@ -77,6 +77,7 @@ MatchSchema.methods.toAuthJSON = function () {
     price: this.price,
     status: this.status,
     isReview: this.isReview,
+    createdAt: this.createdAt,
   };
 };
 
