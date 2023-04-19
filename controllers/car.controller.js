@@ -102,7 +102,7 @@ export const getCars = async (req, res, next) => {
     reviewCount: 1,
   };
 
-  let condition = {renter: null || ""};
+  let condition = {renter: null || "", status: "Available"};
   if (req.query.minprice || req.query.maxprice) {
     condition.rental_price = {
       $gte: parseFloat(req.query.minprice) || 0,
