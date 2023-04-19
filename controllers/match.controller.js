@@ -186,7 +186,7 @@ export const getMatchesBySearch = async (req, res, next) => {
   let search = [
     [{}, {}, {}],
     [{}, {}, {}],
-    [{}, {}, {}],
+    [{}, {}, {}]
   ];
   let idd = [];
   let allMatches = new Set();
@@ -215,13 +215,22 @@ export const getMatchesBySearch = async (req, res, next) => {
           path: "carID",
           match: search[i][2],
         });
+
       }
       else{
         if (req.query.search){
-          condition._id = {$regex: req.query.search, $options: "i"};
+          // let cond = {};
+          // condition._id = {$regex: (req.query.search), $options: "i"};
+          // console.log(condition._id);
+          const seaRCh = req.query.search;
+          matches = await Match.find(condition);
+          matches = matches.filter(
+            (match) =>
+              match._id.toString().includes(seaRCh)
+          );
         }
-        matches = await Match.find(condition)
       }
+      // {_id: " nvdvk"}
 
       matches = matches.filter(
         (match) =>
@@ -249,7 +258,7 @@ export const getMatchesBySearch = async (req, res, next) => {
       });
     }
 
-    const sendMatches = mats.map((e) => e.toAuthJSON());
+    const sendMatches = [...allMatches].map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
