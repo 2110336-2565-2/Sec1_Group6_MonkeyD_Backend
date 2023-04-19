@@ -580,6 +580,12 @@ export const carReserved = async (req, res, next) => {
 
   if (renterID == lessorID)
     return res.send({message: "You can't rent your car."});
+  
+  if (pickUpDateTime >= returnDateTime)
+    return res.send({message: "Invalid Date: End Date must be after Start Date."});
+
+  if (!(price) || price == " " || price == "")
+    return res.send({message: "Price can't be blank"});
 
   let car;
   try {
