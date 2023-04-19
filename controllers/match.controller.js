@@ -192,6 +192,24 @@ export const toggleStatus = async (req, res, next) => {
     } else return res.json({message: "No Action can be taken"});
   } else if (match.status == "Rented") {
     if (action == "Completed") {
+      let chat;
+      try {
+        chat = await Chat.find({ matchID: match_id });
+        if (chat == null) {
+          return res.status(404).json({message: "Cannot find chat"});
+        }
+        for (let c of chat){
+          await User.updateMany(
+            {_id: {$in: c.allowedUsers}},
+            {$pull: {chatRooms: c._id}},
+            {new: true}
+          );
+          await Chat.deleteOne({ _id: c._id });
+        }
+      } catch (err) {
+        console.log(err.message);
+        return res.status(500).json({message: err.message});
+      }
       match.status = "Completed";
     } else return res.json({message: "No Action can be taken"});
   } else {
