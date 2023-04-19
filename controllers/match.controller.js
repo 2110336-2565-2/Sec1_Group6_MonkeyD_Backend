@@ -148,7 +148,23 @@ export const cancelReserevation = async (req, res, next) => {
   }
   match.status = "Cancelled";
   match.save();
-  return res.json(match);
+  let car;
+  try {
+    car = await Car.findById(match.carID);
+    if (car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  const start = new Date(match.pickUpDateTime);
+  const end = new Date(match.returnDateTime);
+
+  car.unavailable_times = car.unavailable_times.filter((time) => {
+    return time.start.getTime() !== start.getTime() || time.end.getTime() !== end.getTime();
+  });
+  car.save();
+  return res.send("Cancel booking");
 };
 
 export const toggleStatus = async (req, res, next) => {
