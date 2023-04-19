@@ -110,6 +110,7 @@ export const googleCallback = (req, res, next) => {
         secure: true,
         expires: 0,
         path: "/",
+        domain: "monkeydcar.website",
       });
       res.cookie(
         "userID",

@@ -237,14 +237,14 @@ export const getMatchesBySearch = async (req, res, next) => {
       });
     }
 
-    let mats;
+    let mats = [...allMatches];
     if (req.query.sortBy == "oldest date"){
-      mats =  [...allMatches].sort(function (a, b) {
+      mats =  mats.sort(function (a, b) {
         return new Date(a.created_at) - new Date(b.created_at);
       });
     }
     else{
-      mats =  [...allMatches].sort(function (a, b) {
+      mats =  mats.sort(function (a, b) {
         return new Date(b.created_at) - new Date(a.created_at);
       });
     }
