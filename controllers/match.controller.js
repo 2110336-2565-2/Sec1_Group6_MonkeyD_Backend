@@ -227,7 +227,7 @@ export const getMatchesBySearch = async (req, res, next) => {
   let search = [
     [{}, {}, {}],
     [{}, {}, {}],
-    [{}, {}, {}],
+    [{}, {}, {}]
   ];
   let idd = [];
   let allMatches = new Set();
@@ -239,35 +239,62 @@ export const getMatchesBySearch = async (req, res, next) => {
     search[1][1].username = {$regex: req.query.search, $options: "i"};
     search[2][2].license_plate = {$regex: req.query.search, $options: "i"};
   }
+  let matches;
   try {
-    for (let i = 0; i < 3; i++) {
-      let matches = await Match.find(condition)
-        .populate({
-          path: "renterID",
-          match: search[i][0],
-        })
-        .populate({
-          path: "lessorID",
-          match: search[i][1],
-        })
-        .populate({
-          path: "carID",
-          match: search[i][2],
-        });
+    for (let i = 0; i < 4; i++) {
+      if(i!=3){
+        matches = await Match.find(condition)
+          .populate({
+            path: "renterID",
+            match: search[i][0],
+          })
+          .populate({
+            path: "lessorID",
+            match: search[i][1],
+          })
+          .populate({
+            path: "carID",
+            match: search[i][2],
+          });
 
-      matches = matches.filter(
-        (match) =>
-          match.renterID !== null &&
-          match.lessorID !== null &&
-          match.carID !== null
-      );
-      matches.forEach((match) => {
-        if (!idd.includes(match._id.toString())) {
-          allMatches.add(match);
-          idd.push(match._id.toString());
+      }
+      else{
+        if (req.query.search){
+          const seaRCh = req.query.search;
+          matches = await Match.find(condition);
+          matches = matches.filter(
+            (match) =>
+              match._id.toString().includes(seaRCh)
+          );
         }
+      }
+    }
+
+    matches = matches.filter(
+      (match) =>
+        match.renterID !== null &&
+        match.lessorID !== null &&
+        match.carID !== null
+    );
+    matches.forEach((match) => {
+      if (!idd.includes(match._id.toString())) {
+        allMatches.add(match);
+        idd.push(match._id.toString());
+      }
+    });
+
+    let mats = [...allMatches];
+    if (req.query.sortBy == "oldest date"){
+      mats =  mats.sort(function (a, b) {
+        return new Date(a.created_at) - new Date(b.created_at);
       });
     }
+    else{
+      mats =  mats.sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    }
+
     const sendMatches = [...allMatches].map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
