@@ -418,7 +418,7 @@ export const updateRoleLessor = async (req, res, next) => {
   user.IDCardNumber = identification_number;
   user.save();
   const notification = new Notification();
-  notification.text = "You are lessor now";
+  notification.text = "Lessor verified successfully! You can add your first car now.";
   notification.userID = user_id;
   notification.save();
   res.send("role lessor updated");
