@@ -219,9 +219,6 @@ export const getMatchesBySearch = async (req, res, next) => {
       }
       else{
         if (req.query.search){
-          // let cond = {};
-          // condition._id = {$regex: (req.query.search), $options: "i"};
-          // console.log(condition._id);
           const seaRCh = req.query.search;
           matches = await Match.find(condition);
           matches = matches.filter(
@@ -230,7 +227,6 @@ export const getMatchesBySearch = async (req, res, next) => {
           );
         }
       }
-      // {_id: " nvdvk"}
 
       matches = matches.filter(
         (match) =>
