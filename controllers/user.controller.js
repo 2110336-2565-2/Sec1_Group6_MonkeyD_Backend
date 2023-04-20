@@ -1,6 +1,7 @@
 import passport from "passport";
 import User from "../models/user.model.js";
 import Match from "../models/match.model.js";
+import Notification from "../models/notification.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import express from "express";
@@ -416,6 +417,10 @@ export const updateRoleLessor = async (req, res, next) => {
   user.drivingLicenseNumber = driving_license;
   user.IDCardNumber = identification_number;
   user.save();
+  const notification = new Notification();
+  notification.text = "Lessor verified successfully! You can add your first car now.";
+  notification.userID = user_id;
+  notification.save();
   res.send("role lessor updated");
 };
 
