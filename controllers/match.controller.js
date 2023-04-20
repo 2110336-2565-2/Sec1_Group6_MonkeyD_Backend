@@ -148,7 +148,26 @@ export const cancelReserevation = async (req, res, next) => {
   }
   match.status = "Cancelled";
   match.save();
-  return res.json(match);
+  let car;
+  try {
+    car = await Car.findById(match.carID);
+    if (car == null) {
+      return res.status(404).send({message: "Cannot find car"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+  const start = new Date(match.pickUpDateTime);
+  const end = new Date(match.returnDateTime);
+
+  car.unavailable_times = car.unavailable_times.filter((time) => {
+    return (
+      time.start.getTime() !== start.getTime() ||
+      time.end.getTime() !== end.getTime()
+    );
+  });
+  car.save();
+  return res.send("Cancel booking");
 };
 
 export const toggleStatus = async (req, res, next) => {
@@ -174,6 +193,28 @@ export const toggleStatus = async (req, res, next) => {
     if (action == "Cancel") {
       match.status = "Cancelled";
     } else return res.json({message: "No Action can be taken"});
+  } else if (match.status == "Rented") {
+    if (action == "Completed") {
+      let chat;
+      try {
+        chat = await Chat.find({matchID: match_id});
+        if (chat == null) {
+          return res.status(404).json({message: "Cannot find chat"});
+        }
+        for (let c of chat) {
+          await User.updateMany(
+            {_id: {$in: c.allowedUsers}},
+            {$pull: {chatRooms: c._id}},
+            {new: true}
+          );
+          await Chat.deleteOne({_id: c._id});
+        }
+      } catch (err) {
+        console.log(err.message);
+        return res.status(500).json({message: err.message});
+      }
+      match.status = "Completed";
+    } else return res.json({message: "No Action can be taken"});
   } else {
     return res.json({message: "No Action can be taken"});
   }
@@ -198,23 +239,23 @@ export const getMatchesBySearch = async (req, res, next) => {
     search[1][1].username = {$regex: req.query.search, $options: "i"};
     search[2][2].license_plate = {$regex: req.query.search, $options: "i"};
   }
+  let matches;
   try {
     for (let i = 0; i < 4; i++) {
-      let matches;
       if(i!=3){
         matches = await Match.find(condition)
-        .populate({
-          path: "renterID",
-          match: search[i][0],
-        })
-        .populate({
-          path: "lessorID",
-          match: search[i][1],
-        })
-        .populate({
-          path: "carID",
-          match: search[i][2],
-        });
+          .populate({
+            path: "renterID",
+            match: search[i][0],
+          })
+          .populate({
+            path: "lessorID",
+            match: search[i][1],
+          })
+          .populate({
+            path: "carID",
+            match: search[i][2],
+          });
 
       }
       else{
@@ -227,20 +268,20 @@ export const getMatchesBySearch = async (req, res, next) => {
           );
         }
       }
-
-      matches = matches.filter(
-        (match) =>
-          match.renterID !== null &&
-          match.lessorID !== null &&
-          match.carID !== null
-      );
-      matches.forEach((match) => {
-        if (!idd.includes(match._id.toString())) {
-          allMatches.add(match);
-          idd.push(match._id.toString());
-        }
-      });
     }
+
+    matches = matches.filter(
+      (match) =>
+        match.renterID !== null &&
+        match.lessorID !== null &&
+        match.carID !== null
+    );
+    matches.forEach((match) => {
+      if (!idd.includes(match._id.toString())) {
+        allMatches.add(match);
+        idd.push(match._id.toString());
+      }
+    });
 
     let mats = [...allMatches];
     if (req.query.sortBy == "oldest date"){
@@ -277,17 +318,17 @@ export const matchComplete = async (req, res, next) => {
   match.save();
   let chat;
   try {
-    chat = await Chat.find({ matchID: match_id });
+    chat = await Chat.find({matchID: match_id});
     if (chat == null) {
       return res.status(404).json({message: "Cannot find chat"});
     }
-    for (let c of chat){
+    for (let c of chat) {
       await User.updateMany(
         {_id: {$in: c.allowedUsers}},
         {$pull: {chatRooms: c._id}},
         {new: true}
       );
-      await Chat.deleteOne({ _id: c._id });
+      await Chat.deleteOne({_id: c._id});
     }
   } catch (err) {
     console.log(err.message);

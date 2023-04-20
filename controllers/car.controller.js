@@ -22,7 +22,6 @@ export const createCars = async (req, res, next) => {
     available_location,
     energy_types,
     province,
-    available_times,
     passenger,
     rating = 0,
     rental_price,
@@ -68,7 +67,6 @@ export const createCars = async (req, res, next) => {
   if (passenger) car.passenger = passenger;
   if (rating) car.rating = rating;
   if (car_image_uris.length) car.car_images = car_image_uris;
-  if (available_times) car.setAvailableTimes(available_times);
   car
     .save()
     .then(function () {
@@ -102,7 +100,7 @@ export const getCars = async (req, res, next) => {
     reviewCount: 1,
   };
 
-  let condition = {renter: null || ""};
+  let condition = {renter: null || "", status: "Available"};
   if (req.query.minprice || req.query.maxprice) {
     condition.rental_price = {
       $gte: parseFloat(req.query.minprice) || 0,
@@ -268,7 +266,6 @@ export const getMyCar = async (req, res, next) => {
       rental_price: 1,
       passenger: 1,
       car_images: 1,
-      available_times: 1,
       unavailable_times: 1,
     }).lean();
 

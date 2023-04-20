@@ -86,20 +86,6 @@
  *         province:
  *           type: string
  *           description: The province of the car.
- *         available_times:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               start:
- *                 type: string
- *                 format: date-time
- *                 description: The start time of the available period.
- *               end:
- *                 type: string
- *                 format: date-time
- *                 description: The end time of the available period.
- *           description: The available times of the car.
  *         unavailable_times:
  *           type: array
  *           items:
