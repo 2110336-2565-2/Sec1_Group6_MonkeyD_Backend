@@ -583,7 +583,16 @@ export const getUsersBySearch = async (req, res, next) => {
       sendUser.image = userImage;
       sendUser.drivingLicenseImage = drivingImage;
     }
-
+    if (req.query.sortBy == "oldest date"){
+      sendUsers =  sendUsers.sort(function (a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    }
+    else{
+      sendUsers =  sendUsers.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});

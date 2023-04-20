@@ -559,6 +559,16 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
         : "";
       car.registration_book_url = registration_book_image;
     }
+    if (req.query.sortBy == "oldest date"){
+      cars =  cars.sort(function (a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    }
+    else{
+      cars =  cars.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
     return res.json({cars: cars, count: cars.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
