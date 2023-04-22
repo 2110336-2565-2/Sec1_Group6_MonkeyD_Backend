@@ -593,7 +593,10 @@ export const getUsersBySearch = async (req, res, next) => {
 export const getAllChat = async (req, res, next) => {
   const userId = req.params.userId;
   try {
-    const user = await User.findById(userId).populate("chatRooms");
+    const user = await User.findById(userId).populate({
+      path: "chatRooms",
+      populate: { path: "matchID", populate: {path : "carID"}},
+    });
     if (!user) {
       return res.status(404).json({error: "User not found"});
     }
