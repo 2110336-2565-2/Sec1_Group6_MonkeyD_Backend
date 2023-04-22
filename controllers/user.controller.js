@@ -395,7 +395,7 @@ export const toggleRequestTobeLessor = async (req, res, next) =>{
   notification.userID = user_id;
   notification.text = "Wait for verification to become a lessor";
   notification.save();
-  res.send("this user is lessor right now");
+  res.send("this user is on verification");
 }
 
 export const updateRoleLessor = async (req, res, next) => {
