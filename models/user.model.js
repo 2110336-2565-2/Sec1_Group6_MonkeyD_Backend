@@ -221,6 +221,7 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
 
   return {
     username: this.username,
+    status: this.status,
     user_id: this._id,
     image: imageUrl,
     role: this.role,
