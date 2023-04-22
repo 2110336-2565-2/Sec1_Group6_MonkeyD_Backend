@@ -76,7 +76,7 @@ const UserSchema = new mongoose.Schema(
     },
     prefix: {
       type: String,
-      enum: ["Mr.", "Mrs.", "Miss", "Ms.", "(Not Specific)"],
+      enum: ["", "Mr.", "Mrs.", "Miss", "Ms.", "(Not Specific)"],
       default: "",
     },
     rentedCount: {
