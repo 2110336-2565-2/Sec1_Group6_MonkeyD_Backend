@@ -356,6 +356,27 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
+export const beLessor = async (req, res, next) =>{
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.role = "lessor";
+  user.save();
+  const notification = new Notification();
+  notification.userID = user_id;
+  notification.text = "You are now a lessor. You can add your first car now.";
+  notification.save();
+  res.send("this user is lessor right now");
+}
+
 export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   const prefix = req.body.prefix;
@@ -408,7 +429,11 @@ export const updateRoleLessor = async (req, res, next) => {
     user.IDCardImage = IDCardImageUri;
   }
 
-  user.role = "lessor";
+  const notification = new Notification();
+  notification.userID = user_id;
+  user.requestTobeLessor = true;
+  notification.text = "Wait for admin to verify to become a lessor";
+  notification.save();
   user.prefix = prefix;
   user.firstName = first_name;
   user.lastName = last_name;
@@ -416,10 +441,6 @@ export const updateRoleLessor = async (req, res, next) => {
   user.drivingLicenseNumber = driving_license;
   user.IDCardNumber = identification_number;
   user.save();
-  const notification = new Notification();
-  notification.text = "Lessor verified successfully! You can add your first car now.";
-  notification.userID = user_id;
-  notification.save();
   res.send("role lessor updated");
 };
 
@@ -476,6 +497,13 @@ export const toggleStatus = async (req, res, next) => {
   if (user.status == "Unverified") {
     if (action == "Approve") {
       user.status = "Verified";
+      if(user.requestTobeLessor){
+        user.role = "lessor";
+        const notification = new Notification();
+        notification.userID = user_id;
+        notification.text = "You are now a lessor. You can add your first car now.";
+        notification.save();
+      }
     } else if (action == "Reject") {
       user.status = "Rejected";
     }
