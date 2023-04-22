@@ -519,7 +519,8 @@ router
   .patch(authenticateUser.required, authorizeUser("admin"), toggleStatus);
 router
   .route("/user/admin")
-  .get(authenticateUser.required, authorizeUser("admin"), getUsersBySearch); //get users by search and filter
+  .get(authorizeUser("admin"), getUsersBySearch); //get users by search and filter
+  // .get(authenticateUser.required, authorizeUser("admin"), getUsersBySearch); //get users by search and filter
 router
   .route("/api/user/chatRooms/:userId")
   .get(authenticateUser.required, getAllChat);

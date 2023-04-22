@@ -604,7 +604,7 @@ export const getUsersBySearch = async (req, res, next) => {
         }
       });
     }
-    const sendUsers = Array.from(allUsers);
+    let sendUsers = [...allUsers];
     for (const sendUser of sendUsers) {
       const userImage = sendUser.image
         ? await getImageUrl(
