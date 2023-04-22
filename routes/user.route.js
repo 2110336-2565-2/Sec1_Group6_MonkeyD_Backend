@@ -461,6 +461,7 @@ import {
   getUsersBySearch,
   getAllChat,
   getCSRF,
+  beLessor,
 } from "../controllers/user.controller.js";
 import {errorHandler} from "../middlewares/error-handler.middleware.js";
 import {
@@ -495,7 +496,7 @@ router.route("/user/logout").post(authenticateUser.required, logout); // logout
 router.route("/user/forgot-password").post(forgotPassword); // send resetlink to email
 router.route("/user/reset-password").post(resetPassword); // reset password
 router.route("/user/navbar").get(authenticateUser.required, getNavbarInfo); // get navbar info
-router // change role
+router // request role
   .route("/user/update-role")
   .patch(
     authenticateUser.required,
@@ -505,6 +506,7 @@ router // change role
     ]),
     updateRoleLessor
   );
+router.route("/user/lessor").patch(authenticateUser.required, beLessor); // change role
 router
   .route("/user/update-role-admin")
   .patch(authenticateUser.required, updateRoleAdmin); // change role

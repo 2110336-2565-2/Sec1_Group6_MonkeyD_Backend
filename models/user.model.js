@@ -122,6 +122,10 @@ const UserSchema = new mongoose.Schema(
         ref: "Chat",
       },
     ],
+    requestTobeLessor: {
+      type:Boolean,
+      default: false,
+    },
     hash: String,
     salt: String,
   },
