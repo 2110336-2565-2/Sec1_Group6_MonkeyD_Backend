@@ -226,7 +226,11 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
     image: imageUrl,
     role: this.role,
     requestTobeLessor: this.requestTobeLessor,
-    haveVerificationInfo: this.drivingLicenseImage && this.IDCardImage,
+    haveVerificationInfo: !!(
+      this.drivingLicenseImage &&
+      this.IDCardImage &&
+      true
+    ),
   };
 };
 
