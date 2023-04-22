@@ -124,7 +124,7 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     requestTobeLessor: {
-      type:Boolean,
+      type: Boolean,
       default: false,
     },
     hash: String,
@@ -225,6 +225,7 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
     user_id: this._id,
     image: imageUrl,
     role: this.role,
+    requestTobeLessor: this.requestTobeLessor,
   };
 };
 
