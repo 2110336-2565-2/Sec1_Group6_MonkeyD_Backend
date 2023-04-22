@@ -153,7 +153,6 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.username) user.username = req.body.username;
       if (imageUri) user.image = imageUri;
       if (req.body.owncars) user.owncars = req.body.owncars;
-      if (req.body.role) user.role = req.body.role;
       if (req.body.firstName) user.firstName = req.body.firstName;
       if (req.body.lastName) user.lastName = req.body.lastName;
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
