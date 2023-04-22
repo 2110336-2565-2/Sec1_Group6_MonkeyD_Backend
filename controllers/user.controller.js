@@ -377,6 +377,27 @@ export const beLessor = async (req, res, next) =>{
   res.send("this user is lessor right now");
 }
 
+export const toggleRequestTobeLessor = async (req, res, next) =>{
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.requestTobeLessor = true;
+  user.save();
+  const notification = new Notification();
+  notification.userID = user_id;
+  notification.text = "Wait for verification to become a lessor";
+  notification.save();
+  res.send("this user is on verification");
+}
+
 export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   const prefix = req.body.prefix;
@@ -432,7 +453,7 @@ export const updateRoleLessor = async (req, res, next) => {
   const notification = new Notification();
   notification.userID = user_id;
   user.requestTobeLessor = true;
-  notification.text = "Wait for admin to verify to become a lessor";
+  notification.text = "Wait for verification to become a lessor";
   notification.save();
   user.prefix = prefix;
   user.firstName = first_name;
