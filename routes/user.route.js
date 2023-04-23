@@ -409,9 +409,12 @@
  *       200:
  *         description: Returns a list of user objects matching the search query
  * 
+ */
+/**
+ * @swagger
  * /api/user/chatRooms/{userId}:
  *   get:
- *     summary: Get all chat rooms for a user
+ *     summary: Get all chat rooms of a user
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
@@ -419,13 +422,80 @@
  *       - in: path
  *         name: userId
  *         required: true
- *         description: The ID of the user whose chat rooms to retrieve
+ *         description: ID of the user whose chat rooms are being retrieved
  *         schema:
  *           type: string
  *     responses:
- *       200:
- *         description: Returns a list of chat room objects for the user
- * 
+ *       '200':
+ *         description: Returns all chat rooms of the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 chats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: ID of the chat room
+ *                       name:
+ *                         type: string
+ *                         description: Name of the chat room
+ *                       allowedUsers:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: List of user IDs allowed in the chat room
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Date and time of when the chat room was created
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Date and time of when the chat room was last updated
+ *             example:
+ *               chats:
+ *                 - _id: "6174b853f1aa4d32c3e3b9a5"
+ *                   name: "John"
+ *                   allowedUsers:
+ *                     - "6174b853f1aa4d32c3e3b9a4"
+ *                     - "6174b853f1aa4d32c3e3b9a6"
+ *                   createdAt: "2023-04-22T10:21:23.621Z"
+ *                   updatedAt: "2023-04-22T10:21:23.621Z"
+ *                 - _id: "6174b86bf1aa4d32c3e3b9a7"
+ *                   name: "Jane"
+ *                   allowedUsers:
+ *                     - "6174b853f1aa4d32c3e3b9a4"
+ *                     - "6174b86bf1aa4d32c3e3b9a8"
+ *                   createdAt: "2023-04-22T10:21:47.609Z"
+ *                   updatedAt: "2023-04-22T10:21:47.609Z"
+ *       '404':
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: User not found
+ *       '500':
+ *         description: An error occurred while getting chat rooms
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: An error occurred while getting chat rooms
+ *
  * /csrf-token:
  *   get:
  *     summary: Get a CSRF token for authenticated requests
