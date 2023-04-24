@@ -223,6 +223,7 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getMatchesBySearch = async (req, res, next) => {
+  const {sortBy} = req.query;
   let condition = {};
   let search = [
     [{}, {}, {}],
@@ -284,18 +285,22 @@ export const getMatchesBySearch = async (req, res, next) => {
     });
 
     let mats = [...allMatches];
-    if (req.query.sortBy == "oldest date"){
-      mats =  mats.sort(function (a, b) {
+
+    if (sortBy === "newest date") {
+      mats.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === "oldest date") {
+      mats.sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
-    }
-    else{
-      mats =  mats.sort(function (a, b) {
+    } else {
+      mats.sort(function (a, b) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     }
 
-    const sendMatches = [...allMatches].map((e) => e.toAuthJSON());
+    const sendMatches = [...mats].map((e) => e.toAuthJSON());
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
     return res.status(500).json({message: err.message});

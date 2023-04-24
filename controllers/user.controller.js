@@ -356,7 +356,7 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
-export const beLessor = async (req, res, next) =>{
+export const beLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   let user;
   try {
@@ -375,9 +375,9 @@ export const beLessor = async (req, res, next) =>{
   notification.text = "You are now a lessor. You can add your first car now.";
   notification.save();
   res.send("this user is lessor right now");
-}
+};
 
-export const toggleRequestTobeLessor = async (req, res, next) =>{
+export const toggleRequestTobeLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   let user;
   try {
@@ -396,7 +396,7 @@ export const toggleRequestTobeLessor = async (req, res, next) =>{
   notification.text = "Wait for verification to become a lessor";
   notification.save();
   res.send("this user is on verification");
-}
+};
 
 export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
@@ -518,11 +518,12 @@ export const toggleStatus = async (req, res, next) => {
   if (user.status == "Unverified") {
     if (action == "Approve") {
       user.status = "Verified";
-      if(user.requestTobeLessor){
+      if (user.requestTobeLessor) {
         user.role = "lessor";
         const notification = new Notification();
         notification.userID = user_id;
-        notification.text = "You are now a lessor. You can add your first car now.";
+        notification.text =
+          "You are now a lessor. You can add your first car now.";
         notification.save();
       }
     } else if (action == "Reject") {
@@ -555,6 +556,7 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getUsersBySearch = async (req, res, next) => {
+  const {status, search, sortBy} = req.query;
   const show_attrs = {
     _id: 1,
     image: 1,
@@ -569,21 +571,22 @@ export const getUsersBySearch = async (req, res, next) => {
     drivingLicenseNumber: 1,
     drivingLicenseImage: 1,
     status: 1,
+    createdAt: 1,
   };
   let condition = [{}, {}, {}];
   let allUsers = new Set();
   let idd = [];
-  if (req.query.status) {
-    condition[0].status = req.query.status;
-    condition[1].status = req.query.status;
-    condition[2].status = req.query.status;
+  if (status) {
+    condition[0].status = status;
+    condition[1].status = status;
+    condition[2].status = status;
   }
-  if (req.query.search) {
-    condition[0].username = {$regex: req.query.search, $options: "i"};
-    condition[1].firstName = {$regex: req.query.search, $options: "i"};
-    condition[2].lastName = {$regex: req.query.search, $options: "i"};
-    if (req.query.search.split(" ").length == 2) {
-      let Name = req.query.search.split(" ");
+  if (search) {
+    condition[0].username = {$regex: search, $options: "i"};
+    condition[1].firstName = {$regex: search, $options: "i"};
+    condition[2].lastName = {$regex: search, $options: "i"};
+    if (search.split(" ").length == 2) {
+      let Name = search.split(" ");
       condition[2].firstName = {$regex: Name[0], $options: "i"};
       condition[2].lastName = {$regex: Name[1], $options: "i"};
     }
@@ -631,13 +634,16 @@ export const getUsersBySearch = async (req, res, next) => {
       sendUser.image = userImage;
       sendUser.drivingLicenseImage = drivingImage;
     }
-    if (req.query.sortBy == "oldest date"){
-      sendUsers =  sendUsers.sort(function (a, b) {
+    if (sortBy === "newest date") {
+      sendUsers.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === "oldest date") {
+      sendUsers.sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
-    }
-    else{
-      sendUsers =  sendUsers.sort(function (a, b) {
+    } else {
+      sendUsers.sort(function (a, b) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     }
@@ -652,7 +658,7 @@ export const getAllChat = async (req, res, next) => {
   try {
     const user = await User.findById(userId).populate({
       path: "chatRooms",
-      populate: { path: "matchID", populate: {path : "carID"}},
+      populate: {path: "matchID", populate: {path: "carID"}},
     });
     if (!user) {
       return res.status(404).json({error: "User not found"});
