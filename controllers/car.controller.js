@@ -520,15 +520,9 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
     registration_book_id: 1,
     license_plate: 1,
     status: 1,
+    createdAt: 1,
   };
-  let filter;
-  let search;
-  if (req.query.filter) {
-    filter = req.query.filter;
-  }
-  if (req.query.search) {
-    search = req.query.search;
-  }
+  const {filter, search, sortBy} = req.query;
   let cars;
   try {
     if (filter == "approved") {
@@ -559,13 +553,16 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
         : "";
       car.registration_book_url = registration_book_image;
     }
-    if (req.query.sortBy == "oldest date"){
-      cars =  cars.sort(function (a, b) {
+    if (sortBy === "newest date") {
+      cars.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === "oldest date") {
+      cars.sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
-    }
-    else{
-      cars =  cars.sort(function (a, b) {
+    } else {
+      cars.sort(function (a, b) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     }
