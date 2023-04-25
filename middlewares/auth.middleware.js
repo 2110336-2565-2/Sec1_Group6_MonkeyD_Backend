@@ -39,17 +39,7 @@ const jwtSocketMiddleware = (socket, next) => {
     const authToken = authCookie
       ? authCookie.split("auth=")[1].split(";")[0]
       : null;
-    const csrfTokenCookie = cookies
-      .split("; ")
-      .find((cookie) => cookie.startsWith("csrf-token="));
-    const csrfToken = csrfTokenCookie
-      ? csrfTokenCookie.split("csrf-token=")[1].split(";")[0]
-      : null;
 
-    // const authToken = socket.handshake.headers.cookie
-    //   .split(" ")[0]
-    //   .split("=")[1]
-    //   .split(";")[0];
     if (!authToken) {
       return next(new Error("Authentication error: No token provided"));
     }
