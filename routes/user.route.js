@@ -204,7 +204,7 @@
  *         description: Redirect to application home page with authentication token
  *
  * /user/role:
- *   post:
+ *   get:
  *     summary: Get the role of the authenticated user
  *     tags:
  *       - User
@@ -215,7 +215,7 @@
  *         description: OK
  * 
  * /user/info:
- *   post:
+ *   get:
  *     summary: Get the information of the authenticated user
  *     tags:
  *       - User
