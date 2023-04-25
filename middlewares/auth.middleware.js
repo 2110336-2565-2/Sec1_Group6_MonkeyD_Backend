@@ -46,16 +46,18 @@ const jwtSocketMiddleware = (socket, next) => {
       ? csrfTokenCookie.split("csrf-token=")[1].split(";")[0]
       : null;
 
-    const authToken = socket.handshake.headers.cookie
-      .split(" ")[0]
-      .split("=")[1]
-      .split(";")[0];
+    // const authToken = socket.handshake.headers.cookie
+    //   .split(" ")[0]
+    //   .split("=")[1]
+    //   .split(";")[0];
     if (!authToken) {
       return next(new Error("Authentication error: No token provided"));
     }
     jwt.verify(authToken, secret, (err, decoded) => {
       if (err) {
-        return next(new Error("Authentication error: Invalid token"));
+        return next(
+          new Error(`Authentication error:${authToken} Invalid token`)
+        );
       }
       socket.decoded_token = decoded;
       next();
