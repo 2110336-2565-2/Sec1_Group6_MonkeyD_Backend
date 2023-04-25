@@ -114,25 +114,35 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
+    const startDate = new Date(req.query.startdate);
+    const endDate = new Date(req.query.enddate);
+    const now = new Date();
+    if (startDate > endDate) {
+      return res.send('Start date cannot be greater than end date');
+    }
+  
+    if (startDate < now) {
+      return res.send('Start date cannot be in the past');
+    }
     condition.unavailable_times = {
       $not: {
         $elemMatch: {
           $or: [
             {
               start: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: new Date(startdate),
+                $lte: new Date(enddate),
               },
             },
             {
               end: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: new Date(startdate),
+                $lte: new Date(enddate),
               },
             },
             {
-              start: {$lte: new Date(req.query.startdate)},
-              end: {$gte: new Date(req.query.enddate)},
+              start: {$lte: new Date(startdate)},
+              end: {$gte: new Date(enddate)},
             },
           ],
         },
