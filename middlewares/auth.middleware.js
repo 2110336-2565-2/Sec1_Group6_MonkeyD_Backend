@@ -32,14 +32,28 @@ const jwtMiddleware = (options) => {
 
 const jwtSocketMiddleware = (socket, next) => {
   try {
-    const token = socket.handshake.headers.cookie
+    const cookies = socket.handshake.headers.cookie;
+    const authCookie = cookies
+      .split("; ")
+      .find((cookie) => cookie.startsWith("auth="));
+    const authToken = authCookie
+      ? authCookie.split("auth=")[1].split(";")[0]
+      : null;
+    const csrfTokenCookie = cookies
+      .split("; ")
+      .find((cookie) => cookie.startsWith("csrf-token="));
+    const csrfToken = csrfTokenCookie
+      ? csrfTokenCookie.split("csrf-token=")[1].split(";")[0]
+      : null;
+
+    const authToken = socket.handshake.headers.cookie
       .split(" ")[0]
       .split("=")[1]
       .split(";")[0];
-    if (!token) {
+    if (!authToken) {
       return next(new Error("Authentication error: No token provided"));
     }
-    jwt.verify(token, secret, (err, decoded) => {
+    jwt.verify(authToken, secret, (err, decoded) => {
       if (err) {
         return next(new Error("Authentication error: Invalid token"));
       }
