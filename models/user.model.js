@@ -204,6 +204,7 @@ UserSchema.methods.getUserInfoJSON = async function () {
     rentedCount: this.rentedCount,
     rentedOutCount: this.rentedOutCount,
     status: this.status,
+    requestTobeLessor: this.requestTobeLessor,
   };
 };
 
