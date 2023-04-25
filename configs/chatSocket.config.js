@@ -41,7 +41,6 @@ const configureChatSocket = (server) => {
           socket.join(chatId);
           const messages = await Message.find({chatId: chatId});
           socket.emit("messages", messages);
-          socket.broadcast.to(chatId).emit("user_joined", {user});
         } else {
           socket.emit("error", "You are not allowed to join this room");
         }
