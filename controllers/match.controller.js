@@ -95,6 +95,7 @@ export const getMatchStatuses = async (req, res, next) => {
 
 export const getMyBookings = async (req, res, next) => {
   let condition = {};
+  let searchCondition = {};
   condition.renterID = req.params.id;
   if (req.query.status) {
     try {
@@ -115,10 +116,21 @@ export const getMyBookings = async (req, res, next) => {
   if (req.query.lessorID) {
     condition.lessorID = req.query.lessorID;
   }
+  if (req.query.search) {
+    searchCondition["$or"] = [
+      {brand: {$regex: req.query.search, $options: "i"}},
+      {model: {$regex: req.query.search, $options: "i"}},
+      {license_plate: {$regex: req.query.search, $options: "i"}},
+    ];
+  }
 
   try {
-    let matches = await Match.find(condition).populate("carID");
-    const sendMatches = matches.map((e) => e.toMyBookingJSON());
+    let matches = await Match.find(condition).populate({
+      path: "carID",
+      match: searchCondition,
+    });
+    let sendMatches = matches.map((e) => e.toMyBookingJSON());
+    sendMatches = sendMatches.filter((match) => match.car !== null);
     for (let match of sendMatches) {
       if (match.car_image) {
         const carImageUrl = await getImageUrl(
@@ -128,6 +140,15 @@ export const getMyBookings = async (req, res, next) => {
         );
         match.car_image = carImageUrl;
       }
+    }
+    if (req.query.sortBy == "oldest date") {
+      sendMatches = sendMatches.sort(function (a, b) {
+        return new Date(a.pickUpDateTime) - new Date(b.pickUpDateTime);
+      });
+    } else if (req.query.sortBy == "newest date") {
+      sendMatches = sendMatches.sort(function (a, b) {
+        return new Date(b.pickUpDateTime) - new Date(a.pickUpDateTime);
+      });
     }
     return res.json({matches: sendMatches, count: sendMatches.length});
   } catch (err) {
@@ -228,7 +249,7 @@ export const getMatchesBySearch = async (req, res, next) => {
   let search = [
     [{}, {}, {}],
     [{}, {}, {}],
-    [{}, {}, {}]
+    [{}, {}, {}],
   ];
   let idd = [];
   let allMatches = new Set();
@@ -243,7 +264,7 @@ export const getMatchesBySearch = async (req, res, next) => {
   let matches;
   try {
     for (let i = 0; i < 4; i++) {
-      if(i!=3){
+      if (i != 3) {
         matches = await Match.find(condition)
           .populate({
             path: "renterID",
@@ -257,15 +278,12 @@ export const getMatchesBySearch = async (req, res, next) => {
             path: "carID",
             match: search[i][2],
           });
-
-      }
-      else{
-        if (req.query.search){
+      } else {
+        if (req.query.search) {
           const seaRCh = req.query.search;
           matches = await Match.find(condition);
-          matches = matches.filter(
-            (match) =>
-              match._id.toString().includes(seaRCh)
+          matches = matches.filter((match) =>
+            match._id.toString().includes(seaRCh)
           );
         }
       }
