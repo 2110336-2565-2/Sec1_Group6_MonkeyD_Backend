@@ -60,7 +60,7 @@ ReviewSchema.methods.toAuthJSON = function () {
   };
 };
 
-ReviewSchema.methods.toCarDetailJSON = function () {
+ReviewSchema.methods.toCarDetailJSON = async function () {
   const options = {day: "numeric", month: "long", year: "numeric"};
   let imageUrl;
   if (this.reviewerID.image.startsWith("https://lh3.googleusercontent.com")) {
