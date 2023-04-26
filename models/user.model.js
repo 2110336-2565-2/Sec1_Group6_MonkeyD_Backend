@@ -127,6 +127,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    requestToverifyDate: {
+      type: Date,
+      default: Date.now,
+    },
     hash: String,
     salt: String,
   },
