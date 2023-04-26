@@ -91,7 +91,7 @@
  * tags:
  *   name: User
  *   description: The users managing API
- * 
+ *
  * /user:
  *   post:
  *     summary: Create a new user
@@ -213,7 +213,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/info:
  *   post:
  *     summary: Get the information of the authenticated user
@@ -245,10 +245,10 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/logout:
  *   post:
- *     summary: Log out the authenticated user 
+ *     summary: Log out the authenticated user
  *     tags:
  *       - User
  *     security:
@@ -256,7 +256,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/forgot-password:
  *   post:
  *     summary: Send a reset password link to the user's email
@@ -276,7 +276,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/reset-password:
  *   post:
  *     summary: Reset the user's password using a token
@@ -299,7 +299,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/navbar:
  *   get:
  *     summary: Get information for the navbar of the authenticated user
@@ -310,7 +310,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/update-role:
  *   patch:
  *     summary: Update the role of the authenticated user
@@ -337,7 +337,7 @@
  *     responses:
  *       200:
  *         description: OK
- * 
+ *
  * /user/update-role-admin:
  *   patch:
  *     summary: Change the role of a user by an admin
@@ -362,7 +362,7 @@
  *     responses:
  *       200:
  *         description: The updated user object
- * 
+ *
  * /user/check-login:
  *   get:
  *     summary: Check if a user is currently logged in
@@ -372,7 +372,7 @@
  *     responses:
  *       200:
  *         description: Returns a JSON object indicating the user is logged in
- * 
+ *
  * /user/status:
  *   patch:
  *     summary: Toggle the status of a user (active or inactive)
@@ -393,7 +393,7 @@
  *     responses:
  *       200:
  *         description: The updated user object
- * 
+ *
  * /user/admin:
  *   get:
  *     summary: Get a list of users filtered by search parameters
@@ -408,7 +408,7 @@
  *     responses:
  *       200:
  *         description: Returns a list of user objects matching the search query
- * 
+ *
  * /api/user/chatRooms/{userId}:
  *   get:
  *     summary: Get all chat rooms for a user
@@ -425,7 +425,7 @@
  *     responses:
  *       200:
  *         description: Returns a list of chat room objects for the user
- * 
+ *
  * /csrf-token:
  *   get:
  *     summary: Get a CSRF token for authenticated requests
@@ -436,9 +436,6 @@
  *       200:
  *         description: Returns a JSON object with the CSRF token
  */
-
-
-
 
 import express from "express";
 import {
@@ -508,7 +505,9 @@ router // request role
     updateRoleLessor
   );
 router.route("/user/lessor").patch(authenticateUser.required, beLessor); // change role
-router.route("/user/togglereqLessor").patch(authenticateUser.required, toggleRequestTobeLessor); // toggle requestTobeLessor
+router
+  .route("/user/togglereqLessor")
+  .patch(authenticateUser.required, toggleRequestTobeLessor); // toggle requestTobeLessor
 router
   .route("/user/update-role-admin")
   .patch(authenticateUser.required, updateRoleAdmin); // change role

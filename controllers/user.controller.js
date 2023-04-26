@@ -334,7 +334,7 @@ export const carRented = async (req, res, next) => {
     renter.IDCardImage = IDCardImageUri;
   }
 
-  renter.requestToverifyDate =new Date(Date.now());
+  renter.requestToverifyDate = new Date(Date.now());
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
   if (prefix) renter.prefix = prefix;
@@ -638,15 +638,24 @@ export const getUsersBySearch = async (req, res, next) => {
     }
     if (sortBy === "newest date") {
       sendUsers.sort(function (a, b) {
-        return new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate);
+        console.log("====================================");
+        console.log(b.requestToverifyDate, a.requestToverifyDate);
+        console.log("====================================");
+        return (
+          new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate)
+        );
       });
     } else if (sortBy === "oldest date") {
       sendUsers.sort(function (a, b) {
-        return new Date(a.requestToverifyDate) - new Date(b.requestToverifyDate);
+        return (
+          new Date(a.requestToverifyDate) - new Date(b.requestToverifyDate)
+        );
       });
     } else {
       sendUsers.sort(function (a, b) {
-        return new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate);
+        return (
+          new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate)
+        );
       });
     }
     return res.json({users: sendUsers, count: sendUsers.length});
