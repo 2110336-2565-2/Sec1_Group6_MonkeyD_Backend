@@ -636,9 +636,19 @@ export const carReserved = async (req, res, next) => {
   if (returnDateTime) match.returnDateTime = new Date(returnDateTime);
   if (price) match.price = price;
 
+  const notification = new Notification();
+  notification.userID = renterID;
+  if(renter.status == "Verified"){
+    notification.text = "Please pay a rental in order to succesfully rent a car";
+  }
+  else{
+    notification.text = "Please wait for the admin to verify your account before making the payment to rent the car successfully";
+  }
+
   try {
     await car.save();
     await match.save();
+    await notification.save();
     return res.json({match: match.toAuthJSON()});
   } catch (error) {
     console.log(error);
