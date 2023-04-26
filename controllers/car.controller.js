@@ -114,25 +114,35 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
+    const startDate = new Date(req.query.startdate);
+    const endDate = new Date(req.query.enddate);
+    const now = new Date();
+    if (startDate > endDate) {
+      return res.send('Start date cannot be greater than end date');
+    }
+  
+    if (startDate < now) {
+      return res.send('Start date cannot be in the past');
+    }
     condition.unavailable_times = {
       $not: {
         $elemMatch: {
           $or: [
             {
               start: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: new Date(startdate),
+                $lte: new Date(enddate),
               },
             },
             {
               end: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: new Date(startdate),
+                $lte: new Date(enddate),
               },
             },
             {
-              start: {$lte: new Date(req.query.startdate)},
-              end: {$gte: new Date(req.query.enddate)},
+              start: {$lte: new Date(startdate)},
+              end: {$gte: new Date(enddate)},
             },
           ],
         },
@@ -520,15 +530,9 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
     registration_book_id: 1,
     license_plate: 1,
     status: 1,
+    createdAt: 1,
   };
-  let filter;
-  let search;
-  if (req.query.filter) {
-    filter = req.query.filter;
-  }
-  if (req.query.search) {
-    search = req.query.search;
-  }
+  const {filter, search, sortBy} = req.query;
   let cars;
   try {
     if (filter == "approved") {
@@ -558,6 +562,19 @@ export const getCarsInfoFilterSearch = async (req, res, next) => {
           )
         : "";
       car.registration_book_url = registration_book_image;
+    }
+    if (sortBy === "newest date") {
+      cars.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === "oldest date") {
+      cars.sort(function (a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    } else {
+      cars.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     }
     return res.json({cars: cars, count: cars.length});
   } catch (err) {
@@ -629,9 +646,19 @@ export const carReserved = async (req, res, next) => {
   if (returnDateTime) match.returnDateTime = new Date(returnDateTime);
   if (price) match.price = price;
 
+  const notification = new Notification();
+  notification.userID = renterID;
+  if(renter.status == "Verified"){
+    notification.text = "Please pay a rental in order to succesfully rent a car";
+  }
+  else{
+    notification.text = "Please wait for the admin to verify your account before making the payment to rent the car successfully";
+  }
+
   try {
     await car.save();
     await match.save();
+    await notification.save();
     return res.json({match: match.toAuthJSON()});
   } catch (error) {
     console.log(error);

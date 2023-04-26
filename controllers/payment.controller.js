@@ -156,27 +156,27 @@ export const getOmiseTransactions = async (req, res, next) => {
     }
     let charges = await getCharges(user.omiseCustomerId, 20, 0);
     let transfers = await getTransfers(user.omiseRecipientId, 20, 0);
-    for (let pay of [charges, transfers]){
+    for (let pay of [charges, transfers]) {
       if (sortBy == "newest date") {
-          pay.sort(function (a, b) {
-            return new Date(b.created_at) - new Date(a.created_at);
-          });
+        pay.sort(function (a, b) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
       } else if (sortBy == "oldest date") {
-          pay.sort(function (a, b) {
-            return new Date(a.created_at) - new Date(b.created_at);
-          });
+        pay.sort(function (a, b) {
+          return new Date(a.created_at) - new Date(b.created_at);
+        });
       } else if (sortBy == "highest price") {
-          pay.sort(function (a, b) {
-            return b.amount - a.amount;
-          });
+        pay.sort(function (a, b) {
+          return b.amount - a.amount;
+        });
       } else if (sortBy == "lowest price") {
-          pay.sort(function (a, b) {
-            return a.amount - b.amount;
-          });
+        pay.sort(function (a, b) {
+          return a.amount - b.amount;
+        });
       } else {
-          pay.sort(function (a, b) {
-            return new Date(b.created_at) - new Date(a.created_at);
-          });
+        pay.sort(function (a, b) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
       }
     }
     let transactions = {charges: charges, transfers: transfers};

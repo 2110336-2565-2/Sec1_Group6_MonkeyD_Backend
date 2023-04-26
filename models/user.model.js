@@ -76,7 +76,8 @@ const UserSchema = new mongoose.Schema(
     },
     prefix: {
       type: String,
-      default: "",
+      enum: ["(Not Specific)", "Mr.", "Mrs.", "Miss", "Ms.", "not set"],
+      default: "not set",
     },
     rentedCount: {
       type: Number,
@@ -122,6 +123,10 @@ const UserSchema = new mongoose.Schema(
         ref: "Chat",
       },
     ],
+    requestTobeLessor: {
+      type: Boolean,
+      default: false,
+    },
     hash: String,
     salt: String,
   },
@@ -199,6 +204,7 @@ UserSchema.methods.getUserInfoJSON = async function () {
     rentedCount: this.rentedCount,
     rentedOutCount: this.rentedOutCount,
     status: this.status,
+    requestTobeLessor: this.requestTobeLessor,
   };
 };
 
@@ -216,9 +222,16 @@ UserSchema.methods.getNavbarInfoJSON = async function () {
 
   return {
     username: this.username,
+    status: this.status,
     user_id: this._id,
     image: imageUrl,
     role: this.role,
+    requestTobeLessor: this.requestTobeLessor,
+    haveVerificationInfo: !!(
+      this.drivingLicenseImage &&
+      this.IDCardImage &&
+      true
+    ),
   };
 };
 

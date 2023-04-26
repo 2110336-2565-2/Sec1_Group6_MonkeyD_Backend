@@ -103,6 +103,7 @@ MatchSchema.methods.toMyBookingJSON = function () {
     returnDateTime: this.returnDateTime,
     price: this.price,
     isReview: this.isReview,
+    createdAt: this.createdAt,
   };
 };
 

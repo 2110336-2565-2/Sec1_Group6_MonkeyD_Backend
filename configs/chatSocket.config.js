@@ -9,7 +9,11 @@ import {
 const configureChatSocket = (server) => {
   const io = new socketIO(server, {
     cors: {
-      origin: "https://monkey-d-frontend.vercel.app",
+      origin: [
+        "https://monkey-d-frontend.vercel.app",
+        "http://localhost:3000",
+        "https://monkeydcar.website",
+      ],
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -37,7 +41,6 @@ const configureChatSocket = (server) => {
           socket.join(chatId);
           const messages = await Message.find({chatId: chatId});
           socket.emit("messages", messages);
-          socket.broadcast.to(chatId).emit("user_joined", {user});
         } else {
           socket.emit("error", "You are not allowed to join this room");
         }

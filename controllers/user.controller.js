@@ -153,7 +153,6 @@ export const addUserInfo = async (req, res, next) => {
       if (req.body.username) user.username = req.body.username;
       if (imageUri) user.image = imageUri;
       if (req.body.owncars) user.owncars = req.body.owncars;
-      if (req.body.role) user.role = req.body.role;
       if (req.body.firstName) user.firstName = req.body.firstName;
       if (req.body.lastName) user.lastName = req.body.lastName;
       if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
@@ -357,6 +356,48 @@ export const getNavbarInfo = async (req, res, next) => {
   }
 };
 
+export const beLessor = async (req, res, next) => {
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.role = "lessor";
+  user.save();
+  const notification = new Notification();
+  notification.userID = user_id;
+  notification.text = "You are now a lessor. You can add your first car now.";
+  notification.save();
+  res.send("this user is lessor right now");
+};
+
+export const toggleRequestTobeLessor = async (req, res, next) => {
+  const user_id = req.headers.user_id;
+  let user;
+  try {
+    user = await User.findById(user_id);
+    if (user == null) {
+      return res.status(404).json({message: "cannot find user"});
+    }
+  } catch (err) {
+    return res.status(500).json({message: err.message});
+  }
+
+  user.requestTobeLessor = true;
+  user.save();
+  const notification = new Notification();
+  notification.userID = user_id;
+  notification.text = "Wait for verification to become a lessor";
+  notification.save();
+  res.send("this user is on verification");
+};
+
 export const updateRoleLessor = async (req, res, next) => {
   const user_id = req.headers.user_id;
   const prefix = req.body.prefix;
@@ -409,7 +450,11 @@ export const updateRoleLessor = async (req, res, next) => {
     user.IDCardImage = IDCardImageUri;
   }
 
-  user.role = "lessor";
+  const notification = new Notification();
+  notification.userID = user_id;
+  user.requestTobeLessor = true;
+  notification.text = "Wait for verification to become a lessor";
+  notification.save();
   user.prefix = prefix;
   user.firstName = first_name;
   user.lastName = last_name;
@@ -417,10 +462,6 @@ export const updateRoleLessor = async (req, res, next) => {
   user.drivingLicenseNumber = driving_license;
   user.IDCardNumber = identification_number;
   user.save();
-  const notification = new Notification();
-  notification.text = "Lessor verified successfully! You can add your first car now.";
-  notification.userID = user_id;
-  notification.save();
   res.send("role lessor updated");
 };
 
@@ -477,6 +518,14 @@ export const toggleStatus = async (req, res, next) => {
   if (user.status == "Unverified") {
     if (action == "Approve") {
       user.status = "Verified";
+      if (user.requestTobeLessor) {
+        user.role = "lessor";
+        const notification = new Notification();
+        notification.userID = user_id;
+        notification.text =
+          "You are now a lessor. You can add your first car now.";
+        notification.save();
+      }
     } else if (action == "Reject") {
       user.status = "Rejected";
     }
@@ -507,6 +556,7 @@ export const toggleStatus = async (req, res, next) => {
 };
 
 export const getUsersBySearch = async (req, res, next) => {
+  const {status, search, sortBy} = req.query;
   const show_attrs = {
     _id: 1,
     image: 1,
@@ -521,21 +571,22 @@ export const getUsersBySearch = async (req, res, next) => {
     drivingLicenseNumber: 1,
     drivingLicenseImage: 1,
     status: 1,
+    createdAt: 1,
   };
   let condition = [{}, {}, {}];
   let allUsers = new Set();
   let idd = [];
-  if (req.query.status) {
-    condition[0].status = req.query.status;
-    condition[1].status = req.query.status;
-    condition[2].status = req.query.status;
+  if (status) {
+    condition[0].status = status;
+    condition[1].status = status;
+    condition[2].status = status;
   }
-  if (req.query.search) {
-    condition[0].username = {$regex: req.query.search, $options: "i"};
-    condition[1].firstName = {$regex: req.query.search, $options: "i"};
-    condition[2].lastName = {$regex: req.query.search, $options: "i"};
-    if (req.query.search.split(" ").length == 2) {
-      let Name = req.query.search.split(" ");
+  if (search) {
+    condition[0].username = {$regex: search, $options: "i"};
+    condition[1].firstName = {$regex: search, $options: "i"};
+    condition[2].lastName = {$regex: search, $options: "i"};
+    if (search.split(" ").length == 2) {
+      let Name = search.split(" ");
       condition[2].firstName = {$regex: Name[0], $options: "i"};
       condition[2].lastName = {$regex: Name[1], $options: "i"};
     }
@@ -556,7 +607,7 @@ export const getUsersBySearch = async (req, res, next) => {
         }
       });
     }
-    const sendUsers = Array.from(allUsers);
+    let sendUsers = [...allUsers];
     for (const sendUser of sendUsers) {
       const userImage = sendUser.image
         ? await getImageUrl(
@@ -583,7 +634,19 @@ export const getUsersBySearch = async (req, res, next) => {
       sendUser.image = userImage;
       sendUser.drivingLicenseImage = drivingImage;
     }
-
+    if (sortBy === "newest date") {
+      sendUsers.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === "oldest date") {
+      sendUsers.sort(function (a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    } else {
+      sendUsers.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
     return res.json({users: sendUsers, count: sendUsers.length});
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -593,7 +656,10 @@ export const getUsersBySearch = async (req, res, next) => {
 export const getAllChat = async (req, res, next) => {
   const userId = req.params.userId;
   try {
-    const user = await User.findById(userId).populate("chatRooms");
+    const user = await User.findById(userId).populate({
+      path: "chatRooms",
+      populate: {path: "matchID", populate: {path: "carID"}},
+    });
     if (!user) {
       return res.status(404).json({error: "User not found"});
     }
