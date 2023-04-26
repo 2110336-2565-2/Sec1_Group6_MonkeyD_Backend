@@ -281,7 +281,15 @@ export const getMatchesBySearch = async (req, res, next) => {
       }else {
         if (req.query.search) {
           const seaRCh = req.query.search;
-          matches = await Match.find(condition);
+          matches = await Match.find(condition).populate({
+            path: "renterID"
+          })
+          .populate({
+            path: "lessorID"
+          })
+          .populate({
+            path: "carID"
+          })
           matches = matches.filter((match) =>
             match._id.toString().includes(seaRCh)
           );
