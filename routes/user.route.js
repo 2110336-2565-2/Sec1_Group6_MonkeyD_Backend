@@ -1364,7 +1364,9 @@ router // request role
     updateRoleLessor
   );
 router.route("/user/lessor").patch(authenticateUser.required, beLessor); // change role
-router.route("/user/togglereqLessor").patch(authenticateUser.required, toggleRequestTobeLessor); // toggle requestTobeLessor
+router
+  .route("/user/togglereqLessor")
+  .patch(authenticateUser.required, toggleRequestTobeLessor); // toggle requestTobeLessor
 router
   .route("/user/update-role-admin")
   .patch(authenticateUser.required, updateRoleAdmin); // change role

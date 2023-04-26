@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {getImageUrl} from "../utils/gcs.utils.js";
 import dotenv from "dotenv";
 
 dotenv.config({path: ".env"});
@@ -59,9 +60,18 @@ ReviewSchema.methods.toAuthJSON = function () {
   };
 };
 
-ReviewSchema.methods.toCarDetailJSON = function () {
+ReviewSchema.methods.toCarDetailJSON = async function () {
   const options = {day: "numeric", month: "long", year: "numeric"};
-
+  let imageUrl;
+  if (this.reviewerID.image.startsWith("https://lh3.googleusercontent.com")) {
+    imageUrl = this.reviewerID.image;
+  } else {
+    imageUrl = await getImageUrl(
+      process.env.GCS_PROFILE_BUCKET,
+      null,
+      this.reviewerID.image
+    );
+  }
   return {
     _id: this._id,
     hygeine: this.hygeine,
@@ -70,7 +80,7 @@ ReviewSchema.methods.toCarDetailJSON = function () {
     comment: this.comment,
     reviewerID: this.reviewerID._id,
     reviewer: this.reviewerID.username,
-    reviewerImg: this.reviewerID.image,
+    reviewerImg: imageUrl,
     rating: (this.carCondition + this.service + this.hygeine) / 3,
     createdAt: this.createdAt.toLocaleDateString("en-US", options),
   };

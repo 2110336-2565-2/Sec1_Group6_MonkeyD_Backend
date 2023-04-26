@@ -88,7 +88,9 @@ export const getReviews = async (req, res, next) => {
     for (const review of reviews) {
       delete review.overall;
     }
-    const sendReviews = reviews.map((e) => e.toCarDetailJSON());
+    const sendReviews = await Promise.all(
+      reviews.map((e) => e.toCarDetailJSON())
+    );
     return res.json({reviews: sendReviews});
   } catch (err) {
     return res.status(500).json({message: err.message});

@@ -473,7 +473,6 @@
  *                   type: string
  *             example:
  *               message: "Server error occurred"
- *
  */
 /**
  * Retrieve information about a specific car

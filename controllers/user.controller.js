@@ -334,6 +334,10 @@ export const carRented = async (req, res, next) => {
     renter.IDCardImage = IDCardImageUri;
   }
 
+  if(renter.status == "Unverified" && renter.requestToverifyDate){
+    renter.requestToverifyDate = new Date(Date.now());
+  }
+
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
   if (prefix) renter.prefix = prefix;
@@ -452,9 +456,10 @@ export const updateRoleLessor = async (req, res, next) => {
 
   const notification = new Notification();
   notification.userID = user_id;
-  user.requestTobeLessor = true;
   notification.text = "Wait for verification to become a lessor";
   notification.save();
+  user.requestToverifyDate = new Date(Date.now());
+  user.requestTobeLessor = true;
   user.prefix = prefix;
   user.firstName = first_name;
   user.lastName = last_name;
@@ -572,6 +577,7 @@ export const getUsersBySearch = async (req, res, next) => {
     drivingLicenseImage: 1,
     status: 1,
     createdAt: 1,
+    requestToverifyDate: 1,
   };
   let condition = [{}, {}, {}];
   let allUsers = new Set();
@@ -636,15 +642,22 @@ export const getUsersBySearch = async (req, res, next) => {
     }
     if (sortBy === "newest date") {
       sendUsers.sort(function (a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+
+        return (
+          new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate)
+        );
       });
     } else if (sortBy === "oldest date") {
       sendUsers.sort(function (a, b) {
-        return new Date(a.createdAt) - new Date(b.createdAt);
+        return (
+          new Date(a.requestToverifyDate) - new Date(b.requestToverifyDate)
+        );
       });
     } else {
       sendUsers.sort(function (a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+        return (
+          new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate)
+        );
       });
     }
     return res.json({users: sendUsers, count: sendUsers.length});
