@@ -95,7 +95,7 @@ export const createOmiseCharge = async (req, res, next) => {
 export const createOmiseTransfer = async (req, res, next) => {
   const {id} = req.params;
   let amount = req.body.amount;
-  amount = amount * 0.85; // fee 20%
+  amount = amount * 0.85; // fee 15%
   try {
     let user = await User.findById(id);
     const bankAccount = {
