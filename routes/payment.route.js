@@ -497,8 +497,9 @@ router
   .route("/payment/transfer/:id")
   .post(authenticateUser.required, createOmiseTransfer);
 
-router
-  .route("/payment/transaction/:id")
-  .post(authenticateUser.required, getOmiseTransactions);
+router.route("/payment/transaction/:id").post(
+  // authenticateUser.required,
+  getOmiseTransactions
+);
 
 export default router;

@@ -151,11 +151,13 @@ export const getOmiseTransactions = async (req, res, next) => {
   const sortBy = req.body.sortBy;
   try {
     let user = await User.findById(id);
+
     if (!user.omiseRecipientId && !user.omiseCustomerId) {
       return res.json([]);
     }
     let charges = await getCharges(user.omiseCustomerId, 20, 0);
     let transfers = await getTransfers(user.omiseRecipientId, 20, 0);
+
     for (let pay of [charges, transfers]) {
       if (sortBy == "newest date") {
         pay.sort(function (a, b) {
