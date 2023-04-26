@@ -334,7 +334,10 @@ export const carRented = async (req, res, next) => {
     renter.IDCardImage = IDCardImageUri;
   }
 
-  renter.requestToverifyDate = new Date(Date.now());
+  if(renter.status == "Unverified" && renter.requestToverifyDate){
+    renter.requestToverifyDate = new Date(Date.now());
+  }
+
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
   if (prefix) renter.prefix = prefix;
@@ -574,6 +577,7 @@ export const getUsersBySearch = async (req, res, next) => {
     drivingLicenseImage: 1,
     status: 1,
     createdAt: 1,
+    requestToverifyDate: 1,
   };
   let condition = [{}, {}, {}];
   let allUsers = new Set();
