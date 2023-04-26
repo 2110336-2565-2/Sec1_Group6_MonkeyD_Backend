@@ -638,9 +638,7 @@ export const getUsersBySearch = async (req, res, next) => {
     }
     if (sortBy === "newest date") {
       sendUsers.sort(function (a, b) {
-        console.log("====================================");
-        console.log(b.requestToverifyDate, a.requestToverifyDate);
-        console.log("====================================");
+
         return (
           new Date(b.requestToverifyDate) - new Date(a.requestToverifyDate)
         );
