@@ -334,7 +334,7 @@ export const carRented = async (req, res, next) => {
     renter.IDCardImage = IDCardImageUri;
   }
 
-  renter.requestToverifyDate = Date.now;
+  renter.requestToverifyDate =new Date(Date.now());
   renter.rentedCount += 1;
   lessor.rentedOutCount += 1;
   if (prefix) renter.prefix = prefix;
@@ -455,7 +455,7 @@ export const updateRoleLessor = async (req, res, next) => {
   notification.userID = user_id;
   notification.text = "Wait for verification to become a lessor";
   notification.save();
-  user.requestToverifyDate = Date.now;
+  user.requestToverifyDate = new Date(Date.now());
   user.requestTobeLessor = true;
   user.prefix = prefix;
   user.firstName = first_name;
