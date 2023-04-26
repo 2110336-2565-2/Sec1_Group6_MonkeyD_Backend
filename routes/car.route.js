@@ -537,7 +537,7 @@
  */
 /**
  * @swagger
- * /car/me/:username:
+ * /car/me/{username}:
  *   post:
  *     summary: Retrieve cars by owner username, sorted by various options
  *     description: Retrieve cars that belong to a specific user, optionally filtered by province, and sorted by rating or price.
@@ -1016,7 +1016,7 @@
  *                   type: integer
  *                   description: The number of cars returned in the response
  *               example:
- *                 cars: 
+ *                 cars:
  *                   - _id: "609f3f7485e5e20034d2a68c"
  *                     owner: "609f3f7485e5e20034d2a68b"
  *                     renter: null
@@ -1108,7 +1108,7 @@
  *                 type: number
  *                 description: Price of the reservation.
  *                 example: 100
-*     responses:
+ *     responses:
  *       200:
  *         description: OK
  *         content:
@@ -1232,9 +1232,6 @@
  *                   example: An internal server error occurred
  */
 
-
-
-
 import express from "express";
 import {
   createCars,
@@ -1309,4 +1306,3 @@ router
 router.route("/car/reserve").patch(carReserved);
 
 export default router;
-
