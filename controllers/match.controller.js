@@ -249,7 +249,7 @@ export const getMatchesBySearch = async (req, res, next) => {
   let search = [
     [{}, {}, {}],
     [{}, {}, {}],
-    [{}, {}, {}],
+    [{}, {}, {}]
   ];
   let idd = [];
   let allMatches = new Set();
@@ -278,7 +278,7 @@ export const getMatchesBySearch = async (req, res, next) => {
             path: "carID",
             match: search[i][2],
           });
-      } else {
+      }else {
         if (req.query.search) {
           const seaRCh = req.query.search;
           matches = await Match.find(condition);
@@ -287,21 +287,20 @@ export const getMatchesBySearch = async (req, res, next) => {
           );
         }
       }
+
+      matches = matches.filter(
+        (match) =>
+          match.renterID !== null &&
+          match.lessorID !== null &&
+          match.carID !== null
+      );
+      matches.forEach((match) => {
+        if (!idd.includes(match._id.toString())) {
+          allMatches.add(match);
+          idd.push(match._id.toString());
+        }
+      });
     }
-
-    matches = matches.filter(
-      (match) =>
-        match.renterID !== null &&
-        match.lessorID !== null &&
-        match.carID !== null
-    );
-    matches.forEach((match) => {
-      if (!idd.includes(match._id.toString())) {
-        allMatches.add(match);
-        idd.push(match._id.toString());
-      }
-    });
-
     let mats = [...allMatches];
 
     if (sortBy === "newest date") {

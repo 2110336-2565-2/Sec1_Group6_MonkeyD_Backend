@@ -627,7 +627,7 @@ router.route("/match/status").get(authenticateUser.required, getMatchStatuses);
 router
   .route("/match/admin")
   .get(
-    // authenticateUser.required, authorizeUser("admin"), 
+    authenticateUser.required, authorizeUser("admin"), 
   getMatchesBySearch);
 router.route("/match/:id").get(authenticateUser.required, getMatchInfo);
 router.route("/match/me/:id").get(authenticateUser.required, getMyBookings);

@@ -498,7 +498,7 @@ router
   .post(authenticateUser.required, createOmiseTransfer);
 
 router.route("/payment/transaction/:id").post(
-  // authenticateUser.required,
+  authenticateUser.required,
   getOmiseTransactions
 );
 
