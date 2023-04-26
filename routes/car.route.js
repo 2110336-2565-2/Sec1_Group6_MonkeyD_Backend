@@ -27,65 +27,64 @@
  *         owner:
  *           type: string
  *           description: The owner of the car.
+ *           example: "john_doe"
  *         renter:
  *           type: string
  *           description: The renter of the car.
+ *           example: "jane_doe"
  *         status:
  *           type: string
- *           enum:
- *             - Pending
- *             - Rejected
- *             - Unavailable
- *             - Available
+ *           enum: [ "Pending", "Rejected", "Unavailable", "Available" ]
  *           description: The status of the car.
+ *           example: "Pending"
  *         brand:
  *           type: string
  *           description: The brand of the car.
+ *           example: "Toyota"
  *         model:
  *           type: string
  *           description: The model of the car.
+ *           example: "Camry"
  *         gear_type:
  *           type: string
- *           enum:
- *             - Manual
- *             - Auto
- *           description: The gear type of the car.
+ *           enum: [ "Manual", "Auto" ]
+ *           description: The type of the car's gear.
+ *           example: "Manual"
  *         year:
  *           type: number
  *           description: The year of the car.
+ *           example: 2022
  *         description:
  *           type: string
- *           description: The description of the car.
+ *           description: A description of the car.
+ *           example: "A brand new car!"
  *         license_plate:
  *           type: string
  *           description: The license plate of the car.
+ *           example: "ABC123"
  *         registration_book_id:
  *           type: string
- *           description: The registration book ID of the car.
+ *           description: The ID of the registration book of the car.
+ *           example: "123456789"
  *         registration_book_url:
  *           type: string
- *           description: The registration book URL of the car.
+ *           description: The URL of the registration book of the car.
+ *           example: "https://example.com/registration_book.pdf"
  *         available_location:
  *           type: string
- *           description: The available location of the car.
+ *           description: The location where the car is available for rent.
+ *           example: "Bangkok"
  *         energy_types:
  *           type: array
  *           items:
  *             type: string
- *             enum:
- *               - DieselB7
- *               - DieselB10
- *               - Gasohol95
- *               - Gasohol91
- *               - E20
- *               - E85
- *               - LPG
- *               - NGV
- *               - EV
- *           description: The energy types of the car.
+ *             enum: [ "DieselB7", "DieselB10", "Gasohol95", "Gasohol91", "E20", "E85", "LPG", "NGV", "EV" ]
+ *             description: The energy types of the car.
+ *             example: [ "DieselB7", "DieselB10" ]
  *         province:
  *           type: string
- *           description: The province of the car.
+ *           description: The province where the car is located.
+ *           example: "Bangkok"
  *         unavailable_times:
  *           type: array
  *           items:
@@ -94,37 +93,47 @@
  *               start:
  *                 type: string
  *                 format: date-time
+ *                 description: The start time of the car's unavailability.
+ *                 example: '2022-01-01T12:00:00Z'
  *               end:
  *                 type: string
  *                 format: date-time
+ *                 example: '2022-01-02T12:00:00Z'
  *               username:
  *                 type: string
+ *                 example: john_doe
  *           description: An array of times when the car is unavailable for rental
+ *           example: [{start: '2022-01-01T12:00:00Z', end: '2022-01-02T12:00:00Z', username: john_doe}]
  *         car_images:
  *           type: array
  *           items:
  *             type: string
  *           description: An array of image URLs for the car
+ *           example: ['https://example.com/car-image1.jpg', 'https://example.com/car-image2.jpg']
  *         rental_price:
  *           type: number
  *           minimum: 0
  *           description: The rental price for the car
+ *           example: 5000
  *         passenger:
  *           type: number
  *           minimum: 0
  *           description: The number of passengers the car can accommodate
+ *           example: 4
  *         hygieneRating:
  *           type: number
  *           minimum: 0
  *           maximum: 5
  *           default: 5
  *           description: The hygiene rating for the car, on a scale of 0 to 5
+ *           example: 3
  *         carConditionRating:
  *           type: number
  *           minimum: 0
  *           maximum: 5
  *           default: 5
  *           description: The condition rating for the car, on a scale of 0 to 5
+ *           example
  *         serviceRating:
  *           type: number
  *           minimum: 0

@@ -5,6 +5,7 @@ import Match from "../models/match.model.js";
 import User from "../models/user.model.js";
 import {uploadImage, getImageUrl, deleteImage} from "../utils/gcs.utils.js";
 import {ObjectId} from "bson";
+import Notification from "../models/notification.model.js";
 
 export const createCars = async (req, res, next) => {
   const car = new Car();
@@ -114,25 +115,36 @@ export const getCars = async (req, res, next) => {
     };
   }
   if (req.query.startdate && req.query.enddate) {
+    const startDate = new Date(req.query.startdate);
+    const endDate = new Date(req.query.enddate);
+    const now = new Date();
+    now.setDate(now.getDate() - 1);
+    if (startDate > endDate) {
+      return res.send("Start date cannot be greater than end date");
+    }
+
+    if (startDate < now) {
+      return res.send("Start date cannot be in the past");
+    }
     condition.unavailable_times = {
       $not: {
         $elemMatch: {
           $or: [
             {
               start: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: startDate,
+                $lte: endDate,
               },
             },
             {
               end: {
-                $gte: new Date(req.query.startdate),
-                $lte: new Date(req.query.enddate),
+                $gte: startDate,
+                $lte: endDate,
               },
             },
             {
-              start: {$lte: new Date(req.query.startdate)},
-              end: {$gte: new Date(req.query.enddate)},
+              start: {$lte: startDate},
+              end: {$gte: endDate},
             },
           ],
         },
@@ -199,8 +211,8 @@ export const getCars = async (req, res, next) => {
       pages: Math.ceil(count / size),
       currentCount: cars.length,
       totalCount: count,
-      remainCount: Math.max(count-page*size,0),
-      data: cars
+      remainCount: Math.max(count - page * size, 0),
+      data: cars,
     });
   } catch (err) {
     return res.status(500).json({message: err.message});
@@ -636,9 +648,20 @@ export const carReserved = async (req, res, next) => {
   if (returnDateTime) match.returnDateTime = new Date(returnDateTime);
   if (price) match.price = price;
 
+  const notification = new Notification();
+  notification.userID = renterID;
+  if (renter.status == "Verified") {
+    notification.text =
+      "Please pay a rental in order to succesfully rent a car";
+  } else {
+    notification.text =
+      "Please wait for the admin to verify your account before making the payment to rent the car successfully";
+  }
+
   try {
     await car.save();
     await match.save();
+    await notification.save();
     return res.json({match: match.toAuthJSON()});
   } catch (error) {
     console.log(error);
