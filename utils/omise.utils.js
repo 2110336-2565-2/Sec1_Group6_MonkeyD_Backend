@@ -56,11 +56,10 @@ export const getCharges = async (customerId, limit = 20, offset = 0) => {
       return [];
     }
     let charges = await omise.charges.list({
-      customer: customerId,
-      // limit,
-      // offset,
+      limit: 10000,
     });
     charges = charges.data.filter((charge) => charge.customer === customerId);
+
     charges = charges.map((charge) => ({
       object: charge.object,
       id: charge.id,
@@ -88,9 +87,7 @@ export const getTransfers = async (recipientId, limit = 20, offset = 0) => {
       return [];
     }
     let transfers = await omise.transfers.list({
-      recipient: recipientId,
-      // limit,
-      // offset,
+      limit: 10000,
     });
     transfers = transfers.data.filter(
       (transfer) => transfer.recipient === recipientId
