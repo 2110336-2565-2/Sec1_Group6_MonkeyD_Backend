@@ -307,12 +307,14 @@
 /**
  * @swagger
  *
- * /users/{id}:
- *   put:
+ * /user/info:
+ *   patch:
  *     tags:
  *       - User
  *     summary: Update user information
  *     description: Update user information, including username, image, cars, and personal information.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -411,12 +413,14 @@
 /**
  * Get user info by ID
  * @swagger
- * /api/user/info:
+ * /user/info:
  *   get:
  *     summary: Retrieve user information by ID
  *     description: Retrieve user information by the given ID.
  *     tags:
  *       - User
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: body
  *         name: id
@@ -474,6 +478,8 @@
  *     summary: Logout the user by clearing the cookies
  *     tags:
  *       - User
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -615,6 +621,8 @@
  *     summary: Rents a car
  *     tags:
  *       - User
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -753,10 +761,12 @@
 /**
  * @swagger
  * /user/lessor:
- *   put:
+ *   patch:
  *     summary: Set user's role as lessor.
  *     tags:
  *       - User
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: header
  *         name: user_id
@@ -792,7 +802,498 @@
  *                 message:
  *                   type: string
  */
-
+/**
+ * @swagger
+ * /user/togglereqLessor:
+ *   patch:
+ *     summary: Toggle a user's request to become a lessor
+ *     description: Toggles the `requestTobeLessor` field of a user to `true` to indicate their request to become a lessor.
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: The user ID in JSON format
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: The ID of the user to update
+ *                 example: "613a5c5d8e25f122a87a7a50"
+ *     responses:
+ *       200:
+ *         description: Success message and updated user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                   example: "This user is on verification"
+ *                 user:
+ *                   type: object
+ *                   description: The updated user object
+ *                   example: 
+ *                     _id: "613a5c5d8e25f122a87a7a50"
+ *                     name: "John Doe"
+ *                     email: "johndoe@example.com"
+ *                     role: "user"
+ *                     requestTobeLessor: true
+ */
+/**
+ * @swagger
+ * /user/update-role:
+ *   patch:
+ *     summary: Update user's role to lessor and related personal information for verification
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               prefix:
+ *                 type: string
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               mobile_number:
+ *                 type: string
+ *               driving_license:
+ *                 type: string
+ *               identification_number:
+ *                 type: string
+ *               drivingLicenseImage:
+ *                 type: string
+ *                 format: binary
+ *               IDCardImage:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Role lessor updated
+ *       400:
+ *         description: Invalid request body
+ */
+/**
+ * @swagger
+ * /user/update-role-admin:
+ *   patch:
+ *     summary: Update user role to admin
+ *     description: Update the role of the user with the given user ID to "admin"
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: The ID of the user to update
+ *             example:
+ *               user_id: 12345
+ *     responses:
+ *       200:
+ *         description: The role of the user has been updated to "admin"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message confirming the update was successful
+ *                   example: role admin updated
+ *       404:
+ *         description: The user with the given ID was not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating the user was not found
+ *                   example: cannot find user
+ *       500:
+ *         description: An error occurred while attempting to update the user's role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating what went wrong
+ *                   example: An error occurred while updating the user's role
+ */
+/**
+ * @swagger
+ * /user/check-login:
+ *   get:
+ *     summary: Check if a user is logged in
+ *     description: Returns a JSON object indicating whether a user is logged in or not.
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Returns a JSON object with a boolean indicating whether the user is logged in.
+ *         example:
+ *           { "isLogin": true }
+ */
+/**
+ * @swagger
+ * /user/role:
+ *   get:
+ *     summary: Get user role by ID
+ *     description: Retrieve the role of a user by their ID.
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to retrieve the role for.
+ *     responses:
+ *       200:
+ *         description: User role retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userRole:
+ *                   type: string
+ *                   description: The user's role.
+ *                   example: "admin"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: "Cannot find user"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: "Internal server error"
+ */
+/**
+ * @swagger
+ * /user/status:
+ *   patch:
+ *     summary: Toggle user status and update associated matches
+ *     description: Toggle user status to Verified or Rejected and update associated matches to Wait for payment or Cancelled, respectively
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: body
+ *         name: user_id
+ *         description: ID of user whose status is being toggled
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             user_id:
+ *               type: string
+ *         example:
+ *           user_id: 61319f92d1350a15f49fa33d
+ *       - in: body
+ *         name: action
+ *         description: Action to take on user status - Approve or Reject
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             action:
+ *               type: string
+ *               enum: [Approve, Reject]
+ *         example:
+ *           action: Approve
+ *     responses:
+ *       '200':
+ *         description: User and associated matches updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User and Match status has been updated
+ *       '400':
+ *         description: Invalid request body format or missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request body format
+ *       '404':
+ *         description: User with specified ID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cannot find user
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error updating user status
+ */
+/**
+ * @swagger
+ * /user/admin:
+ *   get:
+ *     summary: Search for users by status, name, or ID card/driving license image.
+ *     description: Returns a list of users matching the specified search parameters.
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         description: The status of the user account.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         description: The search query to match against the user's name.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: sortBy
+ *         description: The field to sort the results by (newest date, oldest date, or default).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of users matching the search parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 count:
+ *                   type: integer
+ *                   description: The number of users returned in the response.
+ *                   example: 2
+ *       500:
+ *         description: An error occurred while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A description of the error that occurred.
+ *                   example: Internal server error.
+ */
+/**
+ * Returns all chat rooms for a given user.
+ *
+ * @swagger
+ * /api/user/chatRooms/{userId}:
+ *   get:
+ *     summary: Get all chat rooms for a user
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: The ID of the user whose chat rooms are to be retrieved
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: An array of chat rooms for the given user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 chats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 612cb54b6d027b0289a2fc8d
+ *                       name:
+ *                         type: string
+ *                         example: JohnDoe
+ *                       allowedUsers:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                           example: 612cb53c6d027b0289a2fc8b
+ *                       messages:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                               example: 612cb5ba6d027b0289a2fc8e
+ *                             sender:
+ *                               type: string
+ *                               example: 612cb53c6d027b0289a2fc8b
+ *                             content:
+ *                               type: string
+ *                               example: Hello there!
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                               example: "2023-04-26T12:35:15.476Z"
+ *                       matchID:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             example: 612cb6ab6d027b0289a2fc92
+ *                           carID:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 612cb6706d027b0289a2fc90
+ *                               make:
+ *                                 type: string
+ *                                 example: Toyota
+ *                               model:
+ *                                 type: string
+ *                                 example: Camry
+ *                               year:
+ *                                 type: number
+ *                                 example: 2020
+ *                               color:
+ *                                 type: string
+ *                                 example: Blue
+ *                               mileage:
+ *                                 type: number
+ *                                 example: 12000
+ *                               price:
+ *                                 type: number
+ *                                 example: 15000
+ *                             example:
+ *                               _id: 612cb6706d027b0289a2fc90
+ *                               make: Toyota
+ *                               model: Camry
+ *                               year: 2020
+ *                               color: Blue
+ *                               mileage: 12000
+ *                               price: 15000
+ *       404:
+ *         description: The user with the given ID was not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error updating user status
+ */
+/**
+ * @swagger
+ * /csrf:
+ *   get:
+ *     summary: Generate a CSRF token for the client to use in forms.
+ *     description: Returns a CSRF token for the client to include in form submissions to prevent CSRF attacks.
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: A CSRF token to include in form submissions.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: The CSRF token.
+ *                   example: "r3O8O7WGL2vz6cZL4cxq3z1sA2lIeRdS"
+ *       500:
+ *         description: An error occurred while generating the CSRF token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A description of the error that occurred.
+ *                   example: Internal server error.
+ */
 
 
 import express from "express";
