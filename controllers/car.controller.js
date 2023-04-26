@@ -117,6 +117,7 @@ export const getCars = async (req, res, next) => {
     const startDate = new Date(req.query.startdate);
     const endDate = new Date(req.query.enddate);
     const now = new Date();
+    now.setDate(now.getDate() - 1);
     if (startDate > endDate) {
       return res.send('Start date cannot be greater than end date');
     }
@@ -130,19 +131,19 @@ export const getCars = async (req, res, next) => {
           $or: [
             {
               start: {
-                $gte: new Date(startdate),
-                $lte: new Date(enddate),
+                $gte: startDate,
+                $lte: endDate,
               },
             },
             {
               end: {
-                $gte: new Date(startdate),
-                $lte: new Date(enddate),
+                $gte: startDate,
+                $lte: endDate,
               },
             },
             {
-              start: {$lte: new Date(startdate)},
-              end: {$gte: new Date(enddate)},
+              start: {$lte: startDate},
+              end: {$gte: endDate},
             },
           ],
         },
